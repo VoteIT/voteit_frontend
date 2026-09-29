@@ -5,6 +5,7 @@ import AboutView from './AboutView.vue'
 import HomeView from './HomeView.vue'
 import OrgControlPanelView from './OrgControlPanelView.vue'
 import ProfileView from './ProfileView.vue'
+import { tosPanelRequirement } from './useTermsOfService'
 
 router.addRoute({
   component: HomeView,
@@ -31,5 +32,6 @@ router.addRoute({
 router.addRoute({
   component: OrgControlPanelView,
   name: 'orgControlPanel',
-  path: '/control-panel/:panel?'
+  path: '/control-panel/:panel?',
+  meta: { load: tosPanelRequirement }
 })

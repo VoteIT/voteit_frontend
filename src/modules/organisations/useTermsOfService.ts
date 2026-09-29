@@ -1,6 +1,8 @@
 import { DateTime } from 'luxon'
 import { computed, shallowRef, watchEffect } from 'vue'
 
+import type { RequirementFactory } from '@/loader/types'
+
 import * as tosApi from './tosApi'
 import type {
   CurrentTermsOfService,
@@ -22,6 +24,9 @@ const versions = shallowRef<TermsOfService[]>()
  * version is published - a correction keeps its date.
  */
 const needsReview = computed(() => current.value?.newer_global_tos)
+
+/** Undefined until fetched. Without global terms there's nothing to add to. */
+const hasGlobalTos = computed(() => current.value && !!current.value.global_tos)
 
 /** Our version in effect. Null when the organisation has no terms of its own. */
 const organisationTos = computed(() => current.value?.organisation_tos)
@@ -94,6 +99,23 @@ async function saveTos(body: string, correction: boolean) {
 }
 
 /**
+ * The panel is only shown once global terms are known to exist, so a link
+ * straight to it waits for the answer - or it would be sent to the overview
+ * before it came. Failing to fetch lands there too.
+ */
+export const tosPanelRequirement: RequirementFactory = (to) => {
+  if (to.params.panel !== 'termsOfService') return
+  return {
+    key: 'tos-current',
+    blocking: true,
+    async load() {
+      if (useOrgStore().canChangeOrganisation && !current.value)
+        await fetchCurrent().catch(() => {})
+    }
+  }
+}
+
+/**
  * @param quietCheck Fetch terms of service if and when user may change the organisation. Errors are suppressed.
  */
 export default function useTermsOfService(quietCheck = false) {
@@ -109,6 +131,7 @@ export default function useTermsOfService(quietCheck = false) {
   return {
     current,
     globalVersions,
+    hasGlobalTos,
     needsReview,
     baseGlobalVersion,
     globalVersionsToReview,

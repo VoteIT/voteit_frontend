@@ -36,6 +36,9 @@ orgControlPanelPlugins.register({
   id: 'termsOfService',
   component: TermsOfServicePanel,
   icon: 'mdi-file-sign',
+  checkActive() {
+    return !!useTermsOfService().hasGlobalTos.value
+  },
   getDescription(t) {
     return t('organization.tos.description')
   },
