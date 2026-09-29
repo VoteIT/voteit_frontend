@@ -18,10 +18,13 @@ const {
   current,
   globalVersions,
   needsReview,
-  newerGlobalVersions,
+  baseGlobalVersion,
+  globalVersionsToReview,
   organisationTos,
+  versions,
   fetchCurrent,
   fetchGlobalVersions,
+  fetchVersions,
   saveTos
 } = useTermsOfService()
 
@@ -38,7 +41,7 @@ const loaded = computed(
 
 /** Newest published, which is what to review our terms against. */
 const globalTos = computed(
-  () => globalVersions.value?.[0] ?? current.value?.global_tos
+  () => globalVersions.value?.at(0) ?? current.value?.global_tos
 )
 
 function formatDate(iso: string) {
@@ -114,77 +117,142 @@ onBeforeMount(load)
       type="warning"
     />
 
-    <h2 class="mb-2">{{ $t('organization.tos.standardTerms') }}</h2>
-    <template v-if="globalTos">
-      <p class="mb-2 text-medium-emphasis">
-        {{
-          $t('organization.tos.published', {
-            date: formatDate(globalTos.version)
-          })
-        }}
-      </p>
-      <v-sheet border class="mb-6 pa-4" rounded>
-        <Richtext :value="globalTos.body" />
-      </v-sheet>
-    </template>
-    <p v-else class="mb-6 text-medium-emphasis">
-      {{ $t('organization.tos.noStandardTerms') }}
-    </p>
+    <div class="d-flex">
+      <div class="flex-grow-1">
+        <h2 class="mb-2">{{ $t('organization.tos.standardTerms') }}</h2>
+        <p v-if="globalTos" class="mb-2 text-medium-emphasis">
+          {{
+            $t('organization.tos.published', {
+              date: formatDate(globalTos.version)
+            })
+          }}
+        </p>
+        <p v-else class="mb-6 text-medium-emphasis">
+          {{ $t('organization.tos.noStandardTerms') }}
+        </p>
+      </div>
+      <div v-if="needsReview && globalVersionsToReview.length">
+        <DefaultDialog :title="$t('organization.tos.earlierStandardTerms')">
+          <template #activator="{ props }">
+            <v-btn
+              :text="$t('organization.tos.history')"
+              prepend-icon="mdi-clock"
+              variant="tonal"
+              v-bind="props"
+            />
+          </template>
+          <v-list bg-color="transparent">
+            <v-list-item
+              v-for="g in globalVersionsToReview"
+              :key="g.pk"
+              :subtitle="
+                g.pk === baseGlobalVersion?.pk
+                  ? $t('organization.tos.basedOn')
+                  : undefined
+              "
+              :title="formatDate(g.version)"
+            >
+              <template #append>
+                <DefaultDialog
+                  :title="
+                    $t('organization.tos.notesTitle', {
+                      date: formatDate(g.version)
+                    })
+                  "
+                >
+                  <template #activator="{ props }">
+                    <v-btn
+                      v-bind="props"
+                      :prepend-icon="g.notes ? 'mdi-text-box' : undefined"
+                      size="small"
+                      :text="$t('organization.tos.details')"
+                      variant="tonal"
+                    />
+                  </template>
+                  <v-alert
+                    v-if="g.notes"
+                    class="mb-4"
+                    icon="mdi-text-box"
+                    :title="$t('organization.tos.changeNotes')"
+                  >
+                    <Richtext :value="g.notes" />
+                  </v-alert>
+                  <Richtext :value="g.body" />
+                </DefaultDialog>
+              </template>
+            </v-list-item>
+          </v-list>
+        </DefaultDialog>
+      </div>
+    </div>
+    <v-sheet v-if="globalTos" border class="mb-6 pa-4" rounded>
+      <Richtext :value="globalTos.body" />
+    </v-sheet>
 
-    <template v-if="needsReview && newerGlobalVersions.length">
-      <v-expansion-panels class="mb-6">
-        <v-expansion-panel :title="$t('organization.tos.globalChanges')">
-          <v-expansion-panel-text>
-            <v-list bg-color="transparent">
+    <template v-if="organisationTos">
+      <div class="d-flex">
+        <div class="flex-grow-1">
+          <h2 class="mb-2">{{ $t('organization.tos.organisationTerms') }}</h2>
+          <p class="mb-2 text-medium-emphasis">
+            {{
+              $t('organization.tos.published', {
+                date: formatDate(organisationTos.version)
+              })
+            }}
+          </p>
+        </div>
+        <div>
+          <DefaultDialog
+            :title="$t('organization.tos.earlierOrganisationTerms')"
+            @open="handled(fetchVersions)"
+          >
+            <template #activator="{ props }">
+              <v-btn
+                :text="$t('organization.tos.history')"
+                prepend-icon="mdi-clock"
+                variant="tonal"
+                v-bind="props"
+              />
+            </template>
+            <v-list v-if="versions" bg-color="transparent">
               <v-list-item
-                v-for="g in newerGlobalVersions"
-                :key="g.pk"
-                :title="formatDate(g.version)"
+                v-for="tos in versions"
+                :key="tos.pk"
+                :subtitle="
+                  tos.pk === organisationTos.pk
+                    ? $t('organization.tos.currentVersion')
+                    : undefined
+                "
+                :title="formatDate(tos.version)"
               >
                 <template #append>
                   <DefaultDialog
                     :title="
-                      $t('organization.tos.notesTitle', {
-                        date: formatDate(g.version)
+                      $t('organization.tos.published', {
+                        date: formatDate(tos.version)
                       })
                     "
                   >
                     <template #activator="{ props }">
                       <v-btn
                         v-bind="props"
-                        :prepend-icon="g.notes ? 'mdi-text-box' : undefined"
                         size="small"
                         :text="$t('organization.tos.details')"
                         variant="tonal"
                       />
                     </template>
-                    <v-alert
-                      v-if="g.notes"
-                      class="mb-4"
-                      icon="mdi-text-box"
-                      :title="$t('organization.tos.changeNotes')"
-                    >
-                      <Richtext :value="g.notes" />
-                    </v-alert>
-                    <Richtext :value="g.body" />
+                    <Richtext v-if="tos.body" :value="tos.body" />
+                    <p v-else class="text-medium-emphasis">
+                      {{ $t('organization.tos.emptyBody') }}
+                    </p>
                   </DefaultDialog>
                 </template>
               </v-list-item>
             </v-list>
-          </v-expansion-panel-text>
-        </v-expansion-panel>
-      </v-expansion-panels>
-    </template>
-
-    <template v-if="organisationTos">
-      <h2 class="mb-2">{{ $t('organization.tos.organisationTerms') }}</h2>
-      <p class="mb-2 text-medium-emphasis">
-        {{
-          $t('organization.tos.published', {
-            date: formatDate(organisationTos.version)
-          })
-        }}
-      </p>
+            <v-progress-linear v-else color="primary" indeterminate />
+          </DefaultDialog>
+        </div>
+      </div>
       <v-sheet v-if="!editing" border class="mb-4 pa-4" rounded>
         <Richtext v-if="organisationTos.body" :value="organisationTos.body" />
         <p v-else class="text-medium-emphasis">

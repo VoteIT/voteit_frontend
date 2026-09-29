@@ -10,10 +10,15 @@ const api = vi.hoisted(() => ({
   globalVersions: [] as GlobalTermsOfService[],
   newerGlobal: false,
   globalLists: 0,
+  lists: 0,
   currents: 0
 }))
 
 vi.mock('./tosApi', () => ({
+  listTos: async () => {
+    api.lists++
+    return api.versions
+  },
   listGlobalTos: async () => {
     api.globalLists++
     return api.globalVersions
@@ -59,17 +64,23 @@ beforeEach(() => {
   api.newerGlobal = false
 })
 
-test('lists the global versions published after ours in effect', async () => {
+test('lists the global versions since the one ours is based on', async () => {
   api.versions = [tos(1, '<p>Ours</p>', daysAgo(5))]
   api.globalVersions = [
     globalTos(3, daysAgo(1)),
     globalTos(2, daysAgo(3)),
-    globalTos(1, daysAgo(10))
+    globalTos(1, daysAgo(10)),
+    globalTos(0, daysAgo(20))
   ]
-  const { fetchCurrent, fetchGlobalVersions, newerGlobalVersions } =
-    useTermsOfService()
+  const {
+    baseGlobalVersion,
+    fetchCurrent,
+    fetchGlobalVersions,
+    globalVersionsToReview
+  } = useTermsOfService()
   await Promise.all([fetchCurrent(), fetchGlobalVersions()])
-  expect(newerGlobalVersions.value.map((g) => g.pk)).toEqual([3, 2])
+  expect(globalVersionsToReview.value.map((g) => g.pk)).toEqual([1, 2, 3])
+  expect(baseGlobalVersion.value?.pk).toBe(1)
 })
 
 test('newer global terms need review until a new version is published', async () => {
@@ -101,6 +112,25 @@ test('correcting changes the version in effect, keeping its date', async () => {
   })
 })
 
+test('our history is oldest first, and follows corrections', async () => {
+  api.versions = [
+    tos(2, '<p>Ours</p>', daysAgo(1)),
+    tos(1, '<p>Old</p>', daysAgo(10))
+  ]
+  const { fetchCurrent, fetchVersions, saveTos, versions } = useTermsOfService()
+  await Promise.all([fetchCurrent(), fetchVersions()])
+  expect(versions.value?.map((v) => v.pk)).toEqual([1, 2])
+  await saveTos('<p>Ours, fixed</p>', true)
+  expect(versions.value?.[1]).toMatchObject({ body: '<p>Ours, fixed</p>' })
+})
+
+test('publishing leaves our history to be fetched again', async () => {
+  const { fetchCurrent, fetchVersions, saveTos, versions } = useTermsOfService()
+  await Promise.all([fetchCurrent(), fetchVersions()])
+  await saveTos('<p>New</p>', false)
+  expect(versions.value).toBeUndefined()
+})
+
 test('publishing a version makes it the one in effect', async () => {
   const { fetchCurrent, organisationTos, saveTos } = useTermsOfService()
   await fetchCurrent()
@@ -119,9 +149,11 @@ test('simultaneous fetches share one request', async () => {
   expect(api.currents).toBe(2)
 })
 
-test('the current terms alone leave the global list unfetched', async () => {
+test('the current terms alone leave the lists unfetched', async () => {
   const { fetchCurrent } = useTermsOfService()
   api.globalLists = 0
+  api.lists = 0
   await fetchCurrent()
   expect(api.globalLists).toBe(0)
+  expect(api.lists).toBe(0)
 })

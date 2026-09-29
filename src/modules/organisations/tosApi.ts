@@ -17,6 +17,14 @@ export function getCurrentTos() {
   return restApi.get<CurrentTermsOfService>(`${ENDPOINT}current/`)
 }
 
+/**
+ * Organisation managers get every version, others only the active one.
+ * Newest first.
+ */
+export function listTos() {
+  return restApi.get<TermsOfService[]>(ENDPOINT)
+}
+
 /** Publish a new version, which users must accept. Takes effect now. */
 export function createTos(body: string) {
   return restApi.post<TermsOfService>(ENDPOINT, { body })
