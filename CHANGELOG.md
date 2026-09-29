@@ -4,6 +4,12 @@ Document notable changes here.
 
 Version format is `major`.`minor`.`patch`. Until major version 1 is realeased, API changes accours on minor version bumps, but never on patch version bumps.
 
+## 1.2.0 (2026-09-29)
+
+- Terms of service: logins paused by the backend for terms acceptance land on a new accept page showing the global terms and the organisation's addition, then resume the login on acceptance
+- Organisation control panel: roles, contact info and terms of service moved here from tabs on the home page, with panels flagging when they need attention
+- Terms of service control panel: organisation managers can publish new versions of the organisation's addition, correct existing ones and browse the version history
+
 ## 1.1.0 (2026-09-28)
 
 - Multiple login providers: organisations can offer several ways to sign in, replacing the single `login_url`/`id_host`. Users can link and unlink login methods on their profile, and a new link account page lets someone signing in with a new provider connect it to an existing account (or cancel)
