@@ -66,8 +66,7 @@ async function publish(body: string, correction = false) {
   if (
     !correction &&
     !(await dialogQuery({
-      title: t('organization.tos.confirmPublish'),
-      theme: ThemeColor.Warning
+      title: t('organization.tos.confirmPublish')
     }))
   )
     return
@@ -119,7 +118,7 @@ onBeforeMount(load)
 
     <div class="d-flex">
       <div class="flex-grow-1">
-        <h2 class="mb-2">{{ $t('organization.tos.standardTerms') }}</h2>
+        <h2 class="mb-2">{{ $t('organization.tos.requiredTerms') }}</h2>
         <p v-if="globalTos" class="mb-2 text-medium-emphasis">
           {{
             $t('organization.tos.published', {
@@ -128,11 +127,11 @@ onBeforeMount(load)
           }}
         </p>
         <p v-else class="mb-6 text-medium-emphasis">
-          {{ $t('organization.tos.noStandardTerms') }}
+          {{ $t('organization.tos.noRequiredTerms') }}
         </p>
       </div>
       <div v-if="needsReview && globalVersionsToReview.length">
-        <DefaultDialog :title="$t('organization.tos.earlierStandardTerms')">
+        <DefaultDialog :title="$t('organization.tos.earlierRequiredTerms')">
           <template #activator="{ props }">
             <v-btn
               :text="$t('organization.tos.history')"
@@ -192,7 +191,7 @@ onBeforeMount(load)
     <template v-if="organisationTos">
       <div class="d-flex">
         <div class="flex-grow-1">
-          <h2 class="mb-2">{{ $t('organization.tos.organisationTerms') }}</h2>
+          <h2 class="mb-2">{{ $t('organization.tos.additionalTerms') }}</h2>
           <p class="mb-2 text-medium-emphasis">
             {{
               $t('organization.tos.published', {
@@ -203,7 +202,7 @@ onBeforeMount(load)
         </div>
         <div>
           <DefaultDialog
-            :title="$t('organization.tos.earlierOrganisationTerms')"
+            :title="$t('organization.tos.earlierAdditionalTerms')"
             @open="handled(fetchVersions)"
           >
             <template #activator="{ props }">
