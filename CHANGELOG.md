@@ -4,6 +4,10 @@ Document notable changes here.
 
 Version format is `major`.`minor`.`patch`. Until major version 1 is realeased, API changes accours on minor version bumps, but never on patch version bumps.
 
+## 1.2.1 (2026-09-29)
+
+- Terms of service without global terms: the control panel is hidden when there are no global terms, and the accept page shows the organisation's terms on their own
+
 ## 1.2.0 (2026-09-29)
 
 - Terms of service: logins paused by the backend for terms acceptance land on a new accept page showing the global terms and the organisation's addition, then resume the login on acceptance
