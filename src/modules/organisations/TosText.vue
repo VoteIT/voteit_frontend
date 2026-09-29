@@ -2,17 +2,13 @@
 import Richtext from '@/components/Richtext.vue'
 
 defineProps<{
-  /** The global terms */
-  globalBody: string
-  /** The organisation's addition, if it has one */
+  globalBody?: string
   body?: string
 }>()
 </script>
 
 <template>
-  <Richtext :value="globalBody" />
-  <template v-if="body">
-    <v-divider class="my-4" />
-    <Richtext :value="body" />
-  </template>
+  <Richtext v-if="globalBody" :value="globalBody" />
+  <v-divider v-if="body && globalBody" class="my-4" />
+  <Richtext v-if="body" :value="body" />
 </template>
