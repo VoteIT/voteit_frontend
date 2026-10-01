@@ -42,6 +42,8 @@ export default defineConfig(({ mode }) => {
     headers: { Origin: target },
     target
   }
+  // Vite expands a bare string target to changeOrigin: true
+  const keepHostTarget = { changeOrigin: false, target }
 
   return {
     build: {
@@ -66,8 +68,9 @@ export default defineConfig(({ mode }) => {
         '/admin': changeOriginTarget,
         '/api': changeOriginTarget,
         '/asyncapi': changeOriginTarget,
-        '/complete': changeOriginTarget,
-        '/login': changeOriginTarget,
+        // Keep Host so redirect_uri and the pipeline's relative redirects come back through vite
+        '/complete': keepHostTarget,
+        '/login': keepHostTarget,
         '/media': target,
         '/static': target,
         '/ws': {
