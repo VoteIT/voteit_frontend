@@ -1,3 +1,5 @@
+import type { RGB } from '@/utils/color'
+
 export enum OrganisationRole {
   Manager = 'org_manager',
   MeetingCreator = 'meeting_creator'
@@ -30,7 +32,11 @@ export interface LoginProvider {
 
 export interface IOrganisation {
   body: string
+  colors: {
+    appBar?: RGB
+  }
   help_info: string
+  logo: string | null
   page_title: string
   readonly active: boolean
   readonly components: OrganisationComponent[]

@@ -90,11 +90,26 @@ export default defineStore('organisation', () => {
   }
 
   async function updateOrganisation(
-    partial: Partial<Pick<IOrganisation, 'body' | 'help_info' | 'page_title'>>
+    partial: Partial<
+      Pick<IOrganisation, 'body' | 'colors' | 'help_info' | 'page_title'>
+    >
   ) {
     currentOrganisation.value = await restApi.patch<IOrganisation>(
       'organisation/change/',
       partial
+    )
+  }
+
+  /**
+   * The logo is a file field, so it goes multipart in a request of its own.
+   * An empty string removes it.
+   */
+  async function setLogo(logo: Blob | '') {
+    const formData = new FormData()
+    formData.append('logo', logo)
+    currentOrganisation.value = await restApi.patch<IOrganisation>(
+      'organisation/change/',
+      formData
     )
   }
 
@@ -119,6 +134,7 @@ export default defineStore('organisation', () => {
     fetchOrganisation,
     getLoginURL,
     getOrganisationComponent,
+    setLogo,
     startLogin,
     updateOrganisation
   }
