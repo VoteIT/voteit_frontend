@@ -16,6 +16,7 @@ import 'resize-observer-polyfill/dist/ResizeObserver.global'
 
 import { watchEffect } from 'vue'
 import { useI18n } from 'vue-i18n'
+import { useStyleTag } from '@vueuse/core'
 
 import { versions } from './socket'
 import { openDialogEvent } from './utils/events'
@@ -25,11 +26,13 @@ import Loader from './components/Loader.vue'
 import Modal from './components/Modal.vue'
 import NavigationProgress from './components/NavigationProgress.vue'
 import OnlineStatus from './components/OnlineStatus.vue'
+import useOrgProfile from './modules/organisations/useOrgProfile'
 
 // Boot loading lives in src/loader, started from main.ts before the router's
 // first navigation - waiting for a component to mount would be too late.
 
 const { t } = useI18n()
+useStyleTag(useOrgProfile().themeStyles, { id: 'org-profile-theme' })
 
 function promptVersionReload() {
   openDialogEvent.emit({

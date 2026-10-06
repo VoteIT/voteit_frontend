@@ -1,4 +1,5 @@
 import ContactInfoTab from './ContactInfoTab.vue'
+import GraphicalProfilePanel from './GraphicalProfilePanel.vue'
 import OrgRolesPanel from './OrgRolesPanel.vue'
 import TermsOfServicePanel from './TermsOfServicePanel.vue'
 import { orgControlPanelPlugins } from './registry'
@@ -29,6 +30,18 @@ orgControlPanelPlugins.register({
   },
   useRequiresAttention() {
     return useContactInfo(true).requiresCheck
+  }
+})
+
+orgControlPanelPlugins.register({
+  id: 'graphicalProfile',
+  component: GraphicalProfilePanel,
+  icon: 'mdi-palette',
+  getDescription(t) {
+    return t('organization.graphicalProfile.description')
+  },
+  getTitle(t) {
+    return t('organization.graphicalProfile.title')
   }
 })
 

@@ -60,6 +60,7 @@
   "update": "Uppdatera",
   "unknown": "Okänd",
   "unknownUser": "okänd",
+  "upload": "Ladda upp",
   "value": "Värde",
   "winners": "Vinnare",
   "yes": "Ja",
@@ -645,6 +646,20 @@
     "gdpr": {
       "title": "Det här stannar mellan oss",
       "text": "Om du undrar varför du inte fått godkänna kakor från 99 olika spårningstjänster så beror det på att vi valt att inte spåra våra användare. Vi sätter en sessionskaka för att hålla reda på din inloggning. Det är allt."
+    },
+    "graphicalProfile": {
+      "color": "Profilfärg",
+      "colorHelp": "Ersätter standardfärgen på menyer och verktygsfält. Den måste vara mörk nog för att vit text ska gå att läsa.",
+      "contrastWarning": "För ljus för vit text. Kontrasten är {contrast}:1, den behöver vara minst {min}:1.",
+      "description": "Profilfärg och logotyp",
+      "logo": "Logotyp",
+      "logoHelp": "Visas på startsidan, på mötenas startsidor och i realtidsvyn under pauser. Ladda upp en SVG gjord för ljus bakgrund.",
+      "logoSelect": "Välj logotyp (SVG)",
+      "onlySvg": "Logotypen måste vara en SVG-fil",
+      "preview": "Förhandsvisning",
+      "removeLogo": "Ta bort logotyp",
+      "removeLogoConfirm": "Ta bort organisationens logotyp? Den kommer inte längre att visas någonstans i VoteIT.",
+      "title": "Grafisk profil"
     },
     "tos": {
       "acceptUnchanged": "Godkänn utan ändringar",

@@ -60,6 +60,7 @@
   "update": "Update",
   "unknown": "Unknown",
   "unknownUser": "unknown",
+  "upload": "Upload",
   "value": "Value",
   "winners": "Winners",
   "yes": "Yes",
@@ -645,6 +646,20 @@
     "gdpr": {
       "title": "This stays between us",
       "text": "If you're wondering why we haven't asked you to approve cookies from 99 different tracking services, that's because we have choosen to not track our users. We set a session cookie to keep track of your login. That's it."
+    },
+    "graphicalProfile": {
+      "color": "Profile colour",
+      "colorHelp": "Replaces the default colour of menus and toolbars. It must be dark enough for white text to be readable.",
+      "contrastWarning": "Too light for white text. The contrast is {contrast}:1, it needs to be at least {min}:1.",
+      "description": "Profile colour and logo",
+      "logo": "Logo",
+      "logoHelp": "Shown on the start page, on meeting start pages and in the real-time view during pauses. Upload an SVG made for light backgrounds.",
+      "logoSelect": "Select logo (SVG)",
+      "onlySvg": "The logo must be an SVG file",
+      "preview": "Preview",
+      "removeLogo": "Remove logo",
+      "removeLogoConfirm": "Remove the organisation's logo? It will no longer be shown anywhere in VoteIT.",
+      "title": "Graphical profile"
     },
     "tos": {
       "acceptUnchanged": "Accept without changes",
