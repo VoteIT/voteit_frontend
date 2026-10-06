@@ -27,6 +27,7 @@ import { translateMeetingRole } from '../meetings/utils'
 import useMeetingStore from '../meetings/useMeetingStore'
 
 import OrgEditForm from './OrgEditForm.vue'
+import OrgLogo from './OrgLogo.vue'
 import OrgToolbar from './OrgToolbar.vue'
 import useOrgStore from './useOrgStore'
 import FindMeetingDialog from './FindMeetingDialog.vue'
@@ -172,6 +173,7 @@ const meetingCount = computed(() =>
               :value="orgStore.organisation.body"
               :maxHeight="collapsedBodyHeightMobile"
             />
+            <OrgLogo class="mt-12" />
           </template>
         </v-col>
         <v-divider vertical />

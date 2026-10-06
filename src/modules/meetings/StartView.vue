@@ -13,6 +13,8 @@ import RichtextEditor from '@/components/RichtextEditor.vue'
 import WorkflowState from '@/components/WorkflowState.vue'
 import useRules from '@/composables/useRules'
 
+import OrgLogo from '../organisations/OrgLogo.vue'
+
 import { meetingType } from './contentTypes'
 import useMeeting from './useMeeting'
 import { Meeting, MeetingState } from './types'
@@ -144,6 +146,7 @@ async function submit() {
         class="my-2"
       />
       <Richtext :value="meeting.body" />
+      <OrgLogo class="mt-12" />
     </v-col>
   </v-row>
 </template>

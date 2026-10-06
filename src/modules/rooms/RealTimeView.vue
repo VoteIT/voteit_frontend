@@ -14,6 +14,7 @@ import useMeeting from '../meetings/useMeeting'
 import ProposalSheet from '../proposals/ProposalSheet.vue'
 import { ProposalState } from '../proposals/types'
 import ButtonPlugins from '../proposals/ButtonPlugins.vue'
+import OrgLogo from '../organisations/OrgLogo.vue'
 import useRoom from '../rooms/useRoom'
 import ActiveSpeakerList from '../speakerLists/ActiveSpeakerList.vue'
 import useSpeakerStore from '../speakerLists/useSpeakerStore'
@@ -122,6 +123,7 @@ onBeforeUnmount(evt.dispose)
         {{ $t('room.paused') }}
       </p>
       <ClockFace v-if="meetingRoom.show_time" :target-time="targetTime" />
+      <OrgLogo v-else class="mx-auto" />
     </div>
     <div v-else class="d-flex">
       <div v-if="display.speakers" class="left flex-grow-1 pa-6">
