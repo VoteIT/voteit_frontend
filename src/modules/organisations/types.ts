@@ -29,14 +29,14 @@ export interface LoginProvider {
 }
 
 export interface IOrganisation {
-  readonly active: boolean
-  readonly pk: number
-  readonly title: string
   body: string
   help_info: string
   page_title: string
-  readonly providers: LoginProvider[]
+  readonly active: boolean
   readonly components: OrganisationComponent[]
+  readonly pk: number
+  readonly providers: LoginProvider[]
+  readonly title: string
 }
 
 export interface IUser {
