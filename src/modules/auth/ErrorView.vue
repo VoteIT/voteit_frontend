@@ -55,7 +55,7 @@ onBeforeMount(fetchMessages)
           <div v-if="annotatedMessages === undefined">
             <v-progress-circular indeterminate color="primary" />
           </div>
-          <v-list v-else bg-color="transparent" class="text-left mb-6">
+          <v-list v-else bg-color="transparent" class="text-left mb-6 messages">
             <v-list-item
               v-for="(props, i) in annotatedMessages"
               :key="i"
@@ -76,3 +76,9 @@ onBeforeMount(fetchMessages)
     </v-container>
   </v-main>
 </template>
+
+<style scoped lang="sass">
+.messages
+  :deep(.v-list-item-title)
+    white-space: pre-line
+</style>
