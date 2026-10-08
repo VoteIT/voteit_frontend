@@ -2,7 +2,7 @@
 import { sorted } from 'itertools'
 import { computed, onBeforeMount, reactive, shallowRef, watch } from 'vue'
 import { useRouter } from 'vue-router'
-import { useI18n } from 'vue-i18n'
+import { ComposerTranslation, useI18n } from 'vue-i18n'
 
 import { slugify } from '@/utils'
 import CardSelector from '@/components/CardSelector.vue'
@@ -51,32 +51,58 @@ const { handled, handleRestError } = useErrorHandler({ target: 'dialog' })
 
 onBeforeMount(() => loadDialects().catch(handleRestError))
 
-const currentStep = shallowRef(0)
-const steps = computed<{ info: string; title: string }[]>(() => {
-  const erStep = formData.meeting.install_dialect
-    ? []
-    : [
-        {
-          info: t('meeting.createErDescription'),
-          title: t('meeting.createErTitle')
-        }
-      ]
-  return [
-    {
+type StepName = 'base' | 'dialect' | 'room' | 'er'
+
+type StepAdapter = {
+  name: StepName
+  isActive?(): boolean
+  getConfig(t: ComposerTranslation): { info: string; title: string }
+}
+
+const stepAdapters: StepAdapter[] = [
+  {
+    name: 'base',
+    getConfig: (t) => ({
       info: t('meeting.createBaseDescription'),
       title: t('meeting.createBaseTitle')
-    },
-    {
+    })
+  },
+  {
+    name: 'dialect',
+    // Active while dialects are loading, so the step can't appear behind the user
+    isActive: () => installableDialects.value?.length !== 0,
+    getConfig: (t) => ({
       info: t('meeting.createDialectDescription'),
       title: t('meeting.createDialectTitle')
-    },
-    {
+    })
+  },
+  {
+    name: 'room',
+    getConfig: (t) => ({
       info: t('meeting.createRoomDescription'),
       title: t('meeting.createRoomTitle')
-    },
-    ...erStep
-  ]
-})
+    })
+  },
+  {
+    name: 'er',
+    isActive: () => !formData.meeting.install_dialect,
+    getConfig: (t) => ({
+      info: t('meeting.createErDescription'),
+      title: t('meeting.createErTitle')
+    })
+  }
+]
+
+// Steps come and go with the data, so the current one is tracked by name
+const currentStepName = shallowRef<StepName>('base')
+const steps = computed(() =>
+  stepAdapters
+    .filter((step) => step.isActive?.() ?? true)
+    .map((step) => ({ name: step.name, ...step.getConfig(t) }))
+)
+const currentStep = computed(() =>
+  steps.value.findIndex((s) => s.name === currentStepName.value)
+)
 const stepData = computed(() => steps.value[currentStep.value])
 const nextStepBtn = computed(() => {
   return currentStep.value === steps.value.length - 1
@@ -93,14 +119,14 @@ const nextStepBtn = computed(() => {
 })
 
 function prevStep() {
-  currentStep.value--
+  currentStepName.value = steps.value[currentStep.value - 1].name
 }
 
 const formValid = shallowRef(false)
 function nextStep() {
   if (!formValid.value) return
   if (currentStep.value === steps.value.length - 1) addMeeting()
-  else currentStep.value++
+  else currentStepName.value = steps.value[currentStep.value + 1].name
 }
 
 const formData = reactive<FormData>({
@@ -231,7 +257,7 @@ async function addMeeting() {
         color="primary"
         indeterminate
       />
-      <template v-else-if="currentStep === 0">
+      <template v-else-if="currentStepName === 'base'">
         <v-text-field
           :label="$t('title')"
           :rules="[rules.required, rules.minLength(5), rules.maxLength(100)]"
@@ -239,15 +265,16 @@ async function addMeeting() {
           v-model="formData.meeting.title"
         />
       </template>
-      <template v-else-if="currentStep === 1">
+      <template v-else-if="currentStepName === 'dialect'">
         <CardSelector
           color="success"
           :items="dialectItems"
+          :loading="!installableDialects"
           required
           v-model="formData.meeting.install_dialect"
         />
       </template>
-      <template v-else-if="currentStep === 2">
+      <template v-else-if="currentStepName === 'room'">
         <v-checkbox
           hide-details
           :label="$t('room.create')"
@@ -272,7 +299,7 @@ async function addMeeting() {
           hide-time-option
         />
       </template>
-      <template v-else-if="currentStep === 3">
+      <template v-else-if="currentStepName === 'er'">
         <CardSelector
           color="success"
           :items="erMethods"
