@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { ComponentPublicInstance, computed, ref, watch } from 'vue'
+import { ComponentPublicInstance, computed, shallowRef, watch } from 'vue'
 
 import { getFullName } from '@/utils'
 import { userType } from '@/modules/organisations/contentTypes'
@@ -34,9 +34,9 @@ function annotateFullName(user: IUser) {
   }
 }
 
-const query = ref('')
-const results = ref<FullNameUser[]>([])
-const selected = ref<IUser | null>(null)
+const query = shallowRef('')
+const results = shallowRef<FullNameUser[]>([])
+const selected = shallowRef<number | null>(null)
 
 async function search() {
   if (!query.value) {
@@ -72,7 +72,7 @@ function deSelect() {
   results.value = []
 }
 
-const inputField = ref<ComponentPublicInstance | null>(null)
+const inputField = shallowRef<ComponentPublicInstance | null>(null)
 function submit() {
   if (!selected.value) return
   emit('submit', selected.value)
