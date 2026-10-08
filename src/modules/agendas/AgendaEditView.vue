@@ -234,6 +234,7 @@ function tagFilter(tags: string | string[], query: string) {
         <v-btn
           v-bind="props"
           color="primary"
+          :disabled="agenda.length < 2"
           prepend-icon="mdi-reorder-horizontal"
           :text="$t('agenda.ordering')"
         />
