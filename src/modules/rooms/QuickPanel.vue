@@ -12,20 +12,21 @@ const { meetingRooms } = useRooms(meetingId)
 
 const sortedRooms = computed(() => {
   const aid = agenda.value.at(0)?.pk
-  if (!aid) return []
   return sorted(
     meetingRooms.value.map(({ open, pk, title }) => ({
       open,
       pk,
       title,
-      to: {
-        name: 'room:broadcast',
-        params: {
-          id: meetingId.value,
-          roomId: pk,
-          aid
-        }
-      }
+      to: aid
+        ? {
+            name: 'room:broadcast',
+            params: {
+              id: meetingId.value,
+              roomId: pk,
+              aid
+            }
+          }
+        : undefined
     })),
     (r) => r.title.toLocaleLowerCase()
   )
@@ -38,12 +39,13 @@ const sortedRooms = computed(() => {
       v-for="{ pk, open, title, to } in sortedRooms"
       :key="pk"
       color="primary"
+      :disabled="!to"
       :prepend-icon="open ? 'mdi-broadcast' : 'mdi-broadcast-off'"
       size="small"
       :to="to"
       :text="title"
       :variant="open ? 'flat' : 'tonal'"
-      @click.prevent
+      @click.stop
     />
   </v-card-actions>
   <v-card-text v-else>
