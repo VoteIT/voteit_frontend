@@ -107,7 +107,7 @@ const formData = reactive<FormData>({
   meeting: {
     title: '',
     er_policy_name: null,
-    install_dialect: null
+    install_dialect: ''
   },
   createRoom: false,
   createSpeakerSystem: true,
@@ -138,7 +138,7 @@ const dialectItems = computed(() => [
   {
     title: t('meeting.createDialectNone'),
     text: t('meeting.createDialectNoneDescription'),
-    value: null
+    value: '' // Not null, so that "none" is distinguishable from no choice
   },
   ...(installableDialects.value ?? [])?.map(({ title, description, name }) => ({
     title,
@@ -243,6 +243,7 @@ async function addMeeting() {
         <CardSelector
           color="success"
           :items="dialectItems"
+          required
           v-model="formData.meeting.install_dialect"
         />
       </template>
