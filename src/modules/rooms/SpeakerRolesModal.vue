@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, shallowRef } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 import RoleMatrix from '@/components/RoleMatrix.vue'
@@ -23,22 +23,31 @@ const { getRoomSpeakerSystem } = useSpeakerStore()
 const { getUserIds } = speakerSystemType.useContextRoles()
 const { handled } = useErrorHandler({ target: 'dialog' })
 
-const systemIcons = {
+const systemIcons: Record<SpeakerSystemRole, string> = {
   speaker: 'mdi-chat',
   list_moderator: 'mdi-gavel'
 }
+
+const selectedRole = shallowRef(SpeakerSystemRole.Speaker)
+const roleItems = computed(() =>
+  Object.values(SpeakerSystemRole).map((value) => ({
+    value,
+    title: speakerSystemType.getRole(value).translateName(t),
+    props: { prependIcon: systemIcons[value] }
+  }))
+)
 
 const speakerSystem = computed(() => getRoomSpeakerSystem(props.room))
 const userIds = computed(() =>
   speakerSystem.value ? getUserIds(speakerSystem.value.pk) : []
 )
 
-function addSpeaker(user: number) {
+function addRole(user: number) {
   if (!speakerSystem.value)
     throw new Error("Can't add roles without speaker system")
   const { pk } = speakerSystem.value
   return handled(
-    () => speakerSystemType.addRoles(pk, user, SpeakerSystemRole.Speaker),
+    () => speakerSystemType.addRoles(pk, user, selectedRole.value),
     'roles'
   )
 }
@@ -69,11 +78,26 @@ function addSpeaker(user: number) {
       :icons="systemIcons"
       :pk="speakerSystem.pk"
     />
-    <UserSearch
-      class="mb-2"
-      :filter="({ pk }: IUser) => !userIds.includes(pk)"
-      :params="{ meeting: meetingId }"
-      @submit="addSpeaker"
-    />
+    <div class="d-flex flex-wrap ga-2 mb-2">
+      <v-select
+        v-model="selectedRole"
+        class="role-select flex-grow-0"
+        hide-details
+        :items="roleItems"
+        :label="$t('role.add')"
+        :prepend-inner-icon="systemIcons[selectedRole]"
+      />
+      <UserSearch
+        class="flex-grow-1"
+        :filter="({ pk }: IUser) => !userIds.includes(pk)"
+        :params="{ meeting: meetingId }"
+        @submit="addRole"
+      />
+    </div>
   </template>
 </template>
+
+<style lang="sass" scoped>
+.role-select
+  min-width: 200px
+</style>

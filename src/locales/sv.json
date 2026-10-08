@@ -1043,6 +1043,7 @@
     }
   },
   "role": {
+    "add": "Lägg till roll",
     "usersPerPage": "Användare per sida",
     "discusser": "Debattör",
     "list_moderator": "Listmoderator",
