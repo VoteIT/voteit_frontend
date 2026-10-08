@@ -52,7 +52,7 @@ watch(
 
     while (!stop && (node = nodeStack.pop())) {
       if (isText(node)) {
-        var nextCharIndex = charIndex + node.length
+        const nextCharIndex = charIndex + node.length
         if (
           !foundStart &&
           selection.start >= charIndex &&
@@ -72,7 +72,7 @@ watch(
         charIndex = nextCharIndex
       } else {
         // Add in reverse order
-        var i = node.childNodes.length
+        let i = node.childNodes.length
         while (i--) nodeStack.push(node.childNodes[i])
       }
     }

@@ -8,7 +8,6 @@ import Richtext from '@/components/Richtext.vue'
 import RichtextEditor from '@/components/RichtextEditor.vue'
 import useErrorHandler from '@/composables/useErrorHandler'
 import { dialogQuery, stripHTML } from '@/utils'
-import { ThemeColor } from '@/utils/types'
 
 import useTermsOfService from './useTermsOfService'
 
