@@ -659,6 +659,8 @@
       "preview": "Förhandsvisning",
       "removeLogo": "Ta bort logotyp",
       "removeLogoConfirm": "Ta bort organisationens logotyp? Den kommer inte längre att visas någonstans i VoteIT.",
+      "resetColorConfirm": "Återställ profilfärgen? Alla användare kommer att se VoteITs standardfärg istället.",
+      "saveColorConfirm": "Spara den nya profilfärgen? Den ersätter nuvarande färg för alla användare.",
       "title": "Grafisk profil"
     },
     "tos": {

@@ -113,19 +113,37 @@ function uploadLogo() {
   </div>
   <div class="d-flex ga-2 mb-8">
     <v-spacer />
-    <v-btn
-      :disabled="!profileColor || savingColor"
-      :text="$t('reset')"
-      variant="text"
-      @click="resetColor"
-    />
-    <v-btn
-      color="primary"
-      :disabled="!contrastOk || !colorChanged"
-      :loading="savingColor"
-      :text="$t('save')"
-      @click="saveColor"
-    />
+    <QueryDialog
+      color="warning"
+      :confirm-text="$t('reset')"
+      :text="$t('organization.graphicalProfile.resetColorConfirm')"
+      @confirmed="resetColor"
+    >
+      <template #activator="{ props }">
+        <v-btn
+          :disabled="!profileColor || savingColor"
+          :text="$t('reset')"
+          variant="text"
+          v-bind="props"
+        />
+      </template>
+    </QueryDialog>
+    <QueryDialog
+      color="warning"
+      :confirm-text="$t('save')"
+      :text="$t('organization.graphicalProfile.saveColorConfirm')"
+      @confirmed="saveColor"
+    >
+      <template #activator="{ props }">
+        <v-btn
+          color="primary"
+          :disabled="!contrastOk || !colorChanged"
+          :loading="savingColor"
+          :text="$t('save')"
+          v-bind="props"
+        />
+      </template>
+    </QueryDialog>
   </div>
 
   <v-divider class="my-6" />

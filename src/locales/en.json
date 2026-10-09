@@ -659,6 +659,8 @@
       "preview": "Preview",
       "removeLogo": "Remove logo",
       "removeLogoConfirm": "Remove the organisation's logo? It will no longer be shown anywhere in VoteIT.",
+      "resetColorConfirm": "Reset the profile colour? All users will see the standard VoteIT colour instead.",
+      "saveColorConfirm": "Save the new profile colour? It will replace the current colour for all users.",
       "title": "Graphical profile"
     },
     "tos": {
