@@ -4,6 +4,19 @@ Document notable changes here.
 
 Version format is `major`.`minor`.`patch`. Until major version 1 is realeased, API changes accours on minor version bumps, but never on patch version bumps.
 
+## 1.3.0 (2026-10-09)
+
+- Graphical profile control panel: organisation managers can set a profile colour for the app bar (checked for contrast, previewed in a meeting mock-up, confirmed before saving or resetting) and upload an SVG logo
+- Organisation logo shown on start pages and the pause screen
+- Meeting creation: dialect selection is skipped when no dialects are available
+- Room speaker roles: the role to add can be selected
+- Agenda reordering disabled with fewer than two agenda items
+- Bugfix: rooms were shown as not configured when the meeting had no agenda yet; the control is now disabled instead
+
+## 1.2.2 (2026-10-06)
+
+- Login error messages are no longer truncated
+
 ## 1.2.1 (2026-09-29)
 
 - Terms of service without global terms: the control panel is hidden when there are no global terms, and the accept page shows the organisation's terms on their own
