@@ -15,6 +15,7 @@ import {
 import QueryDialog from '@/components/QueryDialog.vue'
 import useErrorHandler from '@/composables/useErrorHandler'
 
+import ProfileColorPreview from './ProfileColorPreview.vue'
 import useOrgProfile, { isSvgFile } from './useOrgProfile'
 
 const { t } = useI18n()
@@ -102,14 +103,10 @@ function uploadLogo() {
         v-model="draftColor"
       />
     </v-input>
-    <div
-      class="flex-grow-1 align-self-start rounded pa-4 text-h6 text-white"
-      :style="{
-        backgroundColor: `rgb(${draftColor.r}, ${draftColor.g}, ${draftColor.b})`
-      }"
-    >
-      {{ $t('organization.graphicalProfile.preview') }}
-    </div>
+    <ProfileColorPreview
+      class="flex-grow-1 align-self-start"
+      :color="draftColor"
+    />
   </div>
   <div class="d-flex ga-2 mb-8">
     <v-spacer />

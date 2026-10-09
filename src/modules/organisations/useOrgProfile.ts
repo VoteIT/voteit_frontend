@@ -4,15 +4,9 @@ import { mixWithWhite, type RGB, toCssChannels } from '@/utils/color'
 
 import useOrgStore from './useOrgStore'
 
-/**
- * Stylesheet overriding Vuetify's app-bar theme variables. Vuetify redeclares
- * them on every element with the theme class - v-app, but also toolbars,
- * drawers, lists, sheets... - so an inline style on v-app would be shadowed.
- * The :root prefix outranks Vuetify's own .v-theme--light rule.
- */
-function getThemeStyles(profileColor?: RGB) {
-  if (!profileColor) return ''
-  const vars = {
+/** Vuetify's app-bar theme variables, derived from a profile colour */
+export function getProfileColorVars(profileColor: RGB) {
+  return {
     '--v-theme-app-bar': toCssChannels(profileColor),
     // Profile colours are checked for contrast with white text
     '--v-theme-on-app-bar': '255,255,255',
@@ -22,7 +16,17 @@ function getThemeStyles(profileColor?: RGB) {
     ),
     '--v-theme-app-bar-active': toCssChannels(mixWithWhite(profileColor, 0.3))
   }
-  const declarations = Object.entries(vars)
+}
+
+/**
+ * Stylesheet overriding Vuetify's app-bar theme variables. Vuetify redeclares
+ * them on every element with the theme class - v-app, but also toolbars,
+ * drawers, lists, sheets... - so an inline style on v-app would be shadowed.
+ * The :root prefix outranks Vuetify's own .v-theme--light rule.
+ */
+function getThemeStyles(profileColor?: RGB) {
+  if (!profileColor) return ''
+  const declarations = Object.entries(getProfileColorVars(profileColor))
     .map(([name, value]) => `${name}: ${value};`)
     .join(' ')
   return `:root .v-theme--light { ${declarations} }`

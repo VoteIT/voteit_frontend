@@ -656,7 +656,6 @@
       "logoHelp": "Shown on the start page, on meeting start pages and in the real-time view during pauses. Upload an SVG made for light backgrounds.",
       "logoSelect": "Select logo (SVG)",
       "onlySvg": "The logo must be an SVG file",
-      "preview": "Preview",
       "removeLogo": "Remove logo",
       "removeLogoConfirm": "Remove the organisation's logo? It will no longer be shown anywhere in VoteIT.",
       "resetColorConfirm": "Reset the profile colour? All users will see the standard VoteIT colour instead.",
