@@ -25,10 +25,11 @@ if ! [[ "$PREID" =~ ^(rc|beta)$ ]]; then
   exit 1
 fi
 
-# npm version refuses to run on a dirty tree, and a tag pointing at a commit that
-# doesn't hold the code that was tested is worse than no tag at all.
-if [ -n "$(git status --porcelain)" ]; then
-  error "You have uncommitted changes. Commit or stash them before tagging."
+# A tag pointing at a commit that doesn't hold the code that was tested is worse
+# than no tag at all. The changelog is the exception: it changes no code, and it
+# is committed along with the version bump.
+if [ -n "$(git status --porcelain -- . ':!CHANGELOG.md')" ]; then
+  error "You have uncommitted changes other than CHANGELOG.md. Commit or stash them before tagging."
   exit 1
 fi
 
@@ -57,14 +58,24 @@ if [[ ! "$VERSION" =~ - ]]; then
   if ! grep -q "^## ${VERSION}\b" CHANGELOG.md; then
     warn "No changelog entry found for version ${VERSION} in CHANGELOG.md."
   fi
+  # A stable tag publishes a release image, so it may only be cut from main.
+  BRANCH="$(git branch --show-current)"
+  if [ "$BRANCH" != "main" ]; then
+    error "Stable version ${VERSION} can only be tagged on main (on '${BRANCH:-detached HEAD}')."
+    exit 1
+  fi
 fi
 
 echo "Current version: ${CURRENT}"
 read -p "Do you want to bump to '${VERSION}' and push git tag '${TAG}' [y/N] " -n 1 -r
 echo
 if [[ "$REPLY" =~ ^[yY]$ ]]; then
-  # Writes package.json and package-lock.json, commits both and tags the commit.
-  npm version "$BUMP" --preid "$PREID" > /dev/null || { error "Failed to bump version."; exit 1; }
-  # npm creates an annotated tag, so --follow-tags carries it along with the commit.
+  # npm only writes package.json and package-lock.json here. Left to commit itself it
+  # refuses a dirty tree and would leave the changelog out, so we commit and tag.
+  npm version "$BUMP" --preid "$PREID" --no-git-tag-version > /dev/null || { error "Failed to bump version."; exit 1; }
+  git add package.json package-lock.json CHANGELOG.md
+  git commit -q -m "$VERSION" || { error "Failed to commit version bump."; exit 1; }
+  git tag -a "$TAG" -m "$VERSION" || { error "Failed to create tag '${TAG}'."; exit 1; }
+  # The tag is annotated, so --follow-tags carries it along with the commit.
   git push --follow-tags origin HEAD || { error "Failed to push. The commit and tag '${TAG}' exist locally only."; exit 1; }
 fi
