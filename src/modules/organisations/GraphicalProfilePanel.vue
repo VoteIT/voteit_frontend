@@ -96,7 +96,7 @@ function uploadLogo() {
     >
       <v-color-picker
         :modes="['rgb', 'hex']"
-        mode="rgb"
+        mode="hex"
         elevation="0"
         border
         v-model="draftColor"
@@ -127,6 +127,8 @@ function uploadLogo() {
       @click="saveColor"
     />
   </div>
+
+  <v-divider class="my-6" />
 
   <h2 class="mb-2">{{ $t('organization.graphicalProfile.logo') }}</h2>
   <p class="mb-4">{{ $t('organization.graphicalProfile.logoHelp') }}</p>
