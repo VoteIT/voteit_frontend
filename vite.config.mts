@@ -42,6 +42,10 @@ export default defineConfig(({ mode }) => {
     headers: { Origin: target },
     target
   }
+  const keepOriginTarget = {
+    changeOrigin: false,
+    target
+  }
   return {
     build: {
       chunkSizeWarningLimit: 1600,
@@ -66,8 +70,8 @@ export default defineConfig(({ mode }) => {
         '/api/': changeOriginTarget,
         '/asyncapi/': changeOriginTarget,
         // Keep Host so redirect_uri and the pipeline's relative redirects come back through vite
-        '/complete/': target,
-        '/login/': target,
+        '/complete/': keepOriginTarget,
+        '/login/': keepOriginTarget,
         '/media/': target,
         '/static/': target,
         '/ws/': {
