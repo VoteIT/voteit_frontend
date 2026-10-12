@@ -13,6 +13,9 @@ vi.mock('@/utils/restApi', () => ({
   isApiError: (e: unknown) => !!e && typeof e === 'object' && 'status' in e
 }))
 
+const submitLogin = vi.hoisted(() => vi.fn())
+vi.mock('@/modules/auth/submitLogin', () => ({ default: submitLogin }))
+
 import restApi from '@/utils/restApi'
 
 import useOrgStore from './useOrgStore'
@@ -117,7 +120,7 @@ test('an edit of our own is stored from the response', async () => {
 const IDPROXY = {
   provider_id: 'idproxy',
   title: 'VoteIT ID',
-  login_url: 'https://id.example.com/login-to/testserver',
+  login_url: '/login/idproxy/',
   profile_url: 'https://id.example.com/',
   logout_url: 'https://id.example.com/log-out',
   scope: ['email']
@@ -161,26 +164,27 @@ test('scopes are the union across the providers', async () => {
   expect(store.scopes.toSorted()).toEqual(['email', 'openid'])
 })
 
-test('the login URL carries where to come back to', async () => {
-  const store = await withProviders(IDPROXY)
+test('a login carries where to come back to', async () => {
+  const store = await withProviders(SCOUTID)
 
-  expect(store.getLoginURL(store.primaryProvider!, '/m/1/a-meeting')).toBe(
-    'https://id.example.com/login-to/testserver?next=%2Fm%2F1%2Fa-meeting'
-  )
+  store.startLogin(SCOUTID, '/m/1/a-meeting')
+  expect(submitLogin).toHaveBeenLastCalledWith('/login/scoutid/', {
+    next: '/m/1/a-meeting'
+  })
   // The front page is where they'd land anyway
-  expect(store.getLoginURL(store.primaryProvider!, '/')).toBe(
-    'https://id.example.com/login-to/testserver'
-  )
+  store.startLogin(SCOUTID, '/')
+  expect(submitLogin).toHaveBeenLastCalledWith('/login/scoutid/', {})
 })
 
-test('starting a login leaves for the provider, coming back to this page', async () => {
-  const assign = vi.fn()
+test('starting a login comes back to this page by default', async () => {
   const { location: realLocation } = window
-  vi.stubGlobal('location', { assign, pathname: '/here' })
+  vi.stubGlobal('location', { pathname: '/here' })
   const store = await withProviders(IDPROXY, SCOUTID)
 
   store.startLogin(SCOUTID)
 
-  expect(assign).toHaveBeenCalledWith('/login/scoutid/?next=%2Fhere')
+  expect(submitLogin).toHaveBeenLastCalledWith('/login/scoutid/', {
+    next: '/here'
+  })
   vi.stubGlobal('location', realLocation)
 })

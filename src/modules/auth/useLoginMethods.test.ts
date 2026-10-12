@@ -9,7 +9,7 @@ const providers = [
   {
     provider_id: 'idproxy',
     title: 'VoteIT ID',
-    login_url: 'https://id.example.com/login-to/testserver',
+    login_url: '/login/idproxy/',
     profile_url: 'https://id.example.com/',
     logout_url: 'https://id.example.com/log-out',
     scope: ['email']
@@ -40,8 +40,8 @@ import restApi from '@/utils/restApi'
 
 import useLoginMethods, { clearLoginMethods } from './useLoginMethods'
 
-const assign = vi.fn()
-vi.stubGlobal('location', { assign })
+const submitLogin = vi.hoisted(() => vi.fn())
+vi.mock('./submitLogin', () => ({ default: submitLogin }))
 
 const get = vi.mocked(restApi.get)
 const post = vi.mocked(restApi.post)
@@ -62,7 +62,7 @@ beforeEach(() => {
   loginProvider = null
   get.mockReset()
   post.mockReset()
-  assign.mockClear()
+  submitLogin.mockClear()
 })
 
 test('connections are fetched once and shared', async () => {
@@ -119,7 +119,7 @@ test('connecting records the intent before leaving', async () => {
   await connect(providers[1])
 
   expect(post).toHaveBeenCalledWith('user/connect/', { provider: 'scoutid' })
-  expect(assign).toHaveBeenCalledWith('/login/scoutid/')
+  expect(submitLogin).toHaveBeenCalledWith('/login/scoutid/')
 })
 
 test('disconnecting re-reads what is left', async () => {

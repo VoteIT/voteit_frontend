@@ -29,8 +29,8 @@ const primaryText = computed(() =>
     : t('organization.loginTo', { title: orgStore.organisation?.title })
 )
 
-function loginURL(provider: LoginProvider) {
-  return orgStore.getLoginURL(provider, props.next)
+function login(provider: LoginProvider) {
+  orgStore.startLogin(provider, props.next)
 }
 </script>
 
@@ -41,7 +41,7 @@ function loginURL(provider: LoginProvider) {
     :block="block"
     color="primary"
     :disabled="!orgStore.canLogin"
-    :href="loginURL(primary)"
+    @click="login(primary)"
     :menu-label="$t('auth.moreLoginOptions')"
     prepend-icon="mdi-login"
     :text="primaryText"
@@ -51,7 +51,7 @@ function loginURL(provider: LoginProvider) {
         <v-list-item
           v-for="provider in rest"
           :key="provider.provider_id"
-          :href="loginURL(provider)"
+          @click="login(provider)"
           prepend-icon="mdi-login"
           :title="$t('auth.loginWith', { title: provider.title })"
         />

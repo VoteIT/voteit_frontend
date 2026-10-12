@@ -135,6 +135,11 @@ function readCookie(name: string) {
   return cookie && decodeURIComponent(cookie.slice(prefix.length))
 }
 
+/** For a request that can't carry the header, such as a form post. */
+export function getCSRFToken() {
+  return readCookie(XSRF_COOKIE_NAME)
+}
+
 function buildURL(url: string, params?: Record<string, unknown>) {
   const target = new URL(url, baseURL)
   for (const [key, value] of Object.entries(params ?? {})) {

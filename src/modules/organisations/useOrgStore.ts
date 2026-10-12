@@ -3,6 +3,7 @@ import { defineStore } from 'pinia'
 import { computed, shallowRef } from 'vue'
 
 import restApi, { isApiError } from '@/utils/restApi'
+import submitLogin from '@/modules/auth/submitLogin'
 import { IOrganisation, LoginProvider } from './types'
 import * as orgRules from './rules'
 import { organisationType } from './contentTypes'
@@ -44,26 +45,16 @@ export default defineStore('organisation', () => {
     ...new Set(providers.value.flatMap((p) => p.scope))
   ])
 
-  // URLs
   /**
-   * Where to send a user to sign in, coming back to `next` afterwards.
+   * Leave to sign in with `provider`, coming back to `next` afterwards.
    *
    * Takes the path rather than reading it, so a guard turning someone away
    * from a route can name the page they were heading for - by then the
    * browser is still on the one they're leaving.
    */
-  function getLoginURL(provider: LoginProvider, next = location.pathname) {
-    const params = next === '/' ? '' : `?next=${encodeURIComponent(next)}`
-    return provider.login_url + params
-  }
-
-  /**
-   * @deprecated Starts login with a GET request.
-   * Logins should go as a POST request, submitted through a hidden form.
-   * ID Proxy may need an exception.
-   */
-  function startLogin(provider: LoginProvider, next?: string) {
-    location.assign(getLoginURL(provider, next))
+  function startLogin(provider: LoginProvider, next = location.pathname) {
+    // The front page is where they'd land anyway
+    submitLogin(provider.login_url, next === '/' ? {} : { next })
   }
 
   // Permissions
@@ -132,7 +123,6 @@ export default defineStore('organisation', () => {
     providers,
     scopes,
     fetchOrganisation,
-    getLoginURL,
     getOrganisationComponent,
     setLogo,
     startLogin,

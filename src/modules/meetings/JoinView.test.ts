@@ -78,7 +78,7 @@ vi.mock('../organisations/useOrgStore', () => ({
     organisation: null,
     providers: [],
     primaryProvider: undefined,
-    getLoginURL: () => ''
+    startLogin: () => {}
   })
 }))
 

@@ -4,6 +4,7 @@ import restApi from '@/utils/restApi'
 import useOrgStore from '@/modules/organisations/useOrgStore'
 import { LoginProvider } from '@/modules/organisations/types'
 
+import submitLogin from './submitLogin'
 import useAuthStore from './useAuthStore'
 
 /** One credential attached to the signed in account. */
@@ -84,7 +85,7 @@ export default function useLoginMethods() {
       'user/connect/',
       { provider: provider.provider_id }
     )
-    location.assign(loginUrl)
+    submitLogin(loginUrl)
   }
 
   async function disconnect(connection: UserConnection) {
