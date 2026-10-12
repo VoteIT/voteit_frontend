@@ -1,51 +1,17 @@
 import type { RouteLocationNormalized } from 'vue-router'
 
-import { openDialogEvent } from '@/utils/events'
-import { t } from '@/utils/locales'
-import { ThemeColor } from '@/utils/types'
-import useOrgStore from '@/modules/organisations/useOrgStore'
-
 import useAuthStore from './useAuthStore'
 
-interface PromptLoginOptions {
-  /** What to say instead of the general "you need to log in" */
-  message?: string
-  /** Where to come back to afterwards. Defaults to the page we're on. */
-  next?: string
-  /** Run when the user would rather not log in after all */
-  cancel?: () => void
-}
-
 /**
- * Ask the user to log in, and send them off to do it if they say yes.
+ * A visitor with no session is on a route that needs one, so the app shows
+ * `LoginRequiredView` in its place - at the address they asked for, so that
+ * logging in brings them straight back to it.
  *
- * An organisation that isn't taking logins - or that has no login provider at
- * all - has nowhere to send them, so they get the same explanation with
- * nothing but an acknowledgement, which is what `canLogin` means everywhere
- * else it's honoured.
- *
- * There's only room for one provider here, so it's the organisation's primary
- * - the same one the login button leads with, wherever they last went. The
- * rest of the choice is on the pages that have space for it.
+ * Only once the boot has settled who they are: until then the user is
+ * unknown rather than absent, and the splash is covering whatever is here.
  */
-export function promptLogin({
-  message,
-  next,
-  cancel
-}: PromptLoginOptions = {}) {
-  const { canLogin, primaryProvider, startLogin } = useOrgStore()
-  const possible = canLogin && !!primaryProvider
-  openDialogEvent.emit({
-    title: message ?? t('permission.defaultLoginMessage'),
-    resolve: (yes) => {
-      if (possible && yes) return startLogin(primaryProvider, next)
-      cancel?.()
-    },
-    dismissible: false,
-    no: possible ? t('cancel') : false,
-    yes: possible ? t('login') : t('ok'),
-    theme: ThemeColor.Primary
-  })
+export function needsLogin(route: RouteLocationNormalized) {
+  return useAuthStore().isAnonymous && !route.meta.anonymous
 }
 
 /**
@@ -54,15 +20,11 @@ export function promptLogin({
  *
  * Requirements are all meeting content the server only hands to a signed in
  * user, over a socket that is never opened for anyone else - so none of them
- * are worth running, and a route that has nothing else to show asks for a
- * login instead of mounting a view that can't fill itself. Which routes those
- * are is the routes' own business: see `RouteMeta.anonymous`.
+ * are worth running. The navigation still goes through, and stays on the
+ * address it was heading for: see `needsLogin` for what's shown there instead
+ * of the view, and `RouteMeta.anonymous` for the routes that need no session.
  */
-export function anonymousGate(to: RouteLocationNormalized) {
+export function anonymousGate() {
   if (useAuthStore().isAuthenticated) return
-  if (to.meta.anonymous) return false
-  // Named here rather than read from the browser: we haven't gone there, and
-  // are about to send them home instead.
-  promptLogin({ next: to.fullPath })
-  return { name: 'home' }
+  return false
 }

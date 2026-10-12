@@ -90,10 +90,10 @@ router.addRoute({
   agenda items doesn't retake the meeting channel. One without it is a plain fetch that runs every time.
 - **Requirements assume a signed-in user** and none of them run without one — they load meeting content the server only
   hands to a session, over a socket that is never opened for anyone else. A route that is still worth showing signed
-  out says `meta: { anonymous: true }` (home, join, about, the auth error page, 404); every other route asks an
-  anonymous visitor to log in and sends them home instead of mounting a view that can't fill itself. See
-  `anonymousGate` (`src/modules/auth/loginGate.ts`), which the loader's guard consults once the boot has settled who
-  they are.
+  out says `meta: { anonymous: true }` (home, join, about, the auth error page, 404); on every other route an
+  anonymous visitor stays at the address they asked for, loads nothing, and `App.vue` shows `LoginRequiredView` in
+  place of the view, so logging in brings them straight back. See `anonymousGate` and `needsLogin`
+  (`src/modules/auth/loginGate.ts`).
 
 A factory decides from the route alone — it runs before the boot fetches have settled, so that the step count is
 whole from the first frame instead of growing as data arrives. Anything that needs fetched state (who's signed in,

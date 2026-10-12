@@ -87,8 +87,8 @@ declare module 'vue-router' {
      * This route is worth showing to a visitor with no session. Off by
      * default: requirements load meeting content the server only hands to a
      * signed in user, over a socket nobody else is given, so a route that says
-     * nothing here is taken to need one and an anonymous visitor is asked to
-     * log in rather than shown a page that can't fill itself.
+     * nothing here is taken to need one and an anonymous visitor is shown the
+     * login page in its place rather than a page that can't fill itself.
      *
      * Inherited by child records, the way vue-router merges `meta`.
      */

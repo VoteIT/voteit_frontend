@@ -1,42 +1,20 @@
-import { afterEach, beforeEach, expect, test, vi } from 'vitest'
+import { beforeEach, expect, test, vi } from 'vitest'
 import type { RouteLocationNormalized } from 'vue-router'
 
-import { openDialogEvent } from '@/utils/events'
+import { anonymousGate, needsLogin } from './loginGate'
 
-import { anonymousGate, promptLogin } from './loginGate'
-
-vi.mock('@/utils/locales', () => ({ t: (key: string) => key }))
-
-let isAuthenticated = false
+/** `undefined` until the boot has settled who they are, then a user or null */
+let user: object | null | undefined
 vi.mock('./useAuthStore', () => ({
   default: () => ({
+    get isAnonymous() {
+      return user === null
+    },
     get isAuthenticated() {
-      return isAuthenticated
+      return !!user
     }
   })
 }))
-
-let canLogin = true
-const provider = {
-  provider_id: 'idproxy',
-  login_url: 'https://id.example.com/'
-}
-vi.mock('@/modules/organisations/useOrgStore', () => ({
-  default: () => ({
-    get canLogin() {
-      return canLogin
-    },
-    primaryProvider: provider,
-    startLogin: (p: typeof provider, next = '/here') =>
-      location.assign(`${p.login_url}?next=${next}`)
-  })
-}))
-
-const assign = vi.fn()
-vi.stubGlobal('location', { assign, pathname: '/here' })
-
-const dialog = vi.fn()
-let dispose: () => void
 
 /** The route we're heading for, with `meta` as the records left it */
 function route(meta: RouteLocationNormalized['meta'] = {}) {
@@ -44,61 +22,25 @@ function route(meta: RouteLocationNormalized['meta'] = {}) {
 }
 
 beforeEach(() => {
-  isAuthenticated = false
-  canLogin = true
-  dispose = openDialogEvent.on(dialog).dispose
-})
-
-afterEach(() => {
-  dispose()
-  dialog.mockClear()
-  assign.mockClear()
+  user = null
 })
 
 test('a signed in user is left alone', () => {
-  isAuthenticated = true
-  expect(anonymousGate(route())).toBeUndefined()
-  expect(dialog).not.toHaveBeenCalled()
+  user = { pk: 1 }
+  expect(anonymousGate()).toBeUndefined()
+  expect(needsLogin(route())).toBe(false)
 })
 
-test('a route that works signed out loads nothing and says nothing', () => {
-  expect(anonymousGate(route({ anonymous: true }))).toBe(false)
-  expect(dialog).not.toHaveBeenCalled()
+test('a visitor loads nothing, and stays where they were heading', () => {
+  expect(anonymousGate()).toBe(false)
 })
 
-test('anywhere else asks for a login and sends them home', () => {
-  expect(anonymousGate(route())).toEqual({ name: 'home' })
-  expect(dialog).toHaveBeenCalledWith(
-    expect.objectContaining({
-      title: 'permission.defaultLoginMessage',
-      yes: 'login',
-      no: 'cancel'
-    })
-  )
-
-  // Back here afterwards, and not to the page they're being sent to meanwhile
-  dialog.mock.calls[0][0].resolve(true)
-  expect(assign).toHaveBeenCalledWith(
-    'https://id.example.com/?next=/m/1/a-meeting'
-  )
+test('a visitor is shown the login only where a session is needed', () => {
+  expect(needsLogin(route())).toBe(true)
+  expect(needsLogin(route({ anonymous: true }))).toBe(false)
 })
 
-test('declining runs the caller cancel', () => {
-  const cancel = vi.fn()
-  promptLogin({ cancel })
-  dialog.mock.calls[0][0].resolve(false)
-  expect(assign).not.toHaveBeenCalled()
-  expect(cancel).toHaveBeenCalled()
-})
-
-test('an organisation that takes no logins only explains', () => {
-  canLogin = false
-  promptLogin()
-  expect(dialog).toHaveBeenCalledWith(
-    expect.objectContaining({ yes: 'ok', no: false })
-  )
-
-  // Nowhere to send them, so acknowledging is all it does
-  dialog.mock.calls[0][0].resolve(true)
-  expect(assign).not.toHaveBeenCalled()
+test('nobody is asked to log in before the boot knows who they are', () => {
+  user = undefined
+  expect(needsLogin(route())).toBe(false)
 })

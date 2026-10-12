@@ -1,6 +1,9 @@
 <template>
   <v-app>
-    <router-view />
+    <router-view v-slot="{ Component, route }">
+      <LoginRequiredView v-if="needsLogin(route)" />
+      <component v-else :is="Component" />
+    </router-view>
     <OnlineStatus class="d-print-none" />
     <Modal />
     <Dialogs />
@@ -26,6 +29,8 @@ import Loader from './components/Loader.vue'
 import Modal from './components/Modal.vue'
 import NavigationProgress from './components/NavigationProgress.vue'
 import OnlineStatus from './components/OnlineStatus.vue'
+import LoginRequiredView from './modules/auth/LoginRequiredView.vue'
+import { needsLogin } from './modules/auth/loginGate'
 import useOrgProfile from './modules/organisations/useOrgProfile'
 
 // Boot loading lives in src/loader, started from main.ts before the router's

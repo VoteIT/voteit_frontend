@@ -4,7 +4,6 @@ import { RouteLocationRaw, Router, useRouter } from 'vue-router'
 
 import { openDialogEvent } from '@/utils/events'
 import { ThemeColor } from '@/utils/types'
-import { promptLogin } from '@/modules/auth/loginGate'
 import useAuthStore from '@/modules/auth/useAuthStore'
 
 interface PermissionOptions {
@@ -44,15 +43,10 @@ const strategies: Record<PermissionDeniedStrategy, PermissionDeniedHandler> = {
     })
   },
   requireLogin(options, router, t, changed) {
+    // Without a session the app already shows the login page in place of
+    // this view, at the same address - see `needsLogin`
     if (useAuthStore().isAuthenticated)
-      return strategies.default(options, router, t, changed)
-    // The loader turns an anonymous visitor away before any of this is
-    // mounted, so what reaches here is a session that ran out while they were
-    // using the page. Same prompt either way.
-    promptLogin({
-      message: options.message,
-      cancel: () => router.push({ name: 'home' })
-    })
+      strategies.default(options, router, t, changed)
   }
 }
 

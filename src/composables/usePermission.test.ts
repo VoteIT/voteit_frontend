@@ -21,17 +21,10 @@ vi.mock(
   '@/modules/auth/useAuthStore',
   vi.fn(() => ({ default: () => ({ isAuthenticated: mockIsAuthenticated }) }))
 )
-// The login prompt itself is loginGate's business, and tested there
-const { promptLogin } = vi.hoisted(() => ({ promptLogin: vi.fn() }))
-vi.mock(
-  '@/modules/auth/loginGate',
-  vi.fn(() => ({ promptLogin }))
-)
 
 afterEach(() => {
   mockIsAuthenticated = false
   mockRouter.push.mockClear()
-  promptLogin.mockClear()
 })
 
 test('usePermission custom', async () => {
@@ -118,7 +111,7 @@ test('usePermission default - shows changed message when permission is revoked',
   dispose()
 })
 
-test('usePermission requireLogin - asks for a login when not authenticated', () => {
+test('usePermission requireLogin - leaves an anonymous visitor to the login page', () => {
   mockIsAuthenticated = false
   const fn = vi.fn()
   const { dispose } = openDialogEvent.on(fn)
@@ -129,15 +122,9 @@ test('usePermission requireLogin - asks for a login when not authenticated', () 
     PermissionDeniedStrategy.RequireLogin
   )
 
-  expect(promptLogin).toHaveBeenCalledWith(
-    expect.objectContaining({ message: 'Members only' })
-  )
-  // The permission dialog is not also shown - the login prompt is the answer
+  // The app shows the login in place of the view, at the same address
   expect(fn).not.toHaveBeenCalled()
-
-  // Declining leaves the page they can't see
-  promptLogin.mock.calls[0][0].cancel()
-  expect(mockRouter.push).toHaveBeenCalledWith({ name: 'home' })
+  expect(mockRouter.push).not.toHaveBeenCalled()
   dispose()
 })
 
@@ -148,7 +135,6 @@ test('usePermission requireLogin - falls back to default strategy when authentic
 
   usePermission(ref(false), {}, PermissionDeniedStrategy.RequireLogin)
 
-  expect(promptLogin).not.toHaveBeenCalled()
   expect(fn).toHaveBeenLastCalledWith(
     expect.objectContaining({
       theme: 'error',
