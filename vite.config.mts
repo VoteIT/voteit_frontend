@@ -65,15 +65,15 @@ export default defineConfig(({ mode }) => {
     server: {
       port: 3000,
       proxy: {
-        '/admin': changeOriginTarget,
-        '/api': changeOriginTarget,
-        '/asyncapi': changeOriginTarget,
+        '/admin/': changeOriginTarget,
+        '/api/': changeOriginTarget,
+        '/asyncapi/': changeOriginTarget,
         // Keep Host so redirect_uri and the pipeline's relative redirects come back through vite
-        '/complete': keepHostTarget,
-        '/login': keepHostTarget,
-        '/media': target,
-        '/static': target,
-        '/ws': {
+        '/complete/': keepHostTarget,
+        '/login/': keepHostTarget,
+        '/media/': target,
+        '/static/': target,
+        '/ws/': {
           ...changeOriginTarget,
           ws: true
         }
