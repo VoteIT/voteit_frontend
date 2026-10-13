@@ -4,6 +4,11 @@ Document notable changes here.
 
 Version format is `major`.`minor`.`patch`. Until major version 1 is realeased, API changes accours on minor version bumps, but never on patch version bumps.
 
+## 1.4.0 (2026-10-13)
+
+- Login required page: visitors without a session on a page that needs one see a login page in its place, at the same address, instead of a login dialog and a redirect home. Logging in brings them straight back
+- Login URLs on the app's own origin are submitted as a CSRF protected POST, as required by social_django. Login URLs on other origins are visited as before, with `next` as a query parameter
+
 ## 1.3.0 (2026-10-09)
 
 - Graphical profile control panel: organisation managers can set a profile colour for the app bar (checked for contrast, previewed in a meeting mock-up, confirmed before saving or resetting) and upload an SVG logo
