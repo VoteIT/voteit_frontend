@@ -2,6 +2,7 @@ import { DateTime } from 'luxon'
 import { computed, shallowRef, watchEffect } from 'vue'
 
 import type { RequirementFactory } from '@/loader/types'
+import { shared } from '@/utils'
 
 import * as tosApi from './tosApi'
 import type {
@@ -52,15 +53,6 @@ const globalVersionsToReview = computed(() => {
     : undefined
   return sorted(globalVersions.value.slice(0, end), (v) => v.version)
 })
-
-/** Calls made while a fetch is under way share it. */
-function shared(fetch: () => Promise<void>) {
-  let pending: Promise<void> | undefined
-  return () =>
-    (pending ??= fetch().finally(() => {
-      pending = undefined
-    }))
-}
 
 /** Enough to tell whether the control panel needs attention. */
 const fetchCurrent = shared(async () => {

@@ -11,6 +11,7 @@ import {
   getFullName,
   orderBy,
   setEquals,
+  shared,
   sleep,
   slugify,
   stripHTML,
@@ -160,4 +161,21 @@ test('capitalizeFirstLetter', () => {
   expect(capFirst('')).toBe('')
   expect(capFirst('a')).toBe('A')
   expect(capFirst('abc def')).toBe('Abc def')
+})
+
+test('shared', async () => {
+  let calls = 0
+  let resolve!: () => void
+  const fetch = shared(() => {
+    calls++
+    return new Promise<void>((r) => (resolve = r))
+  })
+  const first = fetch()
+  expect(fetch()).toBe(first)
+  expect(calls).toBe(1)
+  resolve()
+  await first
+  // Done, so the next call fetches again
+  fetch()
+  expect(calls).toBe(2)
 })

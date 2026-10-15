@@ -225,3 +225,12 @@ export function capFirst(str: string): string {
   if (!str) return str
   return str.charAt(0).toUpperCase() + str.slice(1)
 }
+
+/** Calls made while a fetch is under way share it. */
+export function shared(fetch: () => Promise<void>) {
+  let pending: Promise<void> | undefined
+  return () =>
+    (pending ??= fetch().finally(() => {
+      pending = undefined
+    }))
+}

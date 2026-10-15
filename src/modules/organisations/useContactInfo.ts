@@ -1,6 +1,7 @@
 import { computed, shallowRef, watchEffect } from 'vue'
 
 import type { RequirementFactory } from '@/loader/types'
+import { shared } from '@/utils'
 import restApi, { isApiError } from '@/utils/restApi'
 import useOrgStore from './useOrgStore'
 
@@ -31,8 +32,8 @@ const status = shallowRef<'idle' | 'inaccessible' | 'loading' | 'failed'>(
  * Fetches until contact info is in, then never again. Never throws - the
  * outcome is in status, and contact info stays undefined until a fetch succeeds.
  */
-async function fetchContactInfo() {
-  if (contactInfo.value) return
+const fetchContactInfo = shared(async () => {
+  if (contactInfo.value || status.value === 'inaccessible') return
   status.value = 'loading'
   try {
     contactInfo.value = await restApi.get<ContactInfo>('contact-info/')
@@ -41,7 +42,7 @@ async function fetchContactInfo() {
     if (isApiError(e) && e.status === 404) status.value = 'inaccessible'
     else status.value = 'failed'
   }
-}
+})
 
 async function saveContactInfo(info: Partial<ContactInfo>) {
   const data = await restApi.patch<ContactInfo>('contact-info/change/', info)
