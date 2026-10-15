@@ -2,7 +2,7 @@ import { filter, Predicate } from 'itertools'
 import { defineStore } from 'pinia'
 import { computed, shallowReactive, shallowRef } from 'vue'
 
-import { sleep } from '@/utils'
+import { shared, sleep } from '@/utils'
 import { electoralRegisterType, erMethodType } from '../contentTypes'
 import type { ElectoralRegister, ErMethod } from './types'
 
@@ -15,16 +15,12 @@ export default defineStore('electoralRegisters', () => {
     moderators: 'meeting'
   })
 
-  let fetchingErMethods = false
-  async function fetchErMethods() {
-    if (fetchingErMethods || erMethods.value) return
-    fetchingErMethods = true
+  const fetchErMethods = shared(async () => {
+    if (erMethods.value) return
     try {
-      const data = await erMethodType.api.list()
-      erMethods.value = data
+      erMethods.value = await erMethodType.api.list()
     } catch {} // TODO
-    fetchingErMethods = false
-  }
+  })
 
   function filterRegisters(predicate: Predicate<ElectoralRegister>) {
     return filter(registers.values(), predicate)
