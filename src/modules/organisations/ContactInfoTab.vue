@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onBeforeMount, ref } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 import useRules from '@/composables/useRules'
@@ -9,44 +9,59 @@ import DefaultForm from '@/components/DefaultForm.vue'
 const { t } = useI18n()
 const rules = useRules(t)
 
-const { contactInfo, requiresCheck, fetchContactInfo, saveContactInfo } =
-  useContactInfo()
+const {
+  contactInfo,
+  status,
+  requiresCheck,
+  fetchContactInfo,
+  saveContactInfo
+} = useContactInfo()
 
-const fetchFailed = ref(false)
-const changeForm = ref(contactInfo.value)
+/**
+ * What the form edits, as a new object - the form edits the object it's given,
+ * and a save changes other fields (modified, requires_check) too.
+ */
+function getEditable({
+  generic_email,
+  text,
+  invoice_email,
+  invoice_info
+}: ContactInfo) {
+  return { generic_email, text, invoice_email, invoice_info }
+}
+type EditableContactInfo = ReturnType<typeof getEditable>
+
+// The form keeps this object after a save, so it's only filled once
+const changeForm = ref(contactInfo.value && getEditable(contactInfo.value))
+// The panel opens before contact info is in, if it hasn't arrived yet
+watch(contactInfo, (info) => {
+  if (info && !changeForm.value) changeForm.value = getEditable(info)
+})
 const contactInfoModified = computed(() => {
-  if (!changeForm.value) return false
+  if (!changeForm.value || !contactInfo.value) return false
+  const saved = getEditable(contactInfo.value)
   return Object.entries(changeForm.value).some(
-    ([key, value]) => contactInfo.value![key as keyof ContactInfo] !== value
+    ([key, value]) => saved[key as keyof EditableContactInfo] !== value
   )
 })
 
-// Assignment stays inside the action, so a failed save leaves changeForm intact.
-// Errors are handled by the form.
-async function saveHandler(data: ContactInfo) {
-  changeForm.value = await saveContactInfo(data)
+// Errors are handled by the form
+async function saveHandler(data: EditableContactInfo) {
+  await saveContactInfo(data)
 }
-
-async function updateContactInfo() {
-  fetchFailed.value = false
-  try {
-    changeForm.value = await fetchContactInfo()
-  } catch {
-    fetchFailed.value = true
-  }
-}
-
-onBeforeMount(updateContactInfo)
 </script>
 
 <template>
-  <div v-if="fetchFailed" class="text-center">
-    <p class="my-4 text-warning">Could not fetch contact info</p>
+  <div v-if="!contactInfo" class="text-center">
+    <p class="my-4 text-warning">
+      {{ $t('home.contactInfo.fetchFailed') }}
+    </p>
     <v-btn
       color="primary"
+      :loading="status === 'loading'"
       prepend-icon="mdi-autorenew"
       :text="$t('tryAgain')"
-      @click="updateContactInfo"
+      @click="fetchContactInfo"
     />
   </div>
   <div v-else>
@@ -92,7 +107,7 @@ onBeforeMount(updateContactInfo)
           <v-spacer />
           <v-btn
             color="primary"
-            :disabled="disabled"
+            :disabled="disabled || !contactInfoModified"
             :loading="submitting"
             :text="$t('save')"
             type="submit"
@@ -100,8 +115,5 @@ onBeforeMount(updateContactInfo)
         </div>
       </template>
     </DefaultForm>
-    <div v-else class="py-8 text-center">
-      <v-progress-circular indeterminate color="primary" />
-    </div>
   </div>
 </template>

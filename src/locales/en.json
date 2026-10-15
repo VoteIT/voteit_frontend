@@ -311,6 +311,7 @@
     "yourMeetings": "Your meeting | Your meetings",
     "contactInfo": {
       "description": "Contact and invoice details for your organisation",
+      "fetchFailed": "Could not fetch contact info",
       "genericEmail": "Email for generic contact",
       "invoiceEmail": "Email for invoices",
       "invoiceInfo": "Invoice information (reference, ...)",

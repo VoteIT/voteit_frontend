@@ -22,6 +22,9 @@ orgControlPanelPlugins.register({
   id: 'contactInfo',
   component: ContactInfoTab,
   icon: 'mdi-card-account-mail',
+  checkActive() {
+    return useContactInfo().status.value !== 'inaccessible'
+  },
   getDescription(t) {
     return t('home.contactInfo.description')
   },

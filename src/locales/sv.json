@@ -311,6 +311,7 @@
     "yourMeetings": "Ditt möte | Dina möten",
     "contactInfo": {
       "description": "Kontakt- och faktureringsuppgifter för din organisation",
+      "fetchFailed": "Kunde inte hämta kontaktinformation",
       "genericEmail": "E-post för allmän kontakt",
       "invoiceEmail": "E-post för fakturor",
       "invoiceInfo": "Information för fakturering (referens, etc)",
