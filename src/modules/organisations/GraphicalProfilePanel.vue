@@ -21,7 +21,7 @@ import useOrgProfile, { isSvgFile } from './useOrgProfile'
 const { t } = useI18n()
 const theme = useTheme()
 const { logoUrl, profileColor, setLogo, setProfileColor } = useOrgProfile()
-const { handled } = useErrorHandler({ target: 'alert' })
+const { handled } = useErrorHandler({ target: 'dialog' })
 
 const defaultColor = parseHex(theme.current.value.colors['app-bar'])
 

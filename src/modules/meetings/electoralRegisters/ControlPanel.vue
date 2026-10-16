@@ -67,10 +67,9 @@
 import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 
-import { openDialogEvent } from '@/utils/events'
+import { dialogAlert } from '@/utils'
 import { NetworkError, parseRestError } from '@/utils/restApi'
 import QueryDialog from '@/components/QueryDialog.vue'
-import useAlert from '@/composables/useAlert'
 import { meetingType } from '../contentTypes'
 import useMeeting from '../useMeeting'
 
@@ -80,7 +79,6 @@ import { iterErAttributes } from './utils'
 const { t } = useI18n()
 const { meeting, meetingId } = useMeeting()
 const { availableErMethods, erMethodLocked } = useElectoralRegisters(meetingId)
-const { alert } = useAlert()
 
 const currentName = computed({
   get() {
@@ -91,16 +89,12 @@ const currentName = computed({
     try {
       await meetingType.api.patch(meetingId.value, { er_policy_name: name })
     } catch (e) {
-      if (e instanceof NetworkError) return alert('^Could not reach server')
+      if (e instanceof NetworkError)
+        return dialogAlert('Could not reach server')
       const errors = parseRestError<{ er_policy_name: string }>(e)
       if (errors.er_policy_name)
-        return openDialogEvent.emit({
-          title: errors.er_policy_name.join('\n'),
-          no: false,
-          yes: t('ok'),
-          resolve() {}
-        })
-      alert('^Unknown error')
+        return dialogAlert(errors.er_policy_name.join('\n'))
+      dialogAlert('Unknown error')
     }
   }
 })

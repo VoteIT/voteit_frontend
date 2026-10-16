@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { setEquals } from '@/utils'
+import { dialogAlert, setEquals } from '@/utils'
 import { computed, reactive, ref } from 'vue'
 import { useClipboard } from '@vueuse/core'
 import { useI18n } from 'vue-i18n'
@@ -7,7 +7,6 @@ import { useI18n } from 'vue-i18n'
 import CheckboxMultipleSelect from '@/components/inputs/CheckboxMultipleSelect.vue'
 import DefaultDialog from '@/components/DefaultDialog.vue'
 import QueryDialog from '@/components/QueryDialog.vue'
-import useAlert from '@/composables/useAlert'
 import useChannel from '@/socket/useChannel'
 import usePermission from '@/composables/usePermission'
 
@@ -30,7 +29,6 @@ const ITEMS_PER_PAGE = 25
 const emit = defineEmits(['denied'])
 
 const { t } = useI18n()
-const { alert } = useAlert()
 const { isModerator, meetingId, roleLabelsEditable } = useMeeting()
 const { bulkDelete, bulkRevoke } = useInviteStore()
 const { meetingInvites } = useMeetingInvites(meetingId)
@@ -187,7 +185,7 @@ async function deleteSelected() {
     // The invites are gone; keeping their ids in the model would only let them pile up
     selectedInviteIds.value = []
   } catch {
-    alert('^' + t('invites.errorDelete'))
+    dialogAlert(t('invites.errorDelete'))
   }
 }
 
@@ -197,7 +195,7 @@ async function revokeSelected() {
   try {
     await bulkRevoke(meetingId.value, selectedInviteIdsInView.value)
   } catch {
-    alert('^' + t('invites.errorRevoke'))
+    dialogAlert(t('invites.errorRevoke'))
   }
 }
 
@@ -233,7 +231,7 @@ async function clearSelectedAnnotations() {
       meeting: meetingId.value
     })
   } catch {
-    alert('^' + t('invites.errorClearAnnotations'))
+    dialogAlert(t('invites.errorClearAnnotations'))
   }
 }
 </script>

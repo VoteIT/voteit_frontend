@@ -32,7 +32,7 @@
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 
-import useAlert from '@/composables/useAlert'
+import { dialogAlert } from '@/utils'
 import type { AccessPolicy } from '@/contentTypes/types'
 
 import useMeeting from '../useMeeting'
@@ -41,7 +41,6 @@ import { meetingType } from '../contentTypes'
 
 const props = defineProps<{ policy: AccessPolicy }>()
 
-const { alert } = useAlert()
 const router = useRouter()
 const { meetingRoute } = useMeeting()
 const submitting = ref(false)
@@ -52,7 +51,7 @@ async function joinNow() {
     await automaticAccessType.api.action('join', props.policy.pk)
     router.push(meetingRoute.value)
   } catch {
-    alert('^Could not join meeting')
+    dialogAlert("Couldn't join meeting")
   }
   submitting.value = false
 }

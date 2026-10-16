@@ -3,8 +3,7 @@ import { computed, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 
-import { dialogQuery, minTime, slugify } from '@/utils'
-import { openAlertEvent } from '@/utils/events'
+import { dialogAlert, dialogQuery, minTime, slugify } from '@/utils'
 import { ThemeColor } from '@/utils/types'
 import { invitationScopes } from '../organisations/registry'
 
@@ -31,7 +30,7 @@ async function acceptInvite(inv: MeetingInvite) {
       `/m/${props.invite.meeting}/${slugify(props.invite.meeting_title)}`
     )
   } catch {
-    openAlertEvent.emit('^Failed accepting invite')
+    dialogAlert('Failed accepting invite')
   }
   submitting.value = undefined
 }
@@ -48,7 +47,7 @@ async function rejectInvite(inv: MeetingInvite) {
     await matchedInviteType.api.action('reject', inv.pk)
     fetchMatchedInvites()
   } catch {
-    openAlertEvent.emit('^Invite rejection failed')
+    dialogAlert('Invite rejection failed')
   }
   submitting.value = undefined
 }

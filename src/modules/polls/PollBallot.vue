@@ -2,8 +2,7 @@
 import { computed, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 
-import { dialogQuery } from '@/utils'
-import { openAlertEvent } from '@/utils/events'
+import { dialogAlert, dialogQuery } from '@/utils'
 import { ThemeColor } from '@/utils/types'
 
 import { Proposal } from '../proposals/types'
@@ -43,8 +42,8 @@ async function castVote() {
     await voteType.api.add(msg)
     emit('votingComplete')
   } catch {
-    openAlertEvent.emit(
-      '^Critical error. Your vote was not accepted! Try again, or contact a meeting offical!'
+    dialogAlert(
+      'Critical error. Your vote was not accepted! Try again, or contact a meeting offical!'
     )
   }
   submitting.value = false
@@ -68,8 +67,8 @@ async function abstainVote() {
     validVote.value = undefined
     emit('votingComplete')
   } catch {
-    openAlertEvent.emit(
-      '^Critical error. Your abstain vote was not accepted! Try again, or contact a meeting offical!'
+    dialogAlert(
+      'Critical error. Your abstain vote was not accepted! Try again, or contact a meeting offical!'
     )
   }
   submitting.value = false

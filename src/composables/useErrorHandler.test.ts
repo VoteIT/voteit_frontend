@@ -3,16 +3,6 @@ import { expect, test, vi } from 'vitest'
 import { ApiError } from '@/utils/restApi'
 import { openDialogEvent } from '@/utils/events'
 import useErrorHandler from './useErrorHandler'
-import { useI18n } from 'vue-i18n'
-
-vi.mock('vue-i18n')
-
-// @ts-ignore
-useI18n.mockReturnValue({
-  t(tKey: string) {
-    return tKey
-  }
-})
 
 test('Bad error', () => {
   const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {})

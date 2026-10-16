@@ -1,6 +1,6 @@
 import { paramPk } from '@/loader/channelRequirement'
 import type { RequirementFactory } from '@/loader/types'
-import { openAlertEvent } from '@/utils/events'
+import { dialogAlert } from '@/utils'
 import { t } from '@/utils/locales'
 
 import useERStore from './useERStore'
@@ -20,7 +20,7 @@ export const electoralRegisterRequirement: RequirementFactory = (to) => {
       try {
         await fetchMeetingRegisters(pk)
       } catch {
-        openAlertEvent.emit('^' + t('electoralRegister.fetchFailed'))
+        dialogAlert(t('electoralRegister.fetchFailed'))
       }
     }
   }

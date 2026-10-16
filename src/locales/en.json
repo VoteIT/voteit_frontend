@@ -291,7 +291,6 @@
     }
   },
   "error": {
-    "error": "Error",
     "unknown": "Unknown error"
   },
   "helpText": {

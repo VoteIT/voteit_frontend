@@ -2,9 +2,9 @@
 import { computed, reactive } from 'vue'
 import { useI18n } from 'vue-i18n'
 
-import { getFullName } from '@/utils'
+import { dialogAlert, getFullName } from '@/utils'
+import { ThemeColor } from '@/utils/types'
 import { getApiLink } from '@/utils/restApi'
-import { openAlertEvent } from '@/utils/events'
 import UserSearch from '@/components/UserSearch.vue'
 import RoleMatrix from '@/components/RoleMatrix.vue'
 import useTabRoute from '@/composables/useTabRoute'
@@ -69,7 +69,7 @@ const readonlyRoles = computed(() => {
 
 async function removeConfirm(userPk: number, role: string) {
   if (userPk === authStore.user?.pk && role === 'moderator') {
-    openAlertEvent.emit('*' + t('meeting.cantRemoveSelfModerator'))
+    dialogAlert(t('meeting.cantRemoveSelfModerator'), ThemeColor.Warning)
     return false
   }
   return true

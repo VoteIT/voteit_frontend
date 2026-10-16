@@ -3,9 +3,9 @@ import { computed, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 
-import { slugify } from '@/utils'
+import { dialogAlert, slugify } from '@/utils'
+import { ThemeColor } from '@/utils/types'
 
-import useAlert from '@/composables/useAlert'
 import useErrorHandler from '@/composables/useErrorHandler'
 
 import usePermission from '@/composables/usePermission'
@@ -34,7 +34,6 @@ const { isModerator, meetingRoute, meetingId } = useMeeting()
 const { agenda } = useAgenda(meetingId)
 const { agendaId, agendaItem, meetingAndAiOngoing, nextPollTitle } =
   useAgendaItem()
-const { alert } = useAlert()
 const { handled } = useErrorHandler({ target: 'dialog' })
 
 usePermission(isModerator, { to: meetingRoute }) // TODO canAddPoll might be different in the future
@@ -126,7 +125,10 @@ async function createPoll(
 ) {
   if (!methodSelected.value) return
   if (!pollPlugins.getPlugin(methodSelected.value))
-    return alert(`*${methodSelected.value} not implemented`)
+    return dialogAlert(
+      `${methodSelected.value} not implemented`,
+      ThemeColor.Warning
+    )
   const pollData: PollStartData = {
     ...poll,
     agenda_item: agendaId.value,

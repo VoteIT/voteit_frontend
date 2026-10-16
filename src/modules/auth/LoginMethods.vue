@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { onBeforeMount, onBeforeUnmount, shallowRef } from 'vue'
 
-import { openAlertEvent } from '@/utils/events'
+import { dialogAlert } from '@/utils'
 import { parseRestError } from '@/utils/restApi'
 import Moment from '@/components/Moment.vue'
 import QueryDialog from '@/components/QueryDialog.vue'
@@ -39,9 +39,7 @@ async function startConnect(provider: LoginProvider) {
     await connect(provider)
   } catch (e) {
     working.value = undefined
-    openAlertEvent.emit(
-      `^${Object.values(parseRestError(e)).flat().join(', ')}`
-    )
+    dialogAlert(Object.values(parseRestError(e)).flat().join(', '))
   }
 }
 
@@ -58,9 +56,7 @@ async function removeConnection(connection: UserConnection) {
   try {
     await disconnect(connection)
   } catch (e) {
-    openAlertEvent.emit(
-      `^${Object.values(parseRestError(e)).flat().join(', ')}`
-    )
+    dialogAlert(Object.values(parseRestError(e)).flat().join(', '))
   }
   working.value = undefined
 }

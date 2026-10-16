@@ -8,9 +8,9 @@ import { MeetingRole } from '../meetings/types'
 import { MeetingInvite, MeetingInviteState } from './types'
 import InvitationsTab from './InvitationsTab.vue'
 
-const { mockAlert, mockBulkDelete, mockBulkRevoke, mockListAction } =
+const { mockDialogAlert, mockBulkDelete, mockBulkRevoke, mockListAction } =
   vi.hoisted(() => ({
-    mockAlert: vi.fn(),
+    mockDialogAlert: vi.fn(),
     mockBulkDelete: vi.fn(),
     mockBulkRevoke: vi.fn(),
     mockListAction: vi.fn()
@@ -75,8 +75,9 @@ vi.mock('@/socket/useChannel', () => ({
   default: () => ({ subscribed: ref(true) })
 }))
 vi.mock('@/composables/usePermission', () => ({ default: vi.fn() }))
-vi.mock('@/composables/useAlert', () => ({
-  default: () => ({ alert: mockAlert })
+vi.mock('@/utils', async (importOriginal) => ({
+  ...(await importOriginal<typeof import('@/utils')>()),
+  dialogAlert: mockDialogAlert
 }))
 
 vi.mock('vue-i18n', async (importOriginal) => {
@@ -192,7 +193,7 @@ test('Deleting twice in a row only sends the invites still selected', async () =
   await select(wrapper, 2)
   await confirm(wrapper, 'invites.confirmDelete')
   expect(mockBulkDelete).toHaveBeenLastCalledWith(1, [2])
-  expect(mockAlert).not.toHaveBeenCalled()
+  expect(mockDialogAlert).not.toHaveBeenCalled()
 })
 
 test('Deleting only sends invites matching the current search', async () => {
@@ -250,7 +251,7 @@ test('A failed delete keeps the selection and alerts', async () => {
   await select(wrapper, 1)
   await confirm(wrapper, 'invites.confirmDelete')
 
-  expect(mockAlert).toHaveBeenCalledWith('^invites.errorDelete')
+  expect(mockDialogAlert).toHaveBeenCalledWith('invites.errorDelete')
   expect(selectedPks(wrapper)).toEqual([1])
 })
 
@@ -264,7 +265,7 @@ test('A remote delete of part of the selection leaves the rest deletable', async
   await confirm(wrapper, 'invites.confirmDelete')
 
   expect(mockBulkDelete).toHaveBeenCalledWith(1, [2])
-  expect(mockAlert).not.toHaveBeenCalled()
+  expect(mockDialogAlert).not.toHaveBeenCalled()
 })
 
 test('A remote delete of the whole selection sends no request at all', async () => {

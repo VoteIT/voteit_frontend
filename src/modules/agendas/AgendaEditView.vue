@@ -2,14 +2,12 @@
 import { computed, ref, shallowReactive, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 
-import { dialogQuery, tagify } from '@/utils'
-import { openAlertEvent } from '@/utils/events'
+import { dialogAlert, dialogQuery, tagify } from '@/utils'
 import { isApiError } from '@/utils/restApi'
 import { ThemeColor } from '@/utils/types'
 import DefaultDialog from '@/components/DefaultDialog.vue'
 import Headline from '@/components/Headline.vue'
 import QueryDialog from '@/components/QueryDialog.vue'
-import { AlertLevel } from '@/composables/types'
 import useErrorHandler from '@/composables/useErrorHandler'
 import usePermission from '@/composables/usePermission'
 
@@ -57,16 +55,18 @@ function goToAgendaItem(ai: number) {
 
 const adding = shallowReactive({
   title: '',
-  submitting: false
+  submitting: false,
+  error: ''
 })
 async function addAgendaItem() {
   adding.submitting = true
+  adding.error = ''
   try {
     const { pk } = await createAgendaItem(meetingId.value, adding.title)
     goToAgendaItem(pk)
     adding.title = ''
   } catch {
-    alert("Couldn't create agenda item")
+    adding.error = "Couldn't create agenda item"
   }
   adding.submitting = false
 }
@@ -121,16 +121,13 @@ async function actionOnSelected(
   const settled = await Promise.allSettled(selectedAgendaItems.value.map(fn))
   const rejectedDescriptions = getRejectedDescriptions(settled)
   if (rejectedDescriptions.length)
-    openAlertEvent.emit({
-      title: t('error.error'),
-      level: AlertLevel.Error,
-      sticky: true,
-      text: t(
+    dialogAlert(
+      t(
         'agenda.changeManyFailed',
         { reason: rejectedDescriptions.join(', ') },
         rejectedDescriptions.length
       )
-    })
+    )
   bulkEdit.working = false
 }
 
@@ -473,12 +470,14 @@ function tagFilter(tags: string | string[], query: string) {
   <h2 class="mb-2">{{ $t('agenda.newItem') }}</h2>
   <form class="d-flex" id="agenda-add-form" @submit.prevent="addAgendaItem">
     <v-text-field
-      class="flex-grow-1 hide-details rounded-0"
+      class="flex-grow-1 rounded-0"
+      :error="!!adding.error"
       hide-details
       :label="$t('title')"
       maxlength="100"
       variant="outlined"
       v-model="adding.title"
+      @update:model-value="adding.error = ''"
     />
     <v-btn
       class="rounded-s-0"
@@ -490,6 +489,13 @@ function tagFilter(tags: string | string[], query: string) {
       type="submit"
     />
   </form>
+  <v-messages
+    :active="!!adding.error"
+    class="mt-1 px-4"
+    color="error"
+    :messages="adding.error"
+    role="alert"
+  />
 </template>
 
 <style lang="sass" scoped>

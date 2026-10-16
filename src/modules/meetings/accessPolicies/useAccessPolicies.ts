@@ -1,6 +1,6 @@
 import { filter, ifilter } from 'itertools'
 import { computed, onBeforeMount, Ref, shallowReactive } from 'vue'
-import useAlert from '@/composables/useAlert'
+import { dialogAlert } from '@/utils'
 import ContentType from '@/contentTypes/ContentType'
 import { AccessPolicy, AccessPolicyType } from '@/contentTypes/types'
 
@@ -14,8 +14,6 @@ const contentTypes: Partial<
 > = {
   automatic: automaticAccessType
 }
-
-const { alert } = useAlert()
 
 export default function useAccessPolicies(meetingId: Ref<number>) {
   const accessPolicies = computed(() =>
@@ -42,7 +40,7 @@ export default function useAccessPolicies(meetingId: Ref<number>) {
       await api.delete(p.pk)
       policyStore.delete(p.pk)
     } catch {
-      alert('*Cound not delete access policy')
+      dialogAlert('Could not delete access policy')
     }
   }
 
@@ -58,7 +56,7 @@ export default function useAccessPolicies(meetingId: Ref<number>) {
       })
       policyStore.set(data.pk, data)
     } catch {
-      alert('*Could not change active state')
+      dialogAlert('Could not change active state')
     }
   }
 
@@ -70,7 +68,7 @@ export default function useAccessPolicies(meetingId: Ref<number>) {
       })
       policyStore.set(data.pk, data)
     } catch {
-      alert('*Could not set roles')
+      dialogAlert('Could not set roles')
     }
   }
 
@@ -91,7 +89,7 @@ export default function useAccessPolicies(meetingId: Ref<number>) {
         policyStore.set(p.pk, p)
       }
     } catch {
-      alert('*Could not load access policies for meeting.')
+      dialogAlert('Could not load access policies for meeting.')
     }
   })
 

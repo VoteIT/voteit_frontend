@@ -1,10 +1,9 @@
 <script setup lang="ts">
 import { map, range } from 'itertools'
-import { computed, ref, toRef } from 'vue'
+import { computed, ref, shallowRef, toRef } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { onKeyStroke } from '@vueuse/core'
 
-import { openAlertEvent } from '@/utils/events'
 import { navigationEventAllowed } from '@/utils/keyNavigation'
 import UserAvatar from '@/components/UserAvatar.vue'
 import User from '@/components/User.vue'
@@ -87,7 +86,8 @@ function isSelf(userId: number) {
   return authStore.user?.pk === userId
 }
 
-const participantNumberInput = ref('')
+const participantNumberInput = shallowRef('')
+const participantNumberErrors = ref<string[]>([])
 async function addParticipantNumbers() {
   const numbers = participantNumberInput.value
     .split(/[^\d]+/)
@@ -101,23 +101,22 @@ async function addParticipantNumbers() {
     else if (checkUserInQueue(user)) inList.push(n)
     else handle.add(user)
   }
+  participantNumberErrors.value = []
   if (missing.length)
-    openAlertEvent.emit(
-      '*' +
-        t(
-          'participantNumber.doesNotExist',
-          { ids: missing.join(', ') },
-          missing.length
-        )
+    participantNumberErrors.value.push(
+      t(
+        'participantNumber.doesNotExist',
+        { ids: missing.join(', ') },
+        missing.length
+      )
     )
   if (inList.length)
-    openAlertEvent.emit(
-      '*' +
-        t(
-          'participantNumber.alreadyInList',
-          { ids: inList.join(', ') },
-          inList.length
-        )
+    participantNumberErrors.value.push(
+      t(
+        'participantNumber.alreadyInList',
+        { ids: inList.join(', ') },
+        inList.length
+      )
     )
   participantNumberInput.value = ''
 }
@@ -182,8 +181,10 @@ onKeyStroke(
         <v-text-field
           :label="$t('speaker.addByParticipantNumber')"
           class="mb-0 flex-grow-1"
+          :error-messages="participantNumberErrors"
           v-model="participantNumberInput"
           @keydown.enter="addParticipantNumbers"
+          @update:model-value="participantNumberErrors = []"
         />
       </template>
     </div>

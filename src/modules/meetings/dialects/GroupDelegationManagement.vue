@@ -61,7 +61,7 @@ const { meetingGroups } = useMeetingGroups(meetingId)
 const { getMeetingGroup } = useGroupStore()
 const { handled } = useErrorHandler({
   showField: 'delegate_to',
-  target: 'alert'
+  target: 'dialog'
 })
 
 const delegatedTo = computed(() =>

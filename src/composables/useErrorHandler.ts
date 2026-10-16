@@ -1,14 +1,12 @@
 import { computed, ref } from 'vue'
 
-import { openAlertEvent, openDialogEvent } from '@/utils/events'
+import { dialogAlert } from '@/utils'
 import { isApiError, NetworkError, parseRestError } from '@/utils/restApi'
-import { useI18n } from 'vue-i18n'
-import { ThemeColor } from '@/utils/types'
 
 type APIError = { [P in string]?: string[] }
 
 interface HandlerOptions {
-  target: 'alert' | 'dialog' | 'none'
+  target: 'dialog' | 'none'
   showField?: string
 }
 
@@ -44,16 +42,15 @@ function getNonspecificFieldErrorMessage(errors: APIError) {
 /**
  * Centralised error handling for REST API calls.
  * Parses validation errors into per-field messages and optionally
- * surfaces them via an alert snackbar or a modal dialog.
+ * surfaces them in a modal dialog.
  *
- * @param opts.target - Where to show errors: `'alert'` (snackbar), `'dialog'` (modal), or `'none'` (silent)
+ * @param opts.target - Where to show errors: `'dialog'` (modal), or `'none'` (silent)
  * @param opts.showField - If set, only the error for this field (or `non_field_errors`) is displayed
  * @returns `{ errorMessage, fieldErrors, hasError, clearErrors, handled, handler, handleRestError }`
  */
 export default function useErrorHandler(
   opts: HandlerOptions = DEFAULT_OPTIONS
 ) {
-  const { t } = useI18n()
   opts = { ...DEFAULT_OPTIONS, ...opts }
 
   const fieldErrors = ref<APIError>({})
@@ -66,15 +63,7 @@ export default function useErrorHandler(
   }
 
   function displayError(message: string) {
-    if (opts.target === 'dialog')
-      openDialogEvent.emit({
-        title: message,
-        resolve() {},
-        no: false,
-        yes: t('ok'),
-        theme: ThemeColor.Warning
-      })
-    if (opts.target === 'alert') openAlertEvent.emit(`^${message}`)
+    if (opts.target === 'dialog') dialogAlert(message)
   }
 
   function handleRestError(e: unknown, showField?: string) {
