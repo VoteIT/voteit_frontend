@@ -46,7 +46,7 @@ Before writing new logic, check if one of these already covers it:
 |-----------|------|---------|
 | `useErrorHandler` | `src/composables/useErrorHandler.ts` | Centralised error catching and display |
 | `usePermission` | `src/composables/usePermission.ts` | Guard routes/actions behind auth/role checks |
-| `useAlert` | `src/composables/useAlert.ts` | Show snackbar/toast alerts |
+| `dialogQuery` / `dialogAlert` | `src/utils/index.ts` | Ask a yes/no question, or show a message with only an OK button (utils, not composables) |
 | `openModal` | `src/utils/modal.ts` | Open a modal dialog (util, not a composable); returns a function that closes it |
 | `useContextRoles` | `src/composables/useContextRoles.ts` | Query user roles for a given content object |
 | `useChannel` | `src/socket/useChannel.ts` | Subscribe to a real-time channel |
@@ -167,13 +167,17 @@ When `userId` is `''`, the key is used as a **prefix** to query all users on an 
 
 ## Event bus
 
-Global UI events are in `src/utils/events.ts` as `TypedEvent` instances. Notable shortcuts for `openAlertEvent`:
+Global UI events are in `src/utils/events.ts` as `TypedEvent` instances. Prefer the helpers built on them over
+emitting directly — `dialogQuery` and `dialogAlert` wrap `openDialogEvent`, `openModal` wraps `openModalEvent`.
 
-```typescript
-openAlertEvent.emit('plain info message')
-openAlertEvent.emit('*warning message')   // '*' prefix → warning level
-openAlertEvent.emit('^error message')     // '^' prefix → error level
-```
+## Showing errors
+
+There is no snackbar/toast. Show an error where the user is looking:
+
+- **In the form**, when it belongs to a field the user is filling in — `:error-messages` on the field, or
+  `fieldErrors` from `useErrorHandler`.
+- **In a dialog** otherwise — `dialogAlert(message)`, or `useErrorHandler({ target: 'dialog' })`
+  around REST calls.
 
 ## Naming conventions
 

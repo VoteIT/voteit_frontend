@@ -39,20 +39,6 @@ export function isHTMLModal(modal: Modal): modal is HTMLModal {
   return 'html' in modal
 }
 
-export enum AlertLevel {
-  Info = 'info',
-  Warning = 'warning',
-  Error = 'error'
-}
-
-export interface Alert {
-  level: AlertLevel
-  title: string
-  text: string
-  sticky?: boolean
-  active?: boolean
-}
-
 export interface Dialog {
   title: string
   resolve: (value: boolean) => void

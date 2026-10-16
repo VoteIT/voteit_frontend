@@ -9,7 +9,6 @@
     <Dialogs />
     <Loader />
     <NavigationProgress />
-    <Alerts />
   </v-app>
 </template>
 
@@ -23,7 +22,6 @@ import { useStyleTag } from '@vueuse/core'
 
 import { versions } from './socket'
 import { openDialogEvent } from './utils/events'
-import Alerts from './components/Alerts.vue'
 import Dialogs from './components/Dialogs.vue'
 import Loader from './components/Loader.vue'
 import Modal from './components/Modal.vue'
