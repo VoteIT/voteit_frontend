@@ -42,6 +42,15 @@ async function submit() {
 <template>
   <v-form @submit.prevent="submit" v-slot="{ isValid }">
     <slot :formData="formData" :errors="fieldErrors"></slot>
+    <v-alert
+      v-if="fieldErrors.non_field_errors"
+      class="mb-4"
+      density="compact"
+      type="error"
+      variant="tonal"
+    >
+      {{ fieldErrors.non_field_errors.join(', ') }}
+    </v-alert>
     <div class="text-right">
       <slot name="buttons" :disabled="!isValid.value" :submitting="submitting">
         <v-btn :text="$t('cancel')" variant="text" @click="$emit('done')" />

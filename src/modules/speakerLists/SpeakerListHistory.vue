@@ -83,9 +83,12 @@ async function deleteHistory(pk: number) {
                   :handler="timeSpokenHandler(pk)"
                   :model-value="{ seconds }"
                   @done="close"
-                  v-slot="{ formData }"
+                  v-slot="{ errors, formData }"
                 >
-                  <DurationInput v-model="formData.seconds" />
+                  <DurationInput
+                    :error-messages="errors.seconds"
+                    v-model="formData.seconds"
+                  />
                 </DefaultForm>
               </template>
             </DefaultDialog>
