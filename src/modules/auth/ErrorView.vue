@@ -2,6 +2,7 @@
 import { computed, onBeforeMount, ref } from 'vue'
 import { useRouter } from 'vue-router'
 
+import { dialogAlert } from '@/utils'
 import { cols } from '@/utils/defaults'
 import restApi from '@/utils/restApi'
 import AppBar from '@/components/AppBar.vue'
@@ -25,7 +26,7 @@ async function fetchMessages() {
     messages.value = await restApi.get<IDjangoMessage[]>('user/messages/')
     if (!messages.value.length) router.push({ name: 'home' })
   } catch {
-    alert('Misslyckades med att hämta meddelanden')
+    dialogAlert("Couldn't fetch messages")
   }
 }
 

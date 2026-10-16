@@ -2,7 +2,7 @@
 import { Duration } from 'luxon'
 import { computed, ref } from 'vue'
 
-import { durationToString } from '@/utils'
+import { dialogAlert, durationToString } from '@/utils'
 import User from '@/components/User.vue'
 import UserAvatar from '@/components/UserAvatar.vue'
 import DefaultDialog from '@/components/DefaultDialog.vue'
@@ -49,7 +49,7 @@ async function deleteHistory(pk: number) {
   try {
     await speakerType.api.delete(pk)
   } catch {
-    alert('^Could not delete spoken time entry')
+    dialogAlert('Could not delete spoken time entry')
   }
 }
 </script>

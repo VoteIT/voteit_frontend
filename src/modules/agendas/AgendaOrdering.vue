@@ -8,7 +8,7 @@ import { agendaItemType } from './contentTypes'
 import useAgenda from './useAgenda'
 import { AgendaItem } from './types'
 import { meetingType } from '../meetings/contentTypes'
-import { arrayEquals, minTime } from '@/utils'
+import { arrayEquals, dialogAlert, minTime } from '@/utils'
 import useAgendaStore from './useAgendaStore'
 
 const emit = defineEmits<{
@@ -49,7 +49,7 @@ async function saveAgendaOrder() {
     )
     emit('saved')
   } catch {
-    alert("^Couldn't save agenda order")
+    dialogAlert("Couldn't save agenda order")
   }
   orderSaving.value = false
 }

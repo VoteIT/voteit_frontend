@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, inject } from 'vue'
 
+import { dialogAlert } from '@/utils'
 import { ThemeColor } from '@/utils/types'
 import QueryDialog from '@/components/QueryDialog.vue'
 
@@ -24,7 +25,7 @@ async function dialogSetActive() {
   try {
     await setActive(true)
   } catch {
-    alert('Unknown error: Could not set active status')
+    dialogAlert('Unknown error: Could not set active status')
   }
 }
 </script>

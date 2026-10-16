@@ -2,7 +2,7 @@
 import { sorted } from 'itertools'
 import { computed, shallowReactive, shallowRef, watch } from 'vue'
 
-import { slugify } from '@/utils'
+import { dialogAlert, slugify } from '@/utils'
 import { cols } from '@/utils/defaults'
 import Richtext from '@/components/Richtext.vue'
 import QueryDialog from '@/components/QueryDialog.vue'
@@ -33,7 +33,7 @@ async function fetchNotes(meeting: number) {
     const data = await noteType.api.list({ meeting })
     personalNotes.value = data
   } catch {
-    alert("Couldn't fetch your notes!")
+    dialogAlert("Couldn't fetch your notes!")
   }
   fetching.value = false
 }
@@ -96,7 +96,7 @@ async function deleteAll() {
     await noteType.api.listAction('delete-all', { meeting: meetingId.value })
     personalNotes.value = []
   } catch {
-    alert('Deleting notes failed')
+    dialogAlert('Deleting notes failed')
   }
 }
 
@@ -127,7 +127,7 @@ async function saveNote(note: number, close: () => void) {
     ]
     close()
   } catch {
-    alert('Saving note failed')
+    dialogAlert('Saving note failed')
   }
 }
 
@@ -136,7 +136,7 @@ async function deleteNote(note: number) {
     await noteType.api.delete(note)
     personalNotes.value = personalNotes.value.filter((n) => n.pk !== note)
   } catch {
-    alert('Deleting note failed')
+    dialogAlert('Deleting note failed')
   }
 }
 </script>

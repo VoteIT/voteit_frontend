@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 
+import { dialogAlert } from '@/utils'
+
 import useMeeting from './useMeeting'
 import { isActiveMeeting } from './rules'
 import useMeetingComponent from './useMeetingComponent'
@@ -28,7 +30,7 @@ async function setActive(state: boolean) {
     else await setComponentState(state)
   } catch (e) {
     console.error('Failed to set component state', e)
-    alert(`Failed to set ${props.componentName}: ${state}`)
+    dialogAlert(`Failed to set ${props.componentName}: ${state}`)
   }
 }
 </script>
