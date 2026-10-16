@@ -5,6 +5,7 @@ import {
   arrayEquals,
   capFirst,
   countMatching,
+  dialogAlert,
   dialogQuery,
   durationToString,
   getFieldSorter,
@@ -51,6 +52,15 @@ test('stripHTML', () => {
   expect(stripHTML("  <div>I'm a <em>test pilot</em>.</div>  ")).toBe(
     "I'm a test pilot."
   )
+})
+
+test('dialogAlert', async () => {
+  const listener = openDialogEvent.on((dialog) => {
+    expect(dialog).toMatchObject({ title: 'Oops', no: false, theme: 'error' })
+    dialog.resolve(true)
+  })
+  await expect(dialogAlert('Oops')).resolves.toBeUndefined()
+  listener.dispose()
 })
 
 test('dialogQuery', async () => {

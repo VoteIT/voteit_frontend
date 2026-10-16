@@ -2,7 +2,7 @@ import { all, reduce } from 'itertools'
 import _slugify from 'slugify'
 import { Duration } from 'luxon'
 
-import { Predicate } from '@/utils/types'
+import { Predicate, ThemeColor } from '@/utils/types'
 import { Dialog } from '@/composables/types'
 import { IUser } from '@/modules/organisations/types'
 import { SubscribePayload } from './types'
@@ -83,6 +83,16 @@ export async function dialogQuery(
       })
     }
   })
+}
+
+/**
+ * Show a message the user can only acknowledge. Resolves when dismissed.
+ */
+export async function dialogAlert(
+  title: string,
+  theme: ThemeColor = ThemeColor.Error
+): Promise<void> {
+  await dialogQuery({ title, theme, no: false })
 }
 
 /**

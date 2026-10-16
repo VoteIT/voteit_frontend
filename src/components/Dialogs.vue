@@ -96,7 +96,8 @@ onBeforeMount(() => {
     dialog = {
       dismissible: true,
       no: t('no'),
-      yes: t('yes'),
+      // A lone button acknowledges rather than answers
+      yes: dialog.no === false ? t('ok') : t('yes'),
       ...dialog
     }
     if (!queue.length) {
