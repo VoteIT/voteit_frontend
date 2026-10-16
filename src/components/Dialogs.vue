@@ -14,9 +14,10 @@
     >
       <v-btn
         v-if="dismissible"
-        variant="text"
-        icon="mdi-close"
         class="closer"
+        icon="mdi-close"
+        size="small"
+        variant="text"
         @click="deny()"
       />
       <p class="ml-2 mr-10">

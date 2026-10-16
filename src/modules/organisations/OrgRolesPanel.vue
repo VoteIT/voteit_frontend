@@ -1,7 +1,13 @@
 <script lang="ts" setup>
+import { useI18n } from 'vue-i18n'
+
+import { dialogAlert, dialogQuery } from '@/utils'
+import { ThemeColor } from '@/utils/types'
 import RoleMatrix from '@/components/RoleMatrix.vue'
 import UserSearch from '@/components/UserSearch.vue'
 import useErrorHandler from '@/composables/useErrorHandler'
+
+import useAuthStore from '../auth/useAuthStore'
 
 import { organisationType } from './contentTypes'
 import { OrganisationRole } from './types'
@@ -12,6 +18,8 @@ const organisationIcons: Record<OrganisationRole, string> = {
   org_manager: 'mdi-account-supervisor-circle'
 }
 
+const { t } = useI18n()
+const authStore = useAuthStore()
 const { handled } = useErrorHandler({ target: 'dialog' })
 const orgStore = useOrgStore()
 
@@ -23,6 +31,21 @@ async function addUser(user: number) {
     'roles'
   )
 }
+
+async function removeConfirm(user: number, role?: OrganisationRole) {
+  if (user === authStore.user?.pk) {
+    if (!role) {
+      dialogAlert(t('organization.cantRemoveSelf'), ThemeColor.Warning)
+      return false
+    }
+    if (role === OrganisationRole.Manager) {
+      dialogAlert(t('organization.cantRemoveSelfManager'), ThemeColor.Warning)
+      return false
+    }
+  }
+  if (role) return true
+  return dialogQuery({ title: t('areYouSure'), theme: ThemeColor.Warning })
+}
 </script>
 
 <template>
@@ -33,7 +56,7 @@ async function addUser(user: number) {
       :contentType="organisationType"
       :pk="orgStore.organisation.pk"
       :icons="organisationIcons"
-      :remove-confirm-text="$t('areYouSure')"
+      :remove-confirm="removeConfirm"
     />
   </div>
 </template>

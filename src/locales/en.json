@@ -439,6 +439,7 @@
   "meeting": {
     "addParticipant": "Add participant",
     "advancedSettings": "Advanced",
+    "cantRemoveSelf": "You cannot remove yourself from the meeting.",
     "cantRemoveSelfModerator": "You cannot remove the moderator role from your own user.",
     "confirmRemoveParticipant": "It's usually a bad idea to remove users from a meeting. There might be proposals and other content. It's better to remove permissions.\nDo you still want to remove user?",
     "copyUrl": "Copy meeting link",
@@ -634,6 +635,8 @@
   "organization": {
     "allYears": "All years",
     "cantLogin": "Organization no longer active - login disabled",
+    "cantRemoveSelf": "You cannot remove yourself from the organization.",
+    "cantRemoveSelfManager": "You cannot remove the organisation manager role from your own user.",
     "controlPanel": "Control panel",
     "editProfile": "Edit profile",
     "loginTo": "Log in to {title}",

@@ -2,7 +2,7 @@
 import { computed, reactive } from 'vue'
 import { useI18n } from 'vue-i18n'
 
-import { dialogAlert, getFullName } from '@/utils'
+import { dialogAlert, dialogQuery, getFullName } from '@/utils'
 import { ThemeColor } from '@/utils/types'
 import { getApiLink } from '@/utils/restApi'
 import UserSearch from '@/components/UserSearch.vue'
@@ -67,11 +67,25 @@ const readonlyRoles = computed(() => {
   )
 })
 
-async function removeConfirm(userPk: number, role: string) {
-  if (userPk === authStore.user?.pk && role === MeetingRole.Moderator) {
-    dialogAlert(t('meeting.cantRemoveSelfModerator'), ThemeColor.Warning)
-    return false
+/**
+ * Without a role, the user is about to be removed from the meeting
+ */
+async function removeConfirm(userPk: number, role?: MeetingRole) {
+  if (userPk === authStore.user?.pk) {
+    if (!role) {
+      dialogAlert(t('meeting.cantRemoveSelf'), ThemeColor.Warning)
+      return false
+    }
+    if (role === MeetingRole.Moderator) {
+      dialogAlert(t('meeting.cantRemoveSelfModerator'), ThemeColor.Warning)
+      return false
+    }
   }
+  if (!role)
+    return dialogQuery({
+      title: t('meeting.confirmRemoveParticipant'),
+      theme: ThemeColor.Warning
+    })
   return true
 }
 
@@ -169,7 +183,6 @@ function filterParticipants(_value: unknown, _query: string, item: any) {
             :pk="meetingId"
             :readonly-roles="readonlyRoles"
             :remove-confirm="removeConfirm"
-            :remove-confirm-text="$t('meeting.confirmRemoveParticipant')"
           >
             <template #filter="{ columnDescriptions }">
               <div class="d-flex ga-1">

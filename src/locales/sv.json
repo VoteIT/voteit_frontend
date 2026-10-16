@@ -439,6 +439,7 @@
   "meeting": {
     "addParticipant": "Lägg till deltagare",
     "advancedSettings": "Avancerat",
+    "cantRemoveSelf": "Du kan inte ta bort dig själv från mötet.",
     "cantRemoveSelfModerator": "Du kan inte ta bort moderatorrollen från din egen användare.",
     "confirmRemoveParticipant": "Det är oftast en dålig ide att radera användare från ett möte. Det kan finnas förslag och annat innehåll. Avmarkera hellre rättigheter.\nVill du ändå ta bort användaren?",
     "copyUrl": "Kopiera möteslänk",
@@ -634,6 +635,8 @@
   "organization": {
     "allYears": "Alla år",
     "cantLogin": "Organisationen är inte längre aktiv - inloggning avstängd",
+    "cantRemoveSelf": "Du kan inte ta bort dig själv från organisationen.",
+    "cantRemoveSelfManager": "Du kan inte ta bort administratörsrollen från din egen användare.",
     "controlPanel": "Kontrollpanel",
     "editProfile": "Redigera profil",
     "loginTo": "Logga in till {title}",

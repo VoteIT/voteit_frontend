@@ -15,7 +15,6 @@ import useErrorHandler from '@/composables/useErrorHandler'
 
 import { DescribedColumn, isDescribedColumn, RoleMatrixColumn } from './types'
 import HelpSection from './HelpSection.vue'
-import QueryDialog from './QueryDialog.vue'
 import User from './User.vue'
 
 const ITEMS_PER_PAGE = 20
@@ -30,8 +29,7 @@ const props = withDefaults(
     icons: Record<string, string>
     pk: number
     readonlyRoles?: Record<string, string>
-    removeConfirm?(user: number, role: string): Promise<boolean>
-    removeConfirmText?: string
+    removeConfirm?(user: number, role?: string): Promise<boolean>
   }>(),
   {
     readonlyRoles: () => ({})
@@ -155,6 +153,7 @@ async function removeAllRoles(user: number) {
   if (!props.admin) return
   const userRoles = contextRoles.getUserRoles(props.pk, user)
   if (!userRoles) throw new Error(`User ${user} has no roles in this context`)
+  if (props.removeConfirm && !(await props.removeConfirm(user))) return
   await handled(
     () => props.contentType.removeRoles(props.pk, user, ...userRoles),
     'roles'
@@ -301,20 +300,7 @@ const customKeySort = {
 
       <template v-if="admin" #item.actions="{ item }">
         <div class="text-right">
-          <QueryDialog
-            v-if="removeConfirmText"
-            :text="removeConfirmText"
-            color="warning"
-            @confirmed="removeAllRoles((item as any).user as number)"
-          >
-            <template #activator="{ props: dlgProps }">
-              <v-btn v-bind="dlgProps" color="warning" variant="text">
-                <v-icon icon="mdi-delete" />
-              </v-btn>
-            </template>
-          </QueryDialog>
           <v-btn
-            v-else
             color="warning"
             variant="text"
             @click="removeAllRoles((item as any).user as number)"
