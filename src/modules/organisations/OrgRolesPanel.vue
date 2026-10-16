@@ -1,4 +1,5 @@
 <script lang="ts" setup>
+import { computed, shallowRef } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 import { dialogAlert, dialogQuery } from '@/utils'
@@ -23,11 +24,20 @@ const authStore = useAuthStore()
 const { handled } = useErrorHandler({ target: 'dialog' })
 const orgStore = useOrgStore()
 
-async function addUser(user: number) {
+const selectedRole = shallowRef(OrganisationRole.MeetingCreator)
+const roleItems = computed(() =>
+  Object.values(OrganisationRole).map((value) => ({
+    value,
+    title: organisationType.getRole(value).translateName(t),
+    props: { prependIcon: organisationIcons[value] }
+  }))
+)
+
+async function addRole(user: number) {
   if (!orgStore.organisation) throw new Error('No organisation')
   const { pk } = orgStore.organisation
   await handled(
-    () => organisationType.addRoles(pk, user, OrganisationRole.MeetingCreator),
+    () => organisationType.addRoles(pk, user, selectedRole.value),
     'roles'
   )
 }
@@ -50,13 +60,29 @@ async function removeConfirm(user: number, role?: OrganisationRole) {
 
 <template>
   <div v-if="orgStore.organisation">
-    <UserSearch class="mb-6" @submit="addUser" />
     <RoleMatrix
       admin
+      class="mb-4"
       :contentType="organisationType"
       :pk="orgStore.organisation.pk"
       :icons="organisationIcons"
       :remove-confirm="removeConfirm"
     />
+    <div class="d-flex flex-wrap ga-2">
+      <v-select
+        v-model="selectedRole"
+        class="role-select flex-grow-0"
+        hide-details
+        :items="roleItems"
+        :label="$t('role.add')"
+        :prepend-inner-icon="organisationIcons[selectedRole]"
+      />
+      <UserSearch class="flex-grow-1" @submit="addRole" />
+    </div>
   </div>
 </template>
+
+<style lang="sass" scoped>
+.role-select
+  min-width: 200px
+</style>
