@@ -4,6 +4,15 @@ Document notable changes here.
 
 Version format is `major`.`minor`.`patch`. Until major version 1 is realeased, API changes accours on minor version bumps, but never on patch version bumps.
 
+## 1.4.1 (unreleased)
+
+- Errors are shown in dialogs or inline instead of alert snackbars, and native browser alerts are replaced with app dialogs
+- Forms show both field and non-field errors, including in duration inputs
+- Contact info control panel is hidden when contact info is unavailable from the API
+- Organisation roles: the role to add can be selected
+- Bugfix: users could remove their own moderator role in a meeting, or their own organisation manager role. Removing oneself from a meeting or organisation is also prevented
+- Bugfix: the moderator role was not forced on as required when editing who can change or list a reaction
+
 ## 1.4.0 (2026-10-13)
 
 - Login required page: visitors without a session on a page that needs one see a login page in its place, at the same address, instead of a login dialog and a redirect home. Logging in brings them straight back
