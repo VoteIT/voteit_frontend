@@ -439,7 +439,7 @@
   "meeting": {
     "addParticipant": "Add participant",
     "advancedSettings": "Advanced",
-    "cantRemoveSelfModerator": "You cannot remove moderator or participant roles from your own user.",
+    "cantRemoveSelfModerator": "You cannot remove the moderator role from your own user.",
     "confirmRemoveParticipant": "It's usually a bad idea to remove users from a meeting. There might be proposals and other content. It's better to remove permissions.\nDo you still want to remove user?",
     "copyUrl": "Copy meeting link",
     "controlPanel": "Control panel",

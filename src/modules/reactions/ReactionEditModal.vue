@@ -158,7 +158,7 @@ async function save() {
         <div>
           <CheckboxMultipleSelect
             :label="$t('reaction.rolesRequired')"
-            :required-values="['moderator']"
+            :required-values="[MeetingRole.Moderator]"
             :settings="{ options: roleLabels }"
             v-model="formData.change_roles"
           />
@@ -166,7 +166,7 @@ async function save() {
         <div>
           <CheckboxMultipleSelect
             :label="$t('reaction.listRolesRequired')"
-            :required-values="['moderator']"
+            :required-values="[MeetingRole.Moderator]"
             :settings="{ options: roleLabels }"
             v-model="formData.list_roles"
           />

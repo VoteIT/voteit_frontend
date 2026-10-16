@@ -439,7 +439,7 @@
   "meeting": {
     "addParticipant": "Lägg till deltagare",
     "advancedSettings": "Avancerat",
-    "cantRemoveSelfModerator": "Du kan inte ta bort moderator- eller deltagarroller från din egen användare.",
+    "cantRemoveSelfModerator": "Du kan inte ta bort moderatorrollen från din egen användare.",
     "confirmRemoveParticipant": "Det är oftast en dålig ide att radera användare från ett möte. Det kan finnas förslag och annat innehåll. Avmarkera hellre rättigheter.\nVill du ändå ta bort användaren?",
     "copyUrl": "Kopiera möteslänk",
     "controlPanel": "Kontrollpanel",

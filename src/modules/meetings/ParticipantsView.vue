@@ -68,7 +68,7 @@ const readonlyRoles = computed(() => {
 })
 
 async function removeConfirm(userPk: number, role: string) {
-  if (userPk === authStore.user?.pk && role === 'moderator') {
+  if (userPk === authStore.user?.pk && role === MeetingRole.Moderator) {
     dialogAlert(t('meeting.cantRemoveSelfModerator'), ThemeColor.Warning)
     return false
   }
