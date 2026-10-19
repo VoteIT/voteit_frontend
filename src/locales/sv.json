@@ -422,6 +422,7 @@
     "meeting": "Gå med",
     "meetingTitle": "Gå med i möte: {title}",
     "noAccess": "Du kan inte gå med i det här mötet just nu",
+    "policiesFailed": "Kunde inte hämta sätten att gå med i mötet.",
     "now": "Gå med nu!",
     "rejectInvite": "Neka",
     "rejectInviteQuery": "Du håller på att avvisa den här inbjudan. Inbjudan kommer inte längre att fungera.\nÄr du säker?"

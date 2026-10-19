@@ -422,6 +422,7 @@
     "meeting": "Join",
     "meetingTitle": "Join meeting: {title}",
     "noAccess": "You can not join this meeting at this time",
+    "policiesFailed": "Could not load the ways to join this meeting.",
     "now": "Join now!",
     "rejectInvite": "Deny",
     "rejectInviteQuery": "You're about to reject this invitation. The invitation will no longer be usable.\nAre you sure?"
