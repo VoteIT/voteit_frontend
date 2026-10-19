@@ -4,8 +4,10 @@ Document notable changes here.
 
 Version format is `major`.`minor`.`patch`. Until major version 1 is realeased, API changes accours on minor version bumps, but never on patch version bumps.
 
-## 1.4.1 (unreleased)
+## Unreleased
 
+- Join page: invitations to the meeting are shown on the join page and replace the access policies as the way in. Nothing is offered until invitations and access policies have loaded. Invited users and organisation managers can reach a meeting the server won't show yet, others are sent home, and failing to load access policies can be retried
+- Vuetify components follow the selected language, including built-in texts and collation when sorting data tables
 - Errors are shown in dialogs or inline instead of alert snackbars, and native browser alerts are replaced with app dialogs
 - Forms show both field and non-field errors, including in duration inputs
 - Contact info control panel is hidden when contact info is unavailable from the API
