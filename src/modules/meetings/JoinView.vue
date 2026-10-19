@@ -21,6 +21,7 @@ import { MeetingRole } from './types'
 import useMeeting from './useMeeting'
 import useMeetings from './useMeetings'
 import useMeetingStore from './useMeetingStore'
+import { canJoinMeeting } from './joinRules'
 import { canBecomeModerator } from './rules'
 
 const { handled } = useErrorHandler({ target: 'dialog' })
@@ -39,17 +40,17 @@ const invites = computed(() =>
   matchedInvites.value.filter((inv) => inv.meeting === meetingId.value)
 )
 
-/**
- * The server won't show us the meeting, and we have no other way in.
- * An invitation, or managing the organisation, is a way in even to a meeting
- * we can't see yet.
- */
+const canJoin = computed(() =>
+  canJoinMeeting(meetingId.value, {
+    invites: invites.value,
+    policies: policies.value
+  })
+)
+
+/** The server won't show us the meeting, and we have no other way in. */
 const denied = computed(
   () =>
-    policiesState.value === 'notFound' &&
-    invitesLoaded.value &&
-    !invites.value.length &&
-    !canBecomeModerator()
+    policiesState.value === 'notFound' && invitesLoaded.value && !canJoin.value
 )
 usePermission(computed(() => (denied.value ? false : undefined)))
 
@@ -112,11 +113,7 @@ const loading = computed(
     denied.value
 )
 const noAccess = computed(
-  () =>
-    policiesState.value === 'loaded' &&
-    !invites.value.length &&
-    !policyComponents.value.length &&
-    !canBecomeModerator()
+  () => policiesState.value === 'loaded' && !canJoin.value
 )
 </script>
 
