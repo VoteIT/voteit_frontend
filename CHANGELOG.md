@@ -4,7 +4,7 @@ Document notable changes here.
 
 Version format is `major`.`minor`.`patch`. Until major version 1 is realeased, API changes accours on minor version bumps, but never on patch version bumps.
 
-## Unreleased
+## 1.5.0 (2026-10-19)
 
 - Server notices (`s.msg`) are shown in a dialog with a Close button, with a large colored icon for info, warning or error
 - Join page: invitations to the meeting are shown on the join page and replace the access policies as the way in. Nothing is offered until invitations and access policies have loaded. Invited users and organisation managers can reach a meeting the server won't show yet, others are sent home, and failing to load access policies can be retried
