@@ -2,8 +2,9 @@ import { shallowRef } from 'vue'
 
 import type { ValueOf } from '@/utils/types'
 
+import { showNotice } from './notice'
 import Socket from './Socket'
-import type { SocketOptions, SocketState } from './types'
+import type { Notice, SocketOptions, SocketState } from './types'
 
 const wsProtocol = location.protocol === 'https:' ? 'wss:' : 'ws:'
 const DEFAULT_CONFIG: SocketOptions['config'] = {
@@ -50,6 +51,9 @@ socket.registerTypeHandler('s', ({ action, payload }) => {
   switch (action) {
     case 'versions':
       versions.value = payload as (typeof versions)['value']
+      break
+    case 'msg':
+      showNotice(payload as Notice)
       break
     case 'ping':
     case 'pong':

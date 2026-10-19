@@ -20,9 +20,18 @@
         variant="text"
         @click="deny()"
       />
-      <p class="ml-2 mr-10">
-        {{ active.title }}
-      </p>
+      <div class="d-flex align-center ml-2 mr-10">
+        <v-icon
+          v-if="active.icon"
+          :color="active.theme"
+          :icon="active.icon"
+          class="mr-4 flex-shrink-0"
+          size="x-large"
+        />
+        <p>
+          {{ active.title }}
+        </p>
+      </div>
       <div class="btn-controls justify-end">
         <v-btn
           v-if="active.no"

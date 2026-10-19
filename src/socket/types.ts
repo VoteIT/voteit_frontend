@@ -33,3 +33,11 @@ export interface SocketOptions {
   debug?: boolean
   manual?: boolean
 }
+
+export type NoticeType = 'info' | 'warning' | 'error'
+
+/** A message broadcast to users from the server (s.msg) */
+export interface Notice {
+  type?: NoticeType
+  message: string
+}

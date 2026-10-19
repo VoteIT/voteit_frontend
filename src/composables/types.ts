@@ -46,6 +46,8 @@ export interface Dialog {
   yes?: string | false
   no?: string | false
   theme?: ThemeColor
+  /** Shown large, in the theme color, to the left of the title */
+  icon?: string
 }
 
 export interface OrganisationRoles {
