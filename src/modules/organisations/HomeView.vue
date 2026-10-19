@@ -2,9 +2,9 @@
 import { imap, sum } from 'itertools'
 import { DateTime } from 'luxon'
 import { storeToRefs } from 'pinia'
-import { computed, ref, watch } from 'vue'
+import { computed, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { useIdle, useIntervalFn, useTitle } from '@vueuse/core'
+import { useTitle } from '@vueuse/core'
 
 import { slugify } from '@/utils'
 import { cols } from '@/utils/defaults'
@@ -19,7 +19,7 @@ import useDefaults from '@/composables/useDefaults'
 import LoginButton from '../auth/LoginButton.vue'
 import useAuthStore from '../auth/useAuthStore'
 import InviteCard from '../meetingInvites/InviteCard.vue'
-import useInviteStore from '../meetingInvites/useInviteStore'
+import usePolledInvites from '../meetingInvites/usePolledInvites'
 import AddMeeting from '../meetings/AddMeetingModal.vue'
 import useMeetings from '../meetings/useMeetings'
 import { MeetingState } from '../meetings/types'
@@ -34,10 +34,8 @@ import FindMeetingDialog from './FindMeetingDialog.vue'
 import { displayRoles } from './utils'
 import { meetingType } from '../meetings/contentTypes'
 
-const inviteStore = useInviteStore()
-
 const { t } = useI18n()
-const { isAuthenticated, user } = storeToRefs(useAuthStore())
+const { isAuthenticated } = storeToRefs(useAuthStore())
 const orgStore = useOrgStore()
 const meetingStore = useMeetingStore()
 
@@ -49,26 +47,7 @@ useTitle(
   )
 )
 
-async function fetchInvitesIfAuthenticated() {
-  if (!user.value) return
-  try {
-    await inviteStore.fetchMatchedInvites()
-  } catch (e) {
-    // Polled in the background — don't interrupt the user on every failure
-    console.warn(e)
-  }
-}
-
-watch(user, () => {
-  inviteStore.clearMatchedInvites()
-  fetchInvitesIfAuthenticated()
-})
-const { idle } = useIdle()
-useIntervalFn(
-  fetchInvitesIfAuthenticated,
-  computed(() => (idle.value ? 600_000 : 15_000)),
-  { immediateCallback: true }
-)
+const { matchedInvites } = usePolledInvites()
 
 const editing = ref(false)
 const { collapsedBodyHeightMobile } = useDefaults()
@@ -178,12 +157,12 @@ const meetingCount = computed(() =>
         </v-col>
         <v-divider vertical />
         <v-col v-if="isAuthenticated" v-bind="cols.wideLeft.right">
-          <div v-if="inviteStore.matchedInvites.length" class="mb-4">
+          <div v-if="matchedInvites.length" class="mb-4">
             <h2 class="mb-2">
-              {{ $t('join.invites', inviteStore.matchedInvites.length) }}
+              {{ $t('join.invites', matchedInvites.length) }}
             </h2>
             <InviteCard
-              v-for="inv in inviteStore.matchedInvites"
+              v-for="inv in matchedInvites"
               :key="inv.pk"
               :invite="inv"
               class="mb-4"
