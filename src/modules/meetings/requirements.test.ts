@@ -39,6 +39,13 @@ vi.mock('./useMeetingStore', () => ({
   })
 }))
 
+/** What `checkCanJoinMeeting` finds, swapped per test. Hoisted like the above. */
+let joinCheck: { title?: string } | undefined = undefined
+
+vi.mock('./joinRules', () => ({
+  checkCanJoinMeeting: async () => joinCheck
+}))
+
 import { ApiError } from '@/utils/restApi'
 import { openDialogEvent } from '@/utils/events'
 
@@ -177,6 +184,28 @@ test('a fetch that failed some other way is left to the view', async () => {
 
   expect(await requirement.load(() => {})).toBeUndefined()
   expect(meetingFetchFailed.value).toBe(true)
+})
+
+test('a meeting we can not see but can join sends us to the join page', async () => {
+  joinCheck = { title: 'Invited meeting' }
+  try {
+    for (const status of [403, 404]) {
+      fetchMeeting = () => {
+        throw new ApiError(status, {}, new Headers(), String(status))
+      }
+      const requirement = meetingRequirement(route, route)
+      if (Array.isArray(requirement) || !requirement)
+        throw new Error('expected one requirement')
+
+      expect(await requirement.load(() => {})).toEqual({
+        name: 'meeting:join',
+        params: { id: PK, slug: 'invited-meeting' }
+      })
+      expect(meetingFetchFailed.value).toBe(false)
+    }
+  } finally {
+    joinCheck = undefined
+  }
 })
 
 test('a channel nobody answers keeps us out of the meeting', async () => {

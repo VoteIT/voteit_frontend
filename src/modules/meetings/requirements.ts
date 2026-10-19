@@ -11,14 +11,15 @@ import { t } from '@/utils/locales'
 import { ThemeColor } from '@/utils/types'
 
 import { moderatorChannel, participantChannel } from './contentTypes'
+import { checkCanJoinMeeting } from './joinRules'
 import { isModerator } from './rules'
 import useMeetingStore from './useMeetingStore'
 
 /**
  * Whether the last attempt to fetch a meeting failed outright - a network
  * error, or the server refusing us. Distinct from a meeting we simply have no
- * role in, which redirects to the join view instead, and from one the server
- * says isn't there, which gets the 404 page. `MeetingView` turns this into the
+ * role in, or one we could join, which redirect to the join view instead, and
+ * from one the server says isn't there, which gets the 404 page. `MeetingView` turns this into the
  * permission dialog, which offers a login to anyone whose session ran out on
  * the way in - an anonymous visitor never gets this far.
  */
@@ -95,8 +96,22 @@ export const meetingRequirement: RequirementFactory = (to) => {
             params: { id: pk, slug: slugify(getMeeting(pk)?.title) }
           }
       } catch (e) {
-        // No such meeting is a wrong address, not a door we might be let
-        // through: there is nothing to log in for and nothing to come back to.
+        // A meeting the server won't show us may still be one we can join -
+        // an invitation, an access policy or managing the organisation is a
+        // way in even to a meeting we can't see yet.
+        if (isApiError(e) && (e.status === 403 || e.status === 404)) {
+          const join = await checkCanJoinMeeting(pk)
+          if (join)
+            return {
+              name: 'meeting:join',
+              params: {
+                id: pk,
+                slug: join.title ? slugify(join.title) : to.params.slug || '-'
+              }
+            }
+        }
+        // Otherwise no such meeting is a wrong address: there is nothing to
+        // log in for and nothing to come back to.
         if (isApiError(e) && e.status === 404) return notFoundRoute(to)
         // Anything else - refused, broken, unreachable - is left to
         // MeetingView's usePermission, which knows what to ask

@@ -7,6 +7,7 @@ Version format is `major`.`minor`.`patch`. Until major version 1 is realeased, A
 ## Unreleased
 
 - Join page: invitations to the meeting are shown on the join page and replace the access policies as the way in. Nothing is offered until invitations and access policies have loaded. Invited users and organisation managers can reach a meeting the server won't show yet, others are sent home, and failing to load access policies can be retried
+- Meeting page: opening a meeting the server won't show leads to the join page when the user has a way in - an invitation, an active access policy or managing the organisation - instead of the 404 page or a permission error
 - Vuetify components follow the selected language, including built-in texts and collation when sorting data tables
 - Errors are shown in dialogs or inline instead of alert snackbars, and native browser alerts are replaced with app dialogs
 - Forms show both field and non-field errors, including in duration inputs
