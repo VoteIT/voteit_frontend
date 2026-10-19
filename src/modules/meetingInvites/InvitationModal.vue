@@ -268,7 +268,6 @@ function restart() {
       class="mb-3"
       :headers="tableheaders"
       :items="importData.data"
-      :items-per-page-text="$t('content.itemsPerPageText')"
       striped="odd"
     >
       <template v-for="h in unknownHeaders" #[h] :key="h">

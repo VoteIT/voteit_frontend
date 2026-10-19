@@ -2,6 +2,10 @@ import '@mdi/font/css/materialdesignicons.css'
 import 'vuetify/lib/styles/main.sass'
 import { createVuetify } from 'vuetify'
 import colors from 'vuetify/util/colors'
+import { en, sv } from 'vuetify/locale'
+import { watch } from 'vue'
+
+import { currentLocale } from '@/utils/locales'
 
 const light = {
   colors: {
@@ -50,7 +54,7 @@ const dark = {
 }
 */
 
-export default createVuetify({
+const vuetify = createVuetify({
   defaults: {
     VSelect: {
       persistentHint: true
@@ -65,5 +69,17 @@ export default createVuetify({
   },
   display: {
     mobileBreakpoint: 'md'
+  },
+  locale: {
+    locale: currentLocale.value,
+    fallback: 'en',
+    messages: { en, sv }
   }
 })
+
+// Keep Vuetify in sync with selected language, i.e. for collation when sorting data tables
+watch(currentLocale, (locale) => {
+  vuetify.locale.current.value = locale
+})
+
+export default vuetify

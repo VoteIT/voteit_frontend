@@ -361,8 +361,6 @@ async function clearSelectedAnnotations() {
     :hide-default-footer="filteredInvites.length <= ITEMS_PER_PAGE"
     :items="filteredInvites"
     :items-per-page="ITEMS_PER_PAGE"
-    :items-per-page-text="$t('content.itemsPerPageText')"
-    :page-text="$t('content.pageText')"
     item-value="pk"
     show-select
     v-model="selectedInviteIds"

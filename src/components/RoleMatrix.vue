@@ -242,7 +242,6 @@ const customKeySort = {
       :items="tableItems"
       :items-per-page="ITEMS_PER_PAGE"
       :items-per-page-text="$t('role.usersPerPage')"
-      :page-text="$t('content.pageText')"
       :row-props="
         ({ item }) => ({
           class: { currentUser: isCurrentUser((item as any).user) }

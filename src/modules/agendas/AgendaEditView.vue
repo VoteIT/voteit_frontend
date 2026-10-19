@@ -295,8 +295,6 @@ function tagFilter(tags: string | string[], query: string) {
     :search="agendaTag"
     :filter-keys="['tags']"
     :items="agenda"
-    :page-text="$t('content.pageText')"
-    :items-per-page-text="$t('content.itemsPerPageText')"
     class="mb-2"
   >
     <template #no-data>
