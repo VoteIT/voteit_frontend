@@ -1,3 +1,4 @@
+import { localeChangedEvent } from '@/utils/events'
 import { setDefaultHeader } from '@/utils/restApi'
 import { useStorage } from '@vueuse/core'
 import { Settings } from 'luxon'
@@ -85,27 +86,30 @@ async function loadLocaleMessages(i18n: I18n, locale: string) {
 /**
  * Set request header if locale is selected (not empty string)
  */
-watch(
-  selectedLocale,
-  (locale) => {
-    if (!locale) return
-    setDefaultHeader('Accept-Language', locale)
-    Settings.defaultLocale = locale
-  },
-  { immediate: true }
-)
+function setRequestLocale() {
+  const locale = selectedLocale.value
+  if (!locale) return
+  setDefaultHeader('Accept-Language', locale)
+  Settings.defaultLocale = locale
+}
 
-watch(
-  currentLocale,
-  async (locale) => {
-    // Load messages if not available
-    if (!i18n.global.availableLocales.includes(locale))
-      await loadLocaleMessages(i18n, locale)
-    // This should be a ref, not a string, but check anyway
-    if (typeof i18n.global.locale === 'string') i18n.global.locale = locale
-    else i18n.global.locale.value = locale
-    // Update DOM
-    document.querySelector('html')?.setAttribute('lang', locale)
-  },
-  { immediate: true }
-)
+async function applyLocale(locale: string) {
+  // Load messages if not available
+  if (!i18n.global.availableLocales.includes(locale))
+    await loadLocaleMessages(i18n, locale)
+  // This should be a ref, not a string, but check anyway
+  if (typeof i18n.global.locale === 'string') i18n.global.locale = locale
+  else i18n.global.locale.value = locale
+  // Update DOM
+  document.querySelector('html')?.setAttribute('lang', locale)
+}
+
+setRequestLocale()
+applyLocale(currentLocale.value)
+localeChangedEvent.on(applyLocale)
+
+// The header goes first, so listeners refetching backend translations get the new language
+watch(currentLocale, (locale) => {
+  setRequestLocale()
+  localeChangedEvent.emit(locale)
+})

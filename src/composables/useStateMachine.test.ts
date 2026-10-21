@@ -24,6 +24,7 @@ vi.mock('vue-i18n', () => ({
 
 import restApi from '@/utils/restApi'
 import { dialogQuery } from '@/utils'
+import { localeChangedEvent } from '@/utils/events'
 
 // ─── fixtures ─────────────────────────────────────────────────────────────────
 
@@ -99,6 +100,13 @@ describe('fetchStateMachines', () => {
       mockApi as any
     )
     expect(sm.states.value).toEqual({})
+  })
+
+  test('refetches when the language changes', () => {
+    // State names come translated from the backend
+    vi.mocked(restApi.get).mockResolvedValueOnce({})
+    localeChangedEvent.emit('sv')
+    expect(restApi.get).toHaveBeenCalledWith('state-machines/')
   })
 })
 
