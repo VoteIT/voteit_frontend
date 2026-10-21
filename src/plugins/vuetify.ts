@@ -2,7 +2,7 @@ import '@mdi/font/css/materialdesignicons.css'
 import 'vuetify/lib/styles/main.sass'
 import { createVuetify } from 'vuetify'
 import colors from 'vuetify/util/colors'
-import { en, sv } from 'vuetify/locale'
+import { da, en, sv } from 'vuetify/locale'
 import { watch } from 'vue'
 
 import { currentLocale } from '@/utils/locales'
@@ -73,7 +73,7 @@ const vuetify = createVuetify({
   locale: {
     locale: currentLocale.value,
     fallback: 'en',
-    messages: { en, sv }
+    messages: { da, en, sv }
   }
 })
 
