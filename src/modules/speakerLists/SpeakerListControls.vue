@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { map, range } from 'itertools'
-import { computed, ref, shallowRef, toRef } from 'vue'
+import { computed, toRef } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { onKeyStroke } from '@vueuse/core'
 
@@ -12,7 +12,6 @@ import UserSearch from '@/components/UserSearch.vue'
 import useErrorHandler from '@/composables/useErrorHandler'
 
 import useAuthStore from '../auth/useAuthStore'
-import useParticipantNumbers from '../participantNumbers/useParticipantNumbers'
 import useMeetingId from '../meetings/useMeetingId'
 import { IUser } from '../organisations/types'
 
@@ -55,8 +54,6 @@ const handle = {
   add: handler((user: number) => speakerApi.add(props.listId, user)),
   remove: handler(speakerApi.delete)
 }
-const { hasParticipantNumbers, participantNumbers } =
-  useParticipantNumbers(meetingId)
 
 const canManageSystem = computed(
   () => speakerSystem.value && speakerRules.canManageSystem(speakerSystem.value)
@@ -84,41 +81,6 @@ function userSearchFilter({ pk }: IUser): boolean {
 
 function isSelf(userId: number) {
   return authStore.user?.pk === userId
-}
-
-const participantNumberInput = shallowRef('')
-const participantNumberErrors = ref<string[]>([])
-async function addParticipantNumbers() {
-  const numbers = participantNumberInput.value
-    .split(/[^\d]+/)
-    .filter((n) => n)
-    .map(Number)
-  const inList: number[] = []
-  const missing: number[] = []
-  for (const n of numbers) {
-    const user = participantNumbers.value.find((pn) => pn.number === n)?.user
-    if (!user) missing.push(n)
-    else if (checkUserInQueue(user)) inList.push(n)
-    else handle.add(user)
-  }
-  participantNumberErrors.value = []
-  if (missing.length)
-    participantNumberErrors.value.push(
-      t(
-        'participantNumber.doesNotExist',
-        { ids: missing.join(', ') },
-        missing.length
-      )
-    )
-  if (inList.length)
-    participantNumberErrors.value.push(
-      t(
-        'participantNumber.alreadyInList',
-        { ids: inList.join(', ') },
-        inList.length
-      )
-    )
-  participantNumberInput.value = ''
 }
 
 /*
@@ -176,17 +138,6 @@ onKeyStroke(
         instant
         class="flex-grow-1"
       />
-      <template v-if="hasParticipantNumbers">
-        <div style="width: 10px"></div>
-        <v-text-field
-          :label="$t('speaker.addByParticipantNumber')"
-          class="mb-0 flex-grow-1"
-          :error-messages="participantNumberErrors"
-          v-model="participantNumberInput"
-          @keydown.enter="addParticipantNumbers"
-          @update:model-value="participantNumberErrors = []"
-        />
-      </template>
     </div>
     <p v-else>
       <em>{{ $t('speaker.cantManageList') }}</em>

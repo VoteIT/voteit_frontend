@@ -695,10 +695,6 @@
       "title": "Terms of service"
     }
   },
-  "participantNumber": {
-    "alreadyInList": "Participant number {ids} is already in speaker queue | Participant numbers {ids} are already in speaker queue",
-    "doesNotExist": "Participant number {ids} does not exist in meeting | Participant numbers {ids} does not exist in meeting"
-  },
   "permission": {
     "defaultLoginMessage": "You need to log in to access this page.",
     "defaultMessage": "You don't have permission to view this page.",
@@ -1139,7 +1135,6 @@
   "speaker": {
     "activateList": "Activate",
     "addByName": "Add by name",
-    "addByParticipantNumber": "Add by participant number",
     "addWithName": "Add named list",
     "addQuick": "Quick add",
     "agendaItemHasOngoingSpeaker": "This agenda item has a speaker list with an active speaker.\nFinish the debate before before closing the agenda item.",
