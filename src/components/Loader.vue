@@ -1,11 +1,11 @@
 <script setup lang="ts">
-import { computed, reactive, shallowRef, watch } from 'vue'
+import { computed, shallowRef, watch, watchSyncEffect } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 import useNavigationProgress from '@/loader'
 import useAppReady from '@/loader/appReady'
 import { InitState } from '@/composables/types'
-import { useIntervalFn } from '@vueuse/core'
+import useBokeh from '@/composables/useBokeh'
 
 let visibleTimeout: NodeJS.Timeout
 
@@ -43,8 +43,8 @@ watch(initState, (state) => {
 // drops back to a bare "Loading" on its way out. Synchronous, to catch the
 // finished count before the clear collapses into the same flush.
 const lastSteps = shallowRef<typeof steps.value>()
-watch(steps, (value) => value.total && (lastSteps.value = value), {
-  flush: 'sync'
+watchSyncEffect(() => {
+  if (steps.value.total) lastSteps.value = steps.value
 })
 
 /**
@@ -62,90 +62,12 @@ const message = computed(() =>
   initFailed.value ? t('loader.failed') : t('loader.loading')
 )
 
-const BOKEH_COLORS = [
-  'accent',
-  'error',
-  'info',
-  'primary',
-  'secondary',
-  'success',
-  'surface',
-  'white'
-] as const
-const BOKEH_COUNT = 7
-// How much of the distance left to an edge one tick may cover. Below 1, so a
-// bokeh heading for an edge slows down as it nears it and can never pass it.
-const EDGE_BRAKE = 0.2
-
-interface Bokeh {
-  color: (typeof BOKEH_COLORS)[number]
-  size: number // 1-10, in vw
-  x: number // 0-100, in vw
-  y: number // 0-100, in vh
-  dx: number // momentum, x units per tick
-  dy: number // momentum, y units per tick
-}
-
-function clamp(value: number, min = 0, max = 100) {
-  return Math.max(min, Math.min(max, value))
-}
-
-function randomInt(min: number, max: number) {
-  return min + Math.floor(Math.random() * (max - min + 1))
-}
-
-/**
- * Normally distributed position on a 0-100 axis, centred on the middle
- * (Box-Muller). Clamped, so the rare outlier lands on the edge.
- */
-function randomPosition(spread = 15) {
-  const u = 1 - Math.random() // (0, 1], log(0) is -Infinity
-  const v = Math.random()
-  const z = Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * v)
-  return clamp(50 + z * spread)
-}
-
-function randomBokeh(): Bokeh {
-  return {
-    color: BOKEH_COLORS[randomInt(0, BOKEH_COLORS.length - 1)],
-    size: randomInt(3, 10),
-    x: randomPosition(),
-    y: randomPosition(),
-    dx: Math.random() * 2 - 1,
-    dy: Math.random() * 2 - 1
-  }
-}
-
-/**
- * Nudge momentum on a 0-100 axis at random, then hold it to what the position
- * allows: at most maxSpeed either way, and never past an edge.
- */
-function steer(position: number, momentum: number, maxSpeed: number) {
-  const nudged = momentum + (Math.random() - 0.5) * maxSpeed * 0.5
-  return clamp(
-    nudged,
-    Math.max(-maxSpeed, -position * EDGE_BRAKE),
-    Math.min(maxSpeed, (100 - position) * EDGE_BRAKE)
-  )
-}
-
-// Local state, deep reactive: the drift will change position and size in place.
-const bokehElements = reactive<Bokeh[]>(
-  Array.from({ length: BOKEH_COUNT }, randomBokeh)
-)
-
 // Drifts while the splash is up. It comes back if loading starts over, so
 // pause rather than stop.
-const drift = useIntervalFn(() => {
-  const maxSpeed = initFailed.value ? 1.5 : 3
-  for (const elem of bokehElements) {
-    elem.dx = steer(elem.x, elem.dx, maxSpeed)
-    elem.dy = steer(elem.y, elem.dy, maxSpeed)
-    elem.x += elem.dx
-    elem.y += elem.dy
-  }
-}, 1000)
-watch(initDone, (done) => (done ? drift.pause() : drift.resume()))
+const bokehElements = useBokeh(7, {
+  maxSpeed: () => (initFailed.value ? 1.5 : 3),
+  paused: initDone
+})
 </script>
 
 <template>
