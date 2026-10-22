@@ -1,10 +1,11 @@
 <script setup lang="ts">
-import { computed, shallowRef, watch } from 'vue'
+import { computed, reactive, shallowRef, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 import useNavigationProgress from '@/loader'
 import useAppReady from '@/loader/appReady'
 import { InitState } from '@/composables/types'
+import { useIntervalFn } from '@vueuse/core'
 
 let visibleTimeout: NodeJS.Timeout
 
@@ -60,6 +61,91 @@ const stepCount = computed(() => {
 const message = computed(() =>
   initFailed.value ? t('loader.failed') : t('loader.loading')
 )
+
+const BOKEH_COLORS = [
+  'accent',
+  'error',
+  'info',
+  'primary',
+  'secondary',
+  'success',
+  'surface',
+  'white'
+] as const
+const BOKEH_COUNT = 7
+// How much of the distance left to an edge one tick may cover. Below 1, so a
+// bokeh heading for an edge slows down as it nears it and can never pass it.
+const EDGE_BRAKE = 0.2
+
+interface Bokeh {
+  color: (typeof BOKEH_COLORS)[number]
+  size: number // 1-10, in vw
+  x: number // 0-100, in vw
+  y: number // 0-100, in vh
+  dx: number // momentum, x units per tick
+  dy: number // momentum, y units per tick
+}
+
+function clamp(value: number, min = 0, max = 100) {
+  return Math.max(min, Math.min(max, value))
+}
+
+function randomInt(min: number, max: number) {
+  return min + Math.floor(Math.random() * (max - min + 1))
+}
+
+/**
+ * Normally distributed position on a 0-100 axis, centred on the middle
+ * (Box-Muller). Clamped, so the rare outlier lands on the edge.
+ */
+function randomPosition(spread = 15) {
+  const u = 1 - Math.random() // (0, 1], log(0) is -Infinity
+  const v = Math.random()
+  const z = Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * v)
+  return clamp(50 + z * spread)
+}
+
+function randomBokeh(): Bokeh {
+  return {
+    color: BOKEH_COLORS[randomInt(0, BOKEH_COLORS.length - 1)],
+    size: randomInt(3, 10),
+    x: randomPosition(),
+    y: randomPosition(),
+    dx: Math.random() * 2 - 1,
+    dy: Math.random() * 2 - 1
+  }
+}
+
+/**
+ * Nudge momentum on a 0-100 axis at random, then hold it to what the position
+ * allows: at most maxSpeed either way, and never past an edge.
+ */
+function steer(position: number, momentum: number, maxSpeed: number) {
+  const nudged = momentum + (Math.random() - 0.5) * maxSpeed * 0.5
+  return clamp(
+    nudged,
+    Math.max(-maxSpeed, -position * EDGE_BRAKE),
+    Math.min(maxSpeed, (100 - position) * EDGE_BRAKE)
+  )
+}
+
+// Local state, deep reactive: the drift will change position and size in place.
+const bokehElements = reactive<Bokeh[]>(
+  Array.from({ length: BOKEH_COUNT }, randomBokeh)
+)
+
+// Drifts while the splash is up. It comes back if loading starts over, so
+// pause rather than stop.
+const drift = useIntervalFn(() => {
+  const maxSpeed = initFailed.value ? 1.5 : 3
+  for (const elem of bokehElements) {
+    elem.dx = steer(elem.x, elem.dx, maxSpeed)
+    elem.dy = steer(elem.y, elem.dy, maxSpeed)
+    elem.x += elem.dx
+    elem.y += elem.dy
+  }
+}, 1000)
+watch(initDone, (done) => (done ? drift.pause() : drift.resume()))
 </script>
 
 <template>
@@ -85,6 +171,13 @@ const message = computed(() =>
           </p>
         </div>
       </transition>
+      <div
+        v-for="({ color, size, x, y }, i) in bokehElements"
+        :key="i"
+        class="bokeh"
+        :class="color"
+        :style="{ '--size': size, '--x': x, '--y': y }"
+      ></div>
     </main>
   </transition>
 </template>
@@ -114,6 +207,39 @@ main
   z-index: 1010
   &.initFailed
     background-color: #303030
+
+.bokeh
+  position: absolute
+  width: calc(1vw * var(--size))
+  height: calc(1vw * var(--size))
+  border-radius: 50%
+  top: calc(1vh * var(--y))
+  left: calc(1vw * var(--x))
+  translate: -50% -50%
+  filter: blur(calc(0.1vw * var(--size)))
+  opacity: calc(0.5 / var(--size))
+  transition-property: width, height, top, left
+  // Same as the drift interval, so each step runs into the next
+  transition-duration: 1s
+  transition-timing-function: linear
+  &.success
+    background-color: rgb(var(--v-theme-success))
+  &.error
+    background-color: rgb(var(--v-theme-error))
+  &.info
+    background-color: rgb(var(--v-theme-info))
+  &.secondary
+    background-color: rgb(var(--v-theme-secondary))
+  &.primary
+    background-color: rgb(var(--v-theme-primary))
+  &.surface
+    background-color: rgb(var(--v-theme-surface))
+  &.accent
+    background-color: rgb(var(--v-theme-accent))
+  &.white
+    background-color: rgb(var(--v-theme-white))
+  .initFailed &
+    filter: blur(calc(0.1vw * var(--size))) grayscale(.9)
 
 .fade-leave-active
   transition: opacity 0.5s ease
