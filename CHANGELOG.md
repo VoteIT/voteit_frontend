@@ -4,6 +4,12 @@ Document notable changes here.
 
 Version format is `major`.`minor`.`patch`. Until major version 1 is realeased, API changes accours on minor version bumps, but never on patch version bumps.
 
+## 1.5.1 (2026-10-27)
+
+- Danish translation, and translation fixes for English and Swedish
+- Translations fetched from the server are reloaded when the language changes
+- Loading screen shows animated bokeh dots
+
 ## 1.5.0 (2026-10-19)
 
 - Server notices (`s.msg`) are shown in a dialog with a Close button, with a large colored icon for info, warning or error
