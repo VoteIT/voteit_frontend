@@ -3,6 +3,7 @@ import { defineStore } from 'pinia'
 import { computed, shallowReactive, shallowRef } from 'vue'
 
 import { shared, sleep } from '@/utils'
+import { localeChangedEvent } from '@/utils/events'
 import { electoralRegisterType, erMethodType } from '../contentTypes'
 import type { ElectoralRegister, ErMethod } from './types'
 
@@ -20,6 +21,16 @@ export default defineStore('electoralRegisters', () => {
     try {
       erMethods.value = await erMethodType.api.list()
     } catch {} // TODO
+  })
+
+  // Method titles and descriptions are translated by the backend
+  localeChangedEvent.on(async () => {
+    if (!erMethods.value) return
+    try {
+      erMethods.value = await erMethodType.api.list()
+    } catch (e) {
+      console.error('Refetching electoral register methods failed', e)
+    }
   })
 
   function filterRegisters(predicate: Predicate<ElectoralRegister>) {

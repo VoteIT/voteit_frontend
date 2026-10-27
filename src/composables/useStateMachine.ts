@@ -4,6 +4,7 @@ import { ComposerTranslation } from 'vue-i18n'
 
 import { dialogQuery } from '@/utils'
 import DefaultMap from '@/utils/DefaultMap'
+import { localeChangedEvent } from '@/utils/events'
 import restApi from '@/utils/restApi'
 import { Predicate, ThemeColor } from '@/utils/types'
 import { IStateMeta } from '@/contentTypes/types'
@@ -129,6 +130,13 @@ export async function fetchStateMachines() {
   for (const [id, machine] of Object.entries(data))
     stateMachines.set(id, machine)
 }
+
+// State names are translated by the backend
+localeChangedEvent.on(() =>
+  fetchStateMachines().catch((e) =>
+    console.error('Refetching state machines failed', e)
+  )
+)
 
 export default function useStateMachine<
   T extends StateContent & { pk: number },

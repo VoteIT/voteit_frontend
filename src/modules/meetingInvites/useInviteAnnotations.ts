@@ -1,5 +1,6 @@
 import { Ref, computed, onBeforeMount, ref, watch } from 'vue'
 
+import { localeChangedEvent } from '@/utils/events'
 import restApi from '@/utils/restApi'
 import { Meeting } from '../meetings/types'
 
@@ -14,6 +15,17 @@ interface InviteDataType {
 }
 
 const inviteDataTypes = ref<InviteDataType[] | null>(null)
+
+// Data type titles are translated by the backend
+localeChangedEvent.on(async () => {
+  if (!inviteDataTypes.value) return
+  try {
+    inviteDataTypes.value =
+      await restApi.get<InviteDataType[]>('invite-data-types/')
+  } catch (e) {
+    console.error('Refetching invite data types failed', e)
+  }
+})
 
 function filterDataTypes(
   meeting?: Meeting,

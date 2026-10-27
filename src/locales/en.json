@@ -90,7 +90,7 @@
       "isActive": "Automatic access is active",
       "title": "Automatic",
       "description": "Allows for public access to the meeting. With this policy active, anyone will be able to join your meeting, and will immediately receive selected roles. Existing participants will not be affected.",
-      "joinDescription": "This meeting is open to everyone in the organisation. Om you join the meeting, other participants will be able to see you, and you'll get the following roles:"
+      "joinDescription": "This meeting is open to everyone in the organisation. If you join the meeting, other participants will be able to see you, and you'll get the following roles:"
     }
   },
   "activeUsers": {
@@ -100,7 +100,7 @@
     "active": "Active in meeting",
     "activePlural": "Active in meeting",
     "dialogDescription": "The meeting officials wants to know if you're currently active in this meeting.",
-    "dialogInformation": "The information can be used to determine voting permissions, and other participants will be able to se who's active. You can change this later using the control in the bottom of the meeting menu.",
+    "dialogInformation": "The information can be used to determine voting permissions, and other participants will be able to see who's active. You can change this later using the control in the bottom of the meeting menu.",
     "dialogTitle": "Active in meeting?",
     "groupActiveDescription": "Number of active group members. Participants may be counted in multiple groups.",
     "inactive": "Not active!",
@@ -114,7 +114,7 @@
   },
   "admin": {
     "testMode": "Test mode...",
-    "testModeActive": "You've set temporary meeting roles that overrides your ordinary roles in this meeting. Klick reset to return to your ordinary roles.",
+    "testModeActive": "You've set temporary meeting roles that overrides your ordinary roles in this meeting. Click reset to return to your ordinary roles.",
     "testModeDescription": "You can temporarily set different meeting roles on yourself if you want to see what the meeting looks and behaves like for users with other permissions. The roles are only set in your web browser and will be reset when you leave the meeting."
   },
   "agenda": {
@@ -201,17 +201,17 @@
     "manageAccount": "Manage account",
     "manageAccountAt": "Manage account at {title}",
     "moreLoginOptions": "Other ways to log in",
-    "switchUserText": "There is more than one user profiles connected to your account. You can switch beween profiles to access old meetings.",
+    "switchUserText": "There is more than one user profiles connected to your account. You can switch between profiles to access old meetings.",
     "switchUserTitle": "You have more than one user profile"
   },
   "content": {
-    "delete": "Radera",
+    "delete": "Delete",
     "suggestions": "Suggestions",
     "textSize": "Text size",
     "textSizeNormal": "Normal text",
     "textSizeLarge": "Large text",
     "textSizeXLarge": "Very large text",
-    "warnShorterThan": "Your content is less that {length} characters.\nAre you sure?"
+    "warnShorterThan": "Your content is less than {length} characters.\nAre you sure?"
   },
   "discussion": {
     "closed": "Discussion closed",
@@ -322,7 +322,7 @@
     "seconds": "Seconds"
   },
   "img": {
-    "allowedFormats": "Allowed formats: jpeg, png, webp och svg.",
+    "allowedFormats": "Allowed formats: jpeg, png, webp and svg.",
     "change": "Change image",
     "clear": "Clear",
     "clearUploaded": "Clear uploaded image",
@@ -338,7 +338,7 @@
   },
   "invites": {
     "add": "Invite participants",
-    "addUserInvitesWarning": "Use with precaution! Participants should normaly be added using invitations.",
+    "addUserInvitesWarning": "Use with precaution! Participants should normally be added using invitations.",
     "bulkChange": "Change one invite | Change {count} invites",
     "confirmDelete": "Do you want to delete one invite | Do you want to delete {count} invites?",
     "clearAnnotations": "Clear annotations",
@@ -364,7 +364,7 @@
       "hint": "One member id per row",
       "typeLabel": "Member id"
     },
-    "noInvitesHelp": "Noone has been invited to this meeting yet.",
+    "noInvitesHelp": "No one has been invited to this meeting yet.",
     "noFilteredInvitesHelp": "No invites matches your filter.",
     "revoke": "Revoke",
     "annotate": {
@@ -473,8 +473,8 @@
     "subscriptionFailedMessage": "Couldn't load meeting.",
     "visibleInLists": "Searchable for all organisation members",
     "yearStarted": "Year (started)",
-    "yourGroups": "Your meeting roles",
-    "yourRoles": "Your meeting groups",
+    "yourGroups": "Your meeting groups",
+    "yourRoles": "Your meeting roles",
     "groups": {
       "addMemberEmptyHelp": "Add some members from the meeting to the group, using the search field above.",
       "create": "Create group",
@@ -497,7 +497,7 @@
       "membersIn": "Members in {title}",
       "new": "New group",
       "postAs": "Post as",
-      "postAsDescription": "Group members can make proposals and discussion posts in the name name of this group.",
+      "postAsDescription": "Group members can make proposals and discussion posts in the name of this group.",
       "removeUserConfirm": "You're about to remove {user} from this group.\nAre you sure?",
       "role": "Role",
       "showOnSpeaker": "Speak as",
@@ -619,10 +619,10 @@
     "intentApprove": "I want to approve",
     "intentBlank": "Only note",
     "intentDeny": "I want to deny",
-    "noNotesDescription": "You havn't added any notes yet. You can add notes on proposals on an agenda item.",
+    "noNotesDescription": "You haven't added any notes yet. You can add notes on proposals on an agenda item.",
     "noText": "No text",
     "personal": "Personal note | Personal notes",
-    "personalDescription": "You can all personal notas to proposals in this meeting. We will only show these notes for you, but keep in mind that others may be ably to see your screen.",
+    "personalDescription": "You can add personal notes to proposals in this meeting. We will only show these notes for you, but keep in mind that others may be able to see your screen.",
     "settings": "Your settings",
     "title": "Note | Notes"
   },
@@ -754,7 +754,7 @@
     "noPublishedPolls": "There are no polls in this meeting yet.",
     "noAiPublishedProposals": "This agenda item has no published proposals",
     "viewAndChangeVote": "View and change vote",
-    "votedProgress": "Noone has voted | {percentage} % has voted ({voted} / {total}) | {percentage} % has voted ({voted} / {total})",
+    "votedProgress": "No one has voted | {percentage} % has voted ({voted} / {total}) | {percentage} % has voted ({voted} / {total})",
     "voteAddedInfo": "Your vote has been accepted.\nYou can change your vote at any time until the poll is closed.",
     "winningProposal": "Winning proposal",
     "youHaveVoted": "You have voted",
@@ -779,7 +779,7 @@
       },
       "condorcetLoser": {
         "title": "Condorcet loser",
-        "description": "The loser must loose against every other candidate in a pairwise comparison."
+        "description": "The loser must lose against every other candidate in a pairwise comparison."
       },
       "cloneProof": {
         "title": "Clone proof",
@@ -808,7 +808,7 @@
       "limitMin": "Rank at least one proposal | Rank at least {min} proposals",
       "limitRange": "Rank {min} to {max} proposals",
       "rangeLimit": "Require ranking of a number of proposals",
-      "repeatedRoundResult": "IRV is not a method deisgned to elect multiple winenrs. Each round in a repeated IRV is a simple IRV, with the winners from previous rounds omited. Because each simple IRV has several rounds, there is no simple answer to how many votes a proposal got, other than that it would have at some point got a mojority of the votes. How many rounds that took is irrelevant."
+      "repeatedRoundResult": "IRV is not a method designed to elect multiple winners. Each round in a repeated IRV is a simple IRV, with the winners from previous rounds omitted. Because each simple IRV has several rounds, there is no simple answer to how many votes a proposal got, other than that it would have at some point got a majority of the votes. How many rounds that took is irrelevant."
     },
     "majority": {
       "tiedResult": "The poll got a tied result."
@@ -826,13 +826,13 @@
       "scottish_stv": "Scottish STV",
       "description": {
         "combined_simple": "Each proposal will be voted individually, with the options to approve, deny or abstain.",
-        "dutt": "This poll methos shows which proposals has the highest approval, but can't appoint majority winners or losers. If a proposal was selected by a majority of voters, it's likely, but not certain, that the proposal is supported by a majority. It could also be the result of tactical voting or mandatory amount of selections. The method can be used for opinion surveys and guiding polls, but should be avoided for making real decisions.",
-        "irv": "Ranked poll with a single winner. Voters rank proposals by order of preference. Proposals with least amount of votes will be excluded and votes transfered until one proposal has more than 50 % of the votes.",
+        "dutt": "This poll method shows which proposals has the highest approval, but can't appoint majority winners or losers. If a proposal was selected by a majority of voters, it's likely, but not certain, that the proposal is supported by a majority. It could also be the result of tactical voting or mandatory amount of selections. The method can be used for opinion surveys and guiding polls, but should be avoided for making real decisions.",
+        "irv": "Ranked poll with a single winner. Voters rank proposals by order of preference. Proposals with least amount of votes will be excluded and votes transferred until one proposal has more than 50 % of the votes.",
         "majority": "Voters choose between two proposals. The one with the most votes wins.",
-        "repeated_irv": "Simple IRV is repeated until all winners are elected, or until no proposal can get a majority. Repeated IRV can easily be manipulated by syncronizing votes, and should be avoided.",
+        "repeated_irv": "Simple IRV is repeated until all winners are elected, or until no proposal can get a majority. Repeated IRV can easily be manipulated by synchronizing votes, and should be avoided.",
         "repeated_schulze": "A regular Schulze poll is repeated until all candidates have a ranking. The result is non-proportional, and each stage produces the Condorcet winner within the remaining candidates. Voters rank proposals with stars.",
         "scottish_stv": "Ranked poll with multiple winners. Voters rank proposals by order of preference. Surplus or discarded votes are transferred to reduce wasted votes.",
-        "schulze": "Rank proposals with stars - more is better. The proposal that is prefered in pairwise comparison to every other proposal wins."
+        "schulze": "Rank proposals with stars - more is better. The proposal that is preferred in pairwise comparison to every other proposal wins."
       },
       "help": {
         "combined_simple": "Vote approve or deny for each proposal.",
@@ -861,7 +861,7 @@
       "willBeWithheld": "The result from this poll will be withheld when the poll is closed.",
       "withheld": "Withheld result",
       "withheldDisplayConfirm": "I understand and want to show the result",
-      "withheldDisplayWarning": "As meeting moderator, you can preview a withheld poll result. You should ensure that no unathorized people can see your screen, for example by looking over your shoulder, or if you're sharing your screen.",
+      "withheldDisplayWarning": "As meeting moderator, you can preview a withheld poll result. You should ensure that no unauthorized people can see your screen, for example by looking over your shoulder, or if you're sharing your screen.",
       "withheldExplanation": "The result of this poll is not published yet. That usually means that the meeting organizer wants to control the timing of publication, and that the result will be available soon.",
       "withheldPublish": "Publish result now",
       "withheldPublishConfirm": "This will publish the result for all meeting participants. \nAre you sure?",
@@ -1023,7 +1023,7 @@
     "deleteButtonConfirmation": "You are about to delete a button permanently.\nAre you sure?",
     "displayOn": "Display on",
     "editButton": "Edit Reaction Button",
-    "flags": "Flag | Flaggor",
+    "flags": "Flag | Flags",
     "listRolesRequired": "Roles allowed to see who reacted",
     "none": "No reactions",
     "onPresentation": "Real-time and broadcast views",
@@ -1116,8 +1116,8 @@
     "sendingSpeakers": "Showing speakers",
     "sendingSpeakersProposals": "Showing speakers and proposals",
     "settings": "Meeting room settings",
-    "settingsDescription": "Configure meeting rooms och speaker lists. Mainly used for live meetings.",
-    "settingsHelp": "To access the broadcast view (live decision handling) and speaker lists, you need to configure at least one room in your meeting. If you have a meeting with multiple simultaneous processes, i.e. parallell committees, you may have to configure meeting rooms for those aswell.",
+    "settingsDescription": "Configure meeting rooms and speaker lists. Mainly used for live meetings.",
+    "settingsHelp": "To access the broadcast view (live decision handling) and speaker lists, you need to configure at least one room in your meeting. If you have a meeting with multiple simultaneous processes, i.e. parallel committees, you may have to configure meeting rooms for those as well.",
     "settingsTitle": "Meeting rooms and speaker lists",
     "showClock": "Display clock",
     "toPlenaryView": "To broadcast view",
@@ -1176,7 +1176,7 @@
     "queueEmpty": "No speakers in queue",
     "safePositions": "Safe positions",
     "safePositionsHint": "Number of safe positions at the top of the speaker queue. Usually 1, to ensure that the next speaker can prepare.",
-    "safePositionsValue": "No safe positions | One safe position (default) | Two safe postisions",
+    "safePositionsValue": "No safe positions | One safe position (default) | {count} safe positions",
     "shuffleList": "Shuffle list",
     "shuffleListConfirm": "This will randomise the starting order of all speakers on this list. This can be used before starting the first speaker, so that speakers doesn't get an advantage from entering list early.\nAre you sure?",
     "speakerCount": "No speakers in queue | One speaker in queue | {count} speakers in queue",

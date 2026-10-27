@@ -89,7 +89,7 @@
       "add": "Konfigurera automatisk åtkomst",
       "isActive": "Automatisk åtkomst är aktiv",
       "title": "Automatisk åtkomst",
-      "description": "Tillåter publik tillgång till mötet. Med den här policyn aktiv kan vem som helst gå med i ditt mötet, och får genast de valda rollerna. Existerande användare påverkas inte.",
+      "description": "Tillåter publik tillgång till mötet. Med den här policyn aktiv kan vem som helst gå med i ditt möte, och får genast de valda rollerna. Existerande användare påverkas inte.",
       "joinDescription": "Det här mötet är öppet för alla i organisationen. Om du går med kommer andra användare i mötet att kunna se dig, och du kommer få följande roller:"
     }
   },
@@ -380,7 +380,7 @@
       "typeLabel": "E-post"
     },
     "mixed": {
-      "helpText": "Du kan göra inbjudningar genom att klistra en en lista med e-postadresser, en adress per rad, eller så kan du klistra in fler uppgifter från ett kalkylblad. Den översta raden kan bestå av rubriker som talar om vilken typ av användardata kolumnen innehåller, enligt tabellen nedan. Annars kommer systemet gissa utifrån innehållet.",
+      "helpText": "Du kan göra inbjudningar genom att klistra in en lista med e-postadresser, en adress per rad, eller så kan du klistra in fler uppgifter från ett kalkylblad. Den översta raden kan bestå av rubriker som talar om vilken typ av användardata kolumnen innehåller, enligt tabellen nedan. Annars kommer systemet gissa utifrån innehållet.",
       "helpTitle": "Så lägger du till inbjudningar",
       "label": "Klistra in användaruppgifter"
     },
@@ -414,7 +414,7 @@
   "join": {
     "acceptInvite": "Acceptera",
     "asModerator": "Hantera möte",
-    "asModeratorDescription": "Som administratör kan du gå med I alla möten som moderator. Detta gör dig till en synlig deltagare i mötet.",
+    "asModeratorDescription": "Som administratör kan du gå med i alla möten som moderator. Detta gör dig till en synlig deltagare i mötet.",
     "asModeratorQuery": "Detta gör dig till en synlig deltagare i mötet.\nVill du gå med som moderator?",
     "invites": "Mötesinbjudan | Mötesinbjudningar",
     "loginDescription": "Du behöver logga in för att gå med i möten. Klicka på inloggningsknappen nedan för att komma vidare.",
@@ -520,7 +520,7 @@
       "changeOnlyUpcoming": "Du kan bara ändra dialekt i ett möte som är kommande.",
       "uninstallConfirm": "Avinstallation av dialekten {title} kommer göra ändringar i ditt möte och kan ställa till problem med grupper, rättigheter och inställningar i mötet. Är du säker?",
       "uninstallText": "Du kan avinstallera den här dialekten, men vi kommer då att ändra saker i ditt möte. Det kan påverka grupper, rättigheter och inställningar. Gör inte det om du inte vet vad du håller på med.",
-      "uninstallTitle": "Avinstallera dialect"
+      "uninstallTitle": "Avinstallera dialekt"
     },
     "mustBeOngoing": "Mötet måste vara pågående",
     "mustNotBeUpcoming": "Mötet får inte vara kommande"
@@ -775,19 +775,19 @@
       },
       "condorcetWinner": {
         "title": "Condorcetvinnare",
-        "description": "The winner must beat every other candidate in a pairwise comparison."
+        "description": "Vinnaren måste slå alla andra kandidater i en parvis jämförelse."
       },
       "condorcetLoser": {
         "title": "Condorcetförlorare",
-        "description": "The loser must loose against every other candidate in a pairwise comparison."
+        "description": "Förloraren måste förlora mot alla andra kandidater i en parvis jämförelse."
       },
       "cloneProof": {
         "title": "Klonsäker",
-        "description": "The winner must not change due to strategic nomination, for instance that a similar candidate runs."
+        "description": "Vinnaren får inte ändras på grund av strategisk nominering, till exempel att en liknande kandidat ställer upp."
       },
       "proportional": {
         "title": "Proportionell",
-        "description": "The result should reflect the user base as a whole, for instance: If 20 percent of the electorate support a particular political party as their favorite, then roughly 20 percent of seats will be won by that party. Applies to multiple winner methods."
+        "description": "Resultatet ska spegla de röstande som helhet, till exempel: Om 20 procent av väljarna har ett visst parti som favorit, ska det partiet få ungefär 20 procent av platserna. Gäller metoder med flera vinnare."
       }
     },
     "dutt": {
@@ -827,12 +827,12 @@
       "description": {
         "combined_simple": "Varje förslag behandlas individuellt, med alternativen bifall, avslag och avstå.",
         "dutt": "Denna omröstningsmetod är till för att visa vilka förslag som har störst acceptans bland de röstande, men kan inte utse majoritetsvinnare eller -förlorare. Om ett förslag kryssats av en majoritet av de röstande är det troligt, men inte säkert, att förslaget har majoritetsstöd - det kan också vara resultatet av taktikröstande eller obligatoriskt antal kryss. Metoden kan användas för opinionsmätningar och vägledande yttringar, men bör undvikas för riktiga beslut.",
-        "irv": "Rangordnad omröstning med en vinnare. De röstande rangordnar förslag efter preferens. De förslag som fått minst antal röster exckluderas och röster överförs tills ett förslag fått mer än 50 % av rösterna.",
+        "irv": "Rangordnad omröstning med en vinnare. De röstande rangordnar förslag efter preferens. De förslag som fått minst antal röster exkluderas och röster överförs tills ett förslag fått mer än 50 % av rösterna.",
         "repeated_irv": "Enkel IRV upprepas tills alla vinnare utsetts, eller tills inget förslag längre kan uppnå majoritet. Upprepad IRV är lätt att manipulera genom att synkronisera röster och bör undvikas.",
         "majority": "De röstande väljer mellan två förslag. Det förslag som fått mest röster vinner.",
         "scottish_stv": "Rangordnad omröstning med flera vinnare. De röstande rangordnar förslag efter preferens. När ett förslag vunnit eller exkluderats överförs överskott respektive hel röst till nästa i ordning för att minska bortkastade röster.",
         "schulze": "Rangordna förslag med stjärnor - fler är bättre. Det förslag som föredras i parvis jämförelse med alla andra förslag vinner.",
-        "repeated_schulze": "En enkel Schulze-omröstning repreteras tills alla förslag har en rangordning. Resultatet är icke-proportionerligt, och varje runda ger en Condorcet-vinnare inom de kvarvarande kandidaterna. De röstande rangordnar förslagen med stjärnor."
+        "repeated_schulze": "En enkel Schulze-omröstning upprepas tills alla förslag har en rangordning. Resultatet är icke-proportionerligt, och varje runda ger en Condorcet-vinnare inom de kvarvarande kandidaterna. De röstande rangordnar förslagen med stjärnor."
       },
       "help": {
         "combined_simple": "Rösta bifall eller avslag på varje förslag.",
@@ -864,7 +864,7 @@
       "withheldDisplayWarning": "Som moderator kan du förhandsvisa ett dolt omröstningsresultat. Du bör först förvissa dig om att inga obehöriga kan se vad du visar på din skärm, exempelvis genom att titta över din axel eller genom att du delar skärm på något sätt.",
       "withheldExplanation": "Resultatet i den här omröstningen är inte publicerat ännu. Det betyder vanligtvis att mötets arrangör vill vänta med att presentera resultatet, och att det kommer publiceras senare.",
       "withheldPublish": "Publicera resultatet nu",
-      "withheldPublishConfirm": "Detta publicerar resultatet till alla mötesdetagare.\nÄr du säker?",
+      "withheldPublishConfirm": "Detta publicerar resultatet till alla mötesdeltagare.\nÄr du säker?",
       "withhold": "Dölj resultatet vid stängning av omröstning"
     },
     "schulze": {
@@ -1041,7 +1041,7 @@
       "description": "En reaktionsknapp kan vara många saker, från en enkel gilla-knapp till ett sätt att kategorisera förslag för att underlätta i omröstningar. Du kan välja var de ska visas och när de ska vara aktiva och gå att klicka på. Experimentera gärna med olika inställningar i ett testmöte om du känner dig osäker på de olika inställningarna.",
       "title": "Vad är en reaktionsknapp?",
       "flagButton": "En flagga har två lägen, som en strömbrytare. De kan bara ändras av mötets moderatorer, och används framförallt för att kategorisera förslag. Du kan till exempel lägga till flaggor för att visa vilka förslag som är från valberedningen, vilka förslag som har budgetpåverkan, eller något annat som är viktigt i ert möte.",
-      "reactionButton": "En vanlig reaktionsknapp är till för att mötets deltagare ska kunna reagera på förslag och diskussionsinlägg. Du kan även välja roller som kan reagera och sätta ett tröskelvärde, så att att visst antal reaktioner slår över knappen i ett aktivt läge. Det kan exempelvis användas om förslag behöver stöd från ett visst antal ombud för att komma upp till beslut."
+      "reactionButton": "En vanlig reaktionsknapp är till för att mötets deltagare ska kunna reagera på förslag och diskussionsinlägg. Du kan även välja roller som kan reagera och sätta ett tröskelvärde, så att ett visst antal reaktioner slår över knappen i ett aktivt läge. Det kan exempelvis användas om förslag behöver stöd från ett visst antal ombud för att komma upp till beslut."
     }
   },
   "role": {
@@ -1066,7 +1066,7 @@
       "participant": "Kan se mötet och dess deltagare.",
       "potential_voter": "Kan få rösträtt om vissa kriterier uppfylls. Kriterierna bestäms av mötets metod för röstlängd.",
       "proposer": "Får lägga till förslag där förslag tillåts, så länge mötet inte är stängt.",
-      "speaker": "Får sätta upp sig på talarlisa, även om användaren inte har en krävd roll.",
+      "speaker": "Får sätta upp sig på talarlista, även om användaren inte har en krävd roll.",
       "voter": "Har rösträtt enligt mötets senaste röstlängd. Gamla omröstningar kan fortfarande ha en annan röstlängd."
     }
   },
@@ -1078,7 +1078,7 @@
     "broadcastingSelfDescription": "Du sköter sändningen i det här rummet, men det verkar som att du gör det från en annan enhet.",
     "broadcastingUser": "Sändning pågår ({userid})",
     "closed": "Rummet är för närvarande stängt.",
-    "create": "skapa rum",
+    "create": "Skapa rum",
     "confirmBroadcastTakeover": "Du håller nu på att ta över sändningen i det här rummet.\nÄr du säker?",
     "confirmDelete": "Detta raderar rummet. Det går inte att ångra.\nÄr du säker?",
     "confirmDeleteWithContent": "Det här rummet har talarlistor / talare som raderas med rummet.\n\nTalarlistor: {speaker_lists}\nTalare: {speakers}\n\nVill du ändå radera?",
@@ -1154,7 +1154,7 @@
     "confirmStopActiveSpeaker": "Det finns en aktiv talare på listan \"{title}\". Du behöver stoppa den talaren först.\nVill du göra det nu?",
     "currentlySpeaking": "Talar nu",
     "displayTimer": "Visa timer i realtidsvy",
-    "displayTimerHint": "Om detta är aktivt visas talad tid för aktiv talare för alla i realtidsvyn. Rekommendas att vara avstängt, eftersom det kan upplevas distraherande.",
+    "displayTimerHint": "Om detta är aktivt visas talad tid för aktiv talare för alla i realtidsvyn. Rekommenderas att vara avstängt, eftersom det kan upplevas distraherande.",
     "enterList": "Sätt upp mig",
     "fullscreen": "Visa i fullskärm",
     "handleRoles": "Hantera roller",
