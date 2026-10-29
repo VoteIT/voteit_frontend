@@ -13,7 +13,7 @@
 
 <script setup lang="ts">
 import { Duration, DateTime } from 'luxon'
-import { computed, nextTick, ref, watch, watchEffect } from 'vue'
+import { computed, ref, watchEffect } from 'vue'
 import { useIntervalFn } from '@vueuse/shared'
 
 import { durationToString } from '@/utils'
@@ -33,10 +33,10 @@ const { dateTime, serverNow } = useServerDateTime(computed(() => props.date))
 const fromNow = ref('')
 
 const exactDate = computed(() =>
-  DateTime.fromISO(props.date).toLocaleString({
-    dateStyle: 'long',
-    timeStyle: 'long'
-  })
+  DateTime.fromISO(props.date).toLocaleString(
+    { dateStyle: 'long', timeStyle: 'long' },
+    { locale: currentLocale.value }
+  )
 )
 
 function updateFromNow() {
@@ -46,10 +46,12 @@ function updateFromNow() {
   if (props.inSeconds) {
     fromNow.value = durationToString(serverDiff)
   } else {
+    // DateTime objects keep the locale they were created with, so set it explicitly
+    const localized = dateTime.value.setLocale(currentLocale.value)
     fromNow.value =
       serverDiff > ABSOLUTE_BREAKPOINT
-        ? dateTime.value.toLocaleString()
-        : dateTime.value.toRelative({ base: serverDateTime }) || ''
+        ? localized.toLocaleString()
+        : localized.toRelative({ base: serverDateTime }) || ''
   }
 }
 
@@ -57,7 +59,6 @@ useIntervalFn(updateFromNow, props.inSeconds ? 1_000 : 60_000, {
   immediateCallback: true
 })
 watchEffect(updateFromNow)
-watch(currentLocale, () => nextTick(updateFromNow))
 </script>
 
 <style lang="sass">
