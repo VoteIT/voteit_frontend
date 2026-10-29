@@ -71,6 +71,8 @@ async function sendEvent(event: Event) {
         :text="currentState.translate($t)"
         variant="flat"
         v-bind="{ ...$attrs, ...props }"
+        @click.stop.prevent
+        @mousedown.stop
       />
     </template>
     <v-list density="comfortable">

@@ -1,12 +1,12 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 import { useElementSize } from '@vueuse/core'
+import { useI18n } from 'vue-i18n'
 
 import { slugify } from '@/utils'
-import Dropdown from '@/components/Dropdown.vue'
+import DefaultDialog from '@/components/DefaultDialog.vue'
 import Moment from '@/components/Moment.vue'
 import ProgressBar from '@/components/ProgressBar.vue'
-import Widget from '@/components/Widget.vue'
 import WorkflowState from '@/components/WorkflowState.vue'
 
 import useMeeting from '../meetings/useMeeting'
@@ -18,6 +18,8 @@ import usePoll from './usePoll'
 import { Poll } from './types'
 
 const props = defineProps<{ poll: Poll }>()
+
+const { t } = useI18n()
 
 const { isModerator } = useMeeting()
 const { getPollStatus, getUserVote } = usePollStore()
@@ -41,87 +43,62 @@ const pollRoute = computed(() => ({
   params: { pid: props.poll.pk, pslug: slugify(props.poll.title) }
 }))
 const userVote = computed(() => getUserVote(props.poll))
+
+function* resultDialogGen() {
+  if (!isFinished.value) return
+  if (approved.value.length) {
+    yield {
+      key: 'approved',
+      title: t('poll.numApproved', approved.value.length),
+      proposals: approved.value,
+      color: 'success'
+    }
+  }
+  if (denied.value.length) {
+    yield {
+      key: 'denied',
+      title: t('poll.numDenied', denied.value.length),
+      proposals: denied.value,
+      color: 'warning'
+    }
+  }
+}
+
+const resultDialogs = computed(() => [...resultDialogGen()])
 </script>
 
 <template>
-  <Widget class="poll" ref="rootEl" :style="{ '--columns': proposalColumns }">
-    <header class="mb-1">
-      <div class="d-flex">
-        <router-link :to="pollRoute" class="flex-grow-1">
-          <h3>
-            {{ poll.title }}
-            <small class="text-secondary ml-4">{{ pollMethodName }}</small>
-          </h3>
-          <div class="text-secondary">
-            <Moment
-              v-if="isOngoing && poll.started"
-              :prepend="$t('poll.started')"
-              :date="poll.started"
-            />
-            <Moment
-              v-else-if="isFinished && poll.closed"
-              :prepend="$t('poll.finished')"
-              :date="poll.closed"
-            />
-          </div>
-        </router-link>
-        <div class="text-right d-flex flex-column">
-          <WorkflowState
-            v-if="isModerator"
-            admin
-            :object="poll"
-            :contentType="pollType"
-            right
-          />
-          <router-link :to="pollRoute">
-            <v-icon size="xxx-large">mdi-chevron-right</v-icon>
-          </router-link>
-        </div>
-      </div>
-    </header>
-    <div class="body">
-      <template v-if="isFinished">
-        <Dropdown
-          v-if="approved.length"
-          :title="$t('poll.numApproved', approved.length)"
-          class="mb-2"
-        >
-          <div
-            class="proposals ga-2"
-            :class="{ 'full-width': approved.length === 1 }"
-          >
-            <ProposalSheet
-              v-for="p in approved"
-              :key="p.pk"
-              elevation="2"
-              :proposal="p"
-            />
-          </div>
-        </Dropdown>
-        <Dropdown
-          v-if="denied.length"
-          :title="$t('poll.numDenied', denied.length)"
-          class="mb-2"
-        >
-          <div
-            class="proposals ga-2"
-            :class="{ 'full-width': denied.length === 1 }"
-          >
-            <ProposalSheet
-              v-for="p in denied"
-              :key="p.pk"
-              elevation="2"
-              :proposal="p"
-            />
-          </div>
-        </Dropdown>
-        <ProgressBar
-          :text="voteCount.text"
-          :value="voteCount.voted"
-          :total="voteCount.total"
-        />
-      </template>
-
+  <v-card
+    ref="rootEl"
+    :style="{ '--columns': proposalColumns }"
+    :to="pollRoute"
+  >
+    <template #title>
+      {{ poll.title }}
+      <small class="text-secondary ml-4">{{ pollMethodName }}</small>
+    </template>
+    <template #subtitle>
+      <Moment
+        v-if="isOngoing && poll.started"
+        :prepend="$t('poll.started')"
+        :date="poll.started"
+      />
+      <Moment
+        v-else-if="isFinished && poll.closed"
+        :prepend="$t('poll.finished')"
+        :date="poll.closed"
+      />
+    </template>
+    <template #append v-if="isModerator">
+      <WorkflowState admin :object="poll" :contentType="pollType" right />
+    </template>
+    <template #text>
+      <ProgressBar
+        v-if="isFinished"
+        :text="voteCount.text"
+        :value="voteCount.voted"
+        :total="voteCount.total"
+      />
       <ProgressBar
         v-if="isOngoing"
         :value="pollStatus?.voted"
@@ -152,19 +129,39 @@ const userVote = computed(() => getUserVote(props.poll))
           </span>
         </template>
       </ProgressBar>
-    </div>
-  </Widget>
+    </template>
+    <template #actions v-if="resultDialogs.length">
+      <template
+        v-for="{ key, title, proposals, color } in resultDialogs"
+        :key="key"
+      >
+        <DefaultDialog v-if="proposals.length" :title="title">
+          <template #activator="{ props }">
+            <!-- prevent: the card is a link, so keep the click from navigating -->
+            <v-btn
+              v-bind="props"
+              :color="color"
+              :text="title"
+              variant="tonal"
+              @click.prevent
+              @mousedown.stop
+            />
+          </template>
+          <div class="proposals ga-2">
+            <ProposalSheet
+              v-for="p in proposals"
+              :key="p.pk"
+              elevation="2"
+              :proposal="p"
+            />
+          </div>
+        </DefaultDialog>
+      </template>
+    </template>
+  </v-card>
 </template>
 
 <style lang="sass" scoped>
-header
-  a
-    text-decoration: none
-    color: rgb(var(--v-theme-on-surface))
-
-.voting-info
-  margin-top: 1em
-
 .proposals
   display: grid
   grid-template-columns: repeat(var(--columns, 1), 1fr)
