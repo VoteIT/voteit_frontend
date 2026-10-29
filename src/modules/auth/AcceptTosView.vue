@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { DateTime } from 'luxon'
+import { DATE_FULL, formatDate } from '@/utils/dates'
 import { computed, onBeforeMount, shallowRef } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRoute } from 'vue-router'
@@ -32,9 +32,7 @@ const errorText = computed(() => {
 const answering = shallowRef(false)
 
 const version = computed(
-  () =>
-    tos.value?.version &&
-    DateTime.fromISO(tos.value.version).toLocaleString(DateTime.DATE_FULL)
+  () => tos.value?.version && formatDate(tos.value.version, DATE_FULL)
 )
 
 async function fetchTos() {

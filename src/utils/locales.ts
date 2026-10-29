@@ -1,7 +1,6 @@
 import { localeChangedEvent } from '@/utils/events'
 import { setDefaultHeader } from '@/utils/restApi'
 import { useStorage } from '@vueuse/core'
-import { Settings } from 'luxon'
 import { computed, nextTick, watch } from 'vue'
 import { createI18n, I18n } from 'vue-i18n'
 
@@ -90,7 +89,6 @@ function setRequestLocale() {
   const locale = selectedLocale.value
   if (!locale) return
   setDefaultHeader('Accept-Language', locale)
-  Settings.defaultLocale = locale
 }
 
 async function applyLocale(locale: string) {

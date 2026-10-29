@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { DateTime } from 'luxon'
+import { DATETIME_SHORT, formatDate } from '@/utils/dates'
 import { computed, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRoute, useRouter } from 'vue-router'
@@ -198,9 +198,7 @@ const erPreliminary = computed(() => poll.value?.state === PollState.Upcoming)
                     }}:
                     <span class="text-secondary">
                       {{
-                        DateTime.fromISO(
-                          electoralRegister.created
-                        ).toLocaleString(DateTime.DATETIME_SHORT)
+                        formatDate(electoralRegister.created, DATETIME_SHORT)
                       }}
                     </span>
                   </span>

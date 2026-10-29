@@ -1,6 +1,5 @@
 <script lang="ts" setup>
 import { imap, sum } from 'itertools'
-import { Duration } from 'luxon'
 import { computed, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 
@@ -29,7 +28,7 @@ const speakerSystem = computed(() => {
 const { history } = useSpeakerHistory(meetingId, speakerSystem)
 
 function secondsToTimeDisplay(seconds: number) {
-  return durationToString(Duration.fromMillis(seconds * 1000))
+  return durationToString(seconds * 1000)
 }
 
 function* getSystemTabs() {

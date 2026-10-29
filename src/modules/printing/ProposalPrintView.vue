@@ -53,9 +53,7 @@
           </span>
           <User v-else-if="p.author" :pk="p.author" userid />
           -
-          {{
-            DateTime.fromISO(p.created).toLocaleString(DateTime.DATETIME_SHORT)
-          }}
+          {{ formatDate(p.created, DATETIME_SHORT) }}
         </p>
         <div
           v-html="isDiffProposal(p) ? p.body_diff_brief : p.body"
@@ -67,7 +65,7 @@
 </template>
 
 <script lang="ts" setup>
-import { DateTime } from 'luxon'
+import { DATETIME_SHORT, formatDate } from '@/utils/dates'
 import {
   computed,
   nextTick,

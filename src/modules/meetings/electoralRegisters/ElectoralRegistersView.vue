@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import { imap, partition, sum } from 'itertools'
-import { DateTime } from 'luxon'
+import { DATETIME_SHORT, formatDate } from '@/utils/dates'
 import { computed, reactive, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 
@@ -389,11 +389,7 @@ const currentERText = computed(() => {
                 <span v-if="source">
                   {{ getErMethod(source)?.title || source }},
                 </span>
-                {{
-                  DateTime.fromISO(created).toLocaleString(
-                    DateTime.DATETIME_SHORT
-                  )
-                }}
+                {{ formatDate(created, DATETIME_SHORT) }}
               </small>
             </v-expansion-panel-title>
             <v-expansion-panel-text v-if="weights.length">

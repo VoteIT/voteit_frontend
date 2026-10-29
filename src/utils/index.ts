@@ -1,6 +1,5 @@
 import { all, reduce } from 'itertools'
 import _slugify from 'slugify'
-import { Duration } from 'luxon'
 
 import { Predicate, ThemeColor } from '@/utils/types'
 import { Dialog } from '@/composables/types'
@@ -96,12 +95,17 @@ export async function dialogAlert(
 }
 
 /**
- * Format a Luxon Duration object into a human-readable time string. If the duration is less than one hour, it will be formatted as "m:ss". If it is one hour or more, it will be formatted as "h:mm:ss".
+ * Format a duration in milliseconds as "m:ss", or "h:mm:ss" from one hour up. Hours don't wrap at 24.
  */
-export function durationToString(duration: Duration): string {
-  return duration < Duration.fromObject({ hour: 1 })
-    ? duration.toFormat('m:ss')
-    : duration.toFormat('h:mm:ss')
+export function durationToString(ms: number): string {
+  const sign = ms < 0 ? '-' : ''
+  const total = Math.trunc(Math.abs(ms) / 1000)
+  const h = Math.floor(total / 3600)
+  const m = Math.floor((total % 3600) / 60)
+  const s = String(total % 60).padStart(2, '0')
+  return h
+    ? `${sign}${h}:${String(m).padStart(2, '0')}:${s}`
+    : `${sign}${m}:${s}`
 }
 
 /**

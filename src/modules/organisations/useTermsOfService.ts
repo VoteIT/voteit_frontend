@@ -1,4 +1,4 @@
-import { DateTime } from 'luxon'
+import { parseISO } from '@/utils/dates'
 import { computed, shallowRef, watchEffect } from 'vue'
 
 import type { RequirementFactory } from '@/loader/types'
@@ -36,10 +36,8 @@ const organisationTos = computed(() => current.value?.organisation_tos)
 const baseGlobalVersion = computed(() => {
   const tos = organisationTos.value
   if (!tos) return
-  const version = DateTime.fromISO(tos.version)
-  return globalVersions.value?.find(
-    (g) => DateTime.fromISO(g.version) <= version
-  )
+  const version = parseISO(tos.version)
+  return globalVersions.value?.find((g) => parseISO(g.version) <= version)
 })
 
 /**

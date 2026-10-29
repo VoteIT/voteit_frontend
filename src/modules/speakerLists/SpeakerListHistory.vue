@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { Duration } from 'luxon'
 import { computed, ref } from 'vue'
 
 import { dialogAlert, durationToString } from '@/utils'
@@ -34,7 +33,7 @@ const annotatedSpeakerHistory = computed(() => {
       pk,
       user,
       seconds,
-      time: durationToString(Duration.fromMillis(seconds * 1000))
+      time: durationToString(seconds * 1000)
     }
   })
 })

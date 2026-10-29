@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import { imap, sum } from 'itertools'
-import { DateTime } from 'luxon'
+import { formatDate } from '@/utils/dates'
 import { storeToRefs } from 'pinia'
 import { computed, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
@@ -193,11 +193,7 @@ const meetingCount = computed(() =>
                   params: { id: pk, slug: slugify(title) }
                 }"
                 :title="title"
-                :subtitle="
-                  start_time
-                    ? DateTime.fromISO(start_time).toLocaleString()
-                    : undefined
-                "
+                :subtitle="start_time ? formatDate(start_time) : undefined"
               >
                 <template #append>
                   <v-tooltip

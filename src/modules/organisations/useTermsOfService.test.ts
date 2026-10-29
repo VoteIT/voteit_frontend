@@ -1,4 +1,4 @@
-import { DateTime } from 'luxon'
+import { DAY, parseISO } from '@/utils/dates'
 import { beforeEach, expect, test, vi } from 'vitest'
 
 import type { GlobalTermsOfService, TermsOfService } from './types'
@@ -27,7 +27,7 @@ vi.mock('./tosApi', () => ({
     api.currents++
     return {
       organisation_tos: api.versions.find(
-        (v) => DateTime.fromISO(v.version) <= DateTime.now()
+        (v) => parseISO(v.version) <= Date.now()
       ),
       newer_global_tos: api.newerGlobal
     }
@@ -47,7 +47,7 @@ vi.mock('./tosApi', () => ({
 import useTermsOfService from './useTermsOfService'
 
 function daysAgo(days: number) {
-  return DateTime.now().minus({ days }).toISO()
+  return new Date(Date.now() - days * DAY).toISOString()
 }
 
 function tos(pk: number, body: string, version: string) {

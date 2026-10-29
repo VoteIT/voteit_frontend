@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { DateTime } from 'luxon'
+import { DATE_FULL, formatDate as _formatDate } from '@/utils/dates'
 import { computed, onBeforeMount, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 
@@ -44,7 +44,7 @@ const globalTos = computed(
 )
 
 function formatDate(iso: string) {
-  return DateTime.fromISO(iso).toLocaleString(DateTime.DATE_FULL)
+  return _formatDate(iso, DATE_FULL)
 }
 
 function startEditing() {

@@ -21,7 +21,6 @@
     "@vueuse/integrations": "^14.4.0",
     "core-js": "^3.49.0",
     "itertools": "^2.7.1",
-    "luxon": "^3.7.2",
     "pinia": "^4.1.0",
     "quill": "^2.0.3",
     "quill-mention": "^6.1.1",
@@ -37,7 +36,6 @@
   },
   "devDependencies": {
     "@pinia/testing": "^2.0.2",
-    "@types/luxon": "^3.7.1",
     "@types/node": "^25.9.3",
     "@types/sortablejs": "^1.15.9",
     "@vitejs/plugin-vue": "^6.0.7",

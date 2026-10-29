@@ -7,7 +7,7 @@ import {
   watch
 } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { DateTime } from 'luxon'
+import { DATETIME_SHORT, formatDate as _formatDate } from '@/utils/dates'
 import { useClipboard } from '@vueuse/core'
 
 import restApi, { parseRestError } from '@/utils/restApi'
@@ -81,9 +81,7 @@ async function createToken() {
 }
 
 function formatDate(value: string | null) {
-  return value
-    ? DateTime.fromISO(value).toLocaleString(DateTime.DATETIME_SHORT)
-    : '—'
+  return value ? _formatDate(value, DATETIME_SHORT) : '—'
 }
 
 const annotatedTokens = computed(() =>

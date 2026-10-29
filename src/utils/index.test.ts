@@ -1,4 +1,3 @@
-import { Duration } from 'luxon'
 import { expect, test } from 'vitest'
 
 import {
@@ -78,21 +77,15 @@ test('dialogQuery', async () => {
 })
 
 test('durationToString', () => {
-  expect(
-    durationToString(Duration.fromObject({ day: 1, seconds: 42 }))
-  ).toEqual('24:00:42')
-  expect(durationToString(Duration.fromObject({ minutes: 299 }))).toEqual(
-    '4:59:00'
-  )
-  expect(durationToString(Duration.fromObject({ minutes: 123 }))).toEqual(
-    '2:03:00'
-  )
-  expect(durationToString(Duration.fromObject({ minutes: 59 }))).toEqual(
-    '59:00'
-  )
-  expect(durationToString(Duration.fromObject({ seconds: 60 }))).toEqual('1:00')
-  expect(durationToString(Duration.fromObject({ seconds: 59 }))).toEqual('0:59')
-  expect(durationToString(Duration.fromObject({ second: 1 }))).toEqual('0:01')
+  expect(durationToString(86_442_000)).toEqual('24:00:42')
+  expect(durationToString(299 * 60_000)).toEqual('4:59:00')
+  expect(durationToString(123 * 60_000)).toEqual('2:03:00')
+  expect(durationToString(59 * 60_000)).toEqual('59:00')
+  expect(durationToString(60_000)).toEqual('1:00')
+  expect(durationToString(59_000)).toEqual('0:59')
+  expect(durationToString(1_000)).toEqual('0:01')
+  expect(durationToString(1_999)).toEqual('0:01')
+  expect(durationToString(-5_000)).toEqual('-0:05')
 })
 
 test('sleep', async () => {

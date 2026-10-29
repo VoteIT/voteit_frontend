@@ -12,15 +12,14 @@
 </template>
 
 <script setup lang="ts">
-import { Duration, DateTime } from 'luxon'
 import { computed, ref, watchEffect } from 'vue'
 import { useIntervalFn } from '@vueuse/shared'
 
 import { durationToString } from '@/utils'
-import { currentLocale } from '@/utils/locales'
+import { DAY, DATETIME_LONG, formatDate, formatRelative } from '@/utils/dates'
 import useServerDateTime from '@/composables/useServerDateTime'
 
-const ABSOLUTE_BREAKPOINT = Duration.fromObject({ days: 6 }) // After 6 days, display absolute time
+const ABSOLUTE_BREAKPOINT = 6 * DAY // After 6 days, display absolute time
 
 const props = defineProps<{
   date: string
@@ -32,26 +31,18 @@ const props = defineProps<{
 const { dateTime, serverNow } = useServerDateTime(computed(() => props.date))
 const fromNow = ref('')
 
-const exactDate = computed(() =>
-  DateTime.fromISO(props.date).toLocaleString(
-    { dateStyle: 'long', timeStyle: 'long' },
-    { locale: currentLocale.value }
-  )
-)
+const exactDate = computed(() => formatDate(props.date, DATETIME_LONG))
 
 function updateFromNow() {
   // Can not be computed(), because time is not reactive
-  const serverDateTime = serverNow()
-  const serverDiff = serverDateTime.diff(dateTime.value)
+  const serverDiff = serverNow() - dateTime.value
   if (props.inSeconds) {
     fromNow.value = durationToString(serverDiff)
   } else {
-    // DateTime objects keep the locale they were created with, so set it explicitly
-    const localized = dateTime.value.setLocale(currentLocale.value)
     fromNow.value =
       serverDiff > ABSOLUTE_BREAKPOINT
-        ? localized.toLocaleString()
-        : localized.toRelative({ base: serverDateTime }) || ''
+        ? formatDate(dateTime.value)
+        : formatRelative(-serverDiff)
   }
 }
 
