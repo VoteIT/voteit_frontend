@@ -1,6 +1,5 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue'
-import { useElementSize } from '@vueuse/core'
+import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 import { slugify } from '@/utils'
@@ -33,10 +32,6 @@ const {
   voteCount
 } = usePoll(computed(() => props.poll.pk))
 
-const rootEl = ref<HTMLDivElement>()
-const { width } = useElementSize(rootEl)
-const proposalColumns = computed(() => (width.value < 640 ? 1 : 2))
-
 const pollStatus = computed(() => getPollStatus(props.poll.pk))
 const pollRoute = computed(() => ({
   name: 'poll',
@@ -68,11 +63,7 @@ const resultDialogs = computed(() => [...resultDialogGen()])
 </script>
 
 <template>
-  <v-card
-    ref="rootEl"
-    :style="{ '--columns': proposalColumns }"
-    :to="pollRoute"
-  >
+  <v-card :to="pollRoute">
     <template #title>
       {{ poll.title }}
       <small class="text-secondary ml-4">{{ pollMethodName }}</small>
@@ -135,7 +126,7 @@ const resultDialogs = computed(() => [...resultDialogGen()])
         v-for="{ key, title, proposals, color } in resultDialogs"
         :key="key"
       >
-        <DefaultDialog v-if="proposals.length" :title="title">
+        <DefaultDialog :title="title" color="background">
           <template #activator="{ props }">
             <!-- prevent: the card is a link, so keep the click from navigating -->
             <v-btn
@@ -147,11 +138,14 @@ const resultDialogs = computed(() => [...resultDialogGen()])
               @mousedown.stop
             />
           </template>
-          <div class="proposals ga-2">
+          <div class="d-flex flex-column ga-3">
+            <p class="text-secondary">
+              {{ $t('poll.resultInPoll', { result: title, poll: poll.title }) }}
+            </p>
             <ProposalSheet
               v-for="p in proposals"
               :key="p.pk"
-              elevation="2"
+              elevation="3"
               :proposal="p"
             />
           </div>
@@ -160,11 +154,3 @@ const resultDialogs = computed(() => [...resultDialogGen()])
     </template>
   </v-card>
 </template>
-
-<style lang="sass" scoped>
-.proposals
-  display: grid
-  grid-template-columns: repeat(var(--columns, 1), 1fr)
-  &.full-width
-    --columns: 1
-</style>

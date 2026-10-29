@@ -728,6 +728,7 @@
     "noPollableAgendaItems": "Der er ingen dagsordenspunkter, hvor du kan starte en afstemning.",
     "numApproved": "Vedtaget forslag | Vedtagne forslag",
     "numDenied": "Forkastet forslag | Forkastede forslag",
+    "resultInPoll": "{result} i afstemning {poll}",
     "numVoted": "Ingen stemmer registreret | {voted} / {total} har stemt | {voted} / {total} har stemt",
     "new": "Ny afstemning",
     "pollCount": "Ingen afstemninger | Én afstemning | {count} afstemninger",

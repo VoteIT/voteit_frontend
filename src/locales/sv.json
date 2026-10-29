@@ -728,6 +728,7 @@
     "noPollableAgendaItems": "Det finns inga dagordningspunkter där du kan starta en omröstning.",
     "numApproved": "Bifallet förslag | Bifallna förslag",
     "numDenied": "Avslaget förslag | Avslagna förslag",
+    "resultInPoll": "{result} i omröstning {poll}",
     "numVoted": "Inga röster registrerade | {voted} / {total} röstande | {voted} / {total} röstande",
     "new": "Ny omröstning",
     "pollCount": "Inga omröstningar | En omröstning | {count} omröstningar",

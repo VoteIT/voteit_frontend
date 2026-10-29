@@ -728,6 +728,7 @@
     "noPollableAgendaItems": "There are no agenda items where you can start a poll.",
     "numApproved": "Approved proposal | Approved proposals",
     "numDenied": "Denied proposal | Denied proposals",
+    "resultInPoll": "{result} in poll {poll}",
     "numVoted": "No votes registered | {voted} / {total} voted | {voted} / {total} voted",
     "new": "New poll",
     "pollCount": "No polls | One poll | {count} polls",
