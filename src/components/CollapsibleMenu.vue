@@ -1,6 +1,13 @@
 <script setup lang="ts">
-import { computed, inject, provide, shallowRef, watch } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
+import {
+  computed,
+  getCurrentInstance,
+  inject,
+  provide,
+  shallowRef,
+  watch
+} from 'vue'
+import { useLink } from 'vue-router'
 
 import { TreeMenuLink } from '@/utils/types'
 import TypedEvent from '@/utils/TypedEvent'
@@ -26,9 +33,6 @@ const emit = defineEmits<{
   (e: 'activated'): void
 }>()
 
-const router = useRouter()
-const route = useRoute()
-
 const isOpen = shallowRef(props.modelValue)
 watch(
   () => props.modelValue,
@@ -40,11 +44,14 @@ watch(isOpen, (value) => emit('update:modelValue', value), { immediate: true })
 // Listen to open event if available
 props.openEvent?.on(() => (isOpen.value = true))
 
-const hasActiveLink = computed(() => {
-  return props.links?.some(
-    (item) => router.resolve(item.to).fullPath === route.path
-  )
-})
+// useLink injects the router, so give it the app context when called from the computed
+const app = getCurrentInstance()!.appContext.app
+const hasActiveLink = computed(() =>
+  props.links?.some(({ to, exactActive }) => {
+    const link = app.runWithContext(() => useLink({ to }))
+    return exactActive ? link.isExactActive.value : link.isActive.value
+  })
+)
 watch(
   hasActiveLink,
   (value) => {

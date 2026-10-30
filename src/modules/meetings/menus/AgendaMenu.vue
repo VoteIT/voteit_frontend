@@ -8,7 +8,6 @@ import { TreeMenuLink } from '@/utils/types'
 import CollapsibleMenu from '@/components/CollapsibleMenu.vue'
 import { AgendaState } from '@/modules/agendas/types'
 import { agendaItemType } from '@/modules/agendas/contentTypes'
-import { agendaLoadedEvent } from '@/modules/agendas/events'
 import useAgendaTags from '@/modules/agendas/useAgendaTags'
 import useAgenda from '@/modules/agendas/useAgenda'
 import useAgendaStore from '@/modules/agendas/useAgendaStore'
@@ -77,10 +76,6 @@ const agendaLinks = computed(() =>
     : []
 )
 
-const initialAiState =
-  route.name === 'agendaItem'
-    ? getAgendaItem(Number(route.params.aid))?.state
-    : undefined
 const MENU_STATES = [
   AgendaState.Closed,
   AgendaState.Ongoing,
@@ -88,8 +83,18 @@ const MENU_STATES = [
   AgendaState.Upcoming
 ] as const
 
+/**
+ * Open the current agenda item's state, or else the first non-empty one.
+ * The agenda is already loaded here: meetingRequirement blocks until the
+ * meeting channel is in. Later navigation is handled by auto-open.
+ */
+const initialState =
+  (route.name === 'agendaItem'
+    ? getAgendaItem(Number(route.params.aid))?.state
+    : undefined) ?? aiGroups.value.find((s) => getAiType(s.state).length)?.state
+
 const openMenus = shallowReactive(
-  Object.fromEntries(MENU_STATES.map((s) => [s, s === initialAiState]))
+  Object.fromEntries(MENU_STATES.map((s) => [s, s === initialState]))
 )
 
 const AgendaMenus = computed(() =>
@@ -108,18 +113,6 @@ const AgendaMenus = computed(() =>
     }
   })
 )
-
-/**
- * Open first non-empty agenda state
- */
-agendaLoadedEvent.on(() => {
-  const openState =
-    (route.name === 'agendaItem'
-      ? getAgendaItem(Number(route.params.aid))?.state
-      : undefined) ??
-    aiGroups.value.find((s) => getAIMenuItems(s).length)?.state
-  if (openState) openMenus[openState] = true
-})
 
 const filterMenuOpen = shallowRef(false)
 const isOpen = shallowRef(true)
@@ -177,10 +170,11 @@ const isOpen = shallowRef(true)
       <template #append>
         <CollapsibleMenu
           v-for="menu in AgendaMenus"
+          auto-open
           :key="menu.state"
           :links="menu.items"
           :title="menu.title"
-          :modelValue="openMenus[menu.state]"
+          v-model="openMenus[menu.state]"
           @activated="isOpen = true"
         >
           <template #appendTitle> ({{ menu.count }}) </template>
