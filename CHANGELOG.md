@@ -4,6 +4,14 @@ Document notable changes here.
 
 Version format is `major`.`minor`.`patch`. Until major version 1 is realeased, API changes accours on minor version bumps, but never on patch version bumps.
 
+## 1.5.2 (2026-11-02)
+
+- Poll cards: improved layout and result display
+- Dates and times are formatted using the selected language
+- Speaker list controls: removed the deprecated option to add speakers by participant number
+- Bugfix: the first agenda state with items was no longer opened automatically when loading a meeting
+- Dependencies: Pinia upgraded to 4.1, luxon removed in favour of native browser date functions, and package updates from audit
+
 ## 1.5.1 (2026-10-27)
 
 - Danish translation, and translation fixes for English and Swedish
