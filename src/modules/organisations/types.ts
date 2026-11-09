@@ -52,11 +52,13 @@ export interface IUser {
   img_url: string | null
   last_name: string
   userid: string | null
-  email: string
+  /** Left out of user lists unless the viewer moderates the meeting. */
+  email?: string
 }
 
 // Only when loading authenticated user from /api/user
 export interface IOrganisationUser extends IUser {
+  email: string
   organisation: number
   organisation_roles: OrganisationRole[]
   /**

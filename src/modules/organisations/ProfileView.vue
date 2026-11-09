@@ -20,7 +20,6 @@ import LoginMethods from '../auth/LoginMethods.vue'
 import useAuthStore from '../auth/useAuthStore'
 
 import useOrgStore from './useOrgStore'
-import { IUser } from './types'
 import { profileType } from './contentTypes'
 import SwitchProfileDialog from './SwitchProfileDialog.vue'
 import GdprAlert from './GdprAlert.vue'
@@ -39,7 +38,7 @@ const userFormData = computed(() => {
   return { email, first_name, last_name, userid }
 })
 
-function updateProfile(data: IUser) {
+function updateProfile(data: Parameters<typeof authStore.updateProfile>[0]) {
   return authStore.updateProfile(data)
 }
 

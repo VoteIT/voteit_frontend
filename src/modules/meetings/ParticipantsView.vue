@@ -150,7 +150,7 @@ function filterParticipants(_value: unknown, _query: string, item: any) {
   if (search) {
     const u = getUser(item.raw.user)
     if (!u) return false
-    const joined = `${getFullName(u)} ${u.email}`.toLocaleLowerCase()
+    const joined = `${getFullName(u)} ${u.email ?? ''}`.toLocaleLowerCase()
     if (!joined.includes(search.toLocaleLowerCase())) return false
   }
   return (
