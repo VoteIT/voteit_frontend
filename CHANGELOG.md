@@ -4,7 +4,7 @@ Document notable changes here.
 
 Version format is `major`.`minor`.`patch`. Until major version 1 is realeased, API changes accours on minor version bumps, but never on patch version bumps.
 
-## 1.6.0 (Unreleased)
+## 1.6.0 (2026-11-09)
 
 - Participant lists handle user emails being left out, which the server now only sends to moderators and organisation managers. Participant search matches on email only when it is available
 
