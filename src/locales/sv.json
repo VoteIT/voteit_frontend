@@ -160,6 +160,14 @@
   },
   "auth": {
     "error": "Inloggningsfel",
+    "abortRemoval": {
+      "title": "Borttagning av konto",
+      "pending": "Ditt konto är markerat för borttagning sedan {date}.",
+      "help": "Vi har skickat en bekräftelse via e-post med en länk för att avbryta. Begäran går till organisationen, som hanterar den enligt sin egen policy. Om du deltar i ett pågående möte kan borttagningen ta längre tid än annars.",
+      "tokenHelp": "Ditt konto är markerat för borttagning. Om det inte var du, eller om du har ändrat dig, kan du avbryta borttagningen här.",
+      "abort": "Återkalla begäran om borttagning",
+      "nonePending": "Det finns ingen pågående borttagning för ditt konto."
+    },
     "acceptTos": {
       "accept": "Jag godkänner",
       "cancel": "Avbryt inloggning",

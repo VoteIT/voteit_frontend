@@ -160,6 +160,14 @@
   },
   "auth": {
     "error": "Login-fejl",
+    "abortRemoval": {
+      "title": "Sletning af konto",
+      "pending": "Din konto er markeret til sletning siden {date}.",
+      "help": "Vi har sendt dig en bekræftelse på e-mail med et link til at annullere. Anmodningen går til organisationen, som behandler den efter sin egen politik. Hvis du deltager i et igangværende møde, kan sletningen tage længere tid end ellers.",
+      "tokenHelp": "Din konto er markeret til sletning. Hvis det ikke var dig, eller hvis du har fortrudt, kan du annullere sletningen her.",
+      "abort": "Træk anmodningen om sletning tilbage",
+      "nonePending": "Der er ingen igangværende sletning af din konto."
+    },
     "acceptTos": {
       "accept": "Jeg accepterer",
       "cancel": "Afbryd login",

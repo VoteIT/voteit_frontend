@@ -160,6 +160,14 @@
   },
   "auth": {
     "error": "Login error",
+    "abortRemoval": {
+      "title": "Account removal",
+      "pending": "Your account is marked for removal since {date}.",
+      "help": "We've emailed you a confirmation with a link to cancel. The request goes to the organisation, which handles it according to its own policy. If you take part in an ongoing meeting, removal may take longer than it otherwise would.",
+      "tokenHelp": "Your account is marked for removal. If this wasn't you, or if you've changed your mind, you can cancel the removal here.",
+      "abort": "Withdraw removal request",
+      "nonePending": "There's no removal pending for your account."
+    },
     "acceptTos": {
       "accept": "I accept",
       "cancel": "Cancel login",
