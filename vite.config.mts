@@ -1,6 +1,7 @@
 import path from 'path'
 import { loadEnv } from 'vite'
 import { defineConfig } from 'vitest/config'
+import Legacy from '@vitejs/plugin-legacy'
 import Vue from '@vitejs/plugin-vue'
 import Vuetify from 'vite-plugin-vuetify'
 import type { AtRule, Declaration, Plugin } from 'postcss'
@@ -48,8 +49,7 @@ export default defineConfig(({ mode }) => {
   }
   return {
     build: {
-      chunkSizeWarningLimit: 1600,
-      target: 'es2019'
+      chunkSizeWarningLimit: 1600
     },
     css: {
       postcss: {
@@ -57,7 +57,17 @@ export default defineConfig(({ mode }) => {
       }
     },
     // Imports the Vuetify components and directives each template uses, so the rest stay out of the build
-    plugins: [Vue(), Vuetify({ autoImport: true })],
+    plugins: [
+      Vue(),
+      Vuetify({ autoImport: true }),
+      // Polyfills whatever newer JS APIs the build (dependencies included) uses, for the browsers we support.
+      // These targets also set build.target. The CSS floor is Safari 14.1 (Vuetify's :is() and flex gap).
+      Legacy({
+        modernPolyfills: true,
+        modernTargets: ['chrome >= 88', 'edge >= 88', 'firefox >= 78', 'safari >= 14.1', 'ios >= 14.5'],
+        renderLegacyChunks: false
+      })
+    ],
     resolve: {
       alias: {
         '@': path.resolve(import.meta.dirname, './src')

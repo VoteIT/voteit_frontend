@@ -13,7 +13,6 @@
 </template>
 
 <script setup lang="ts">
-import 'core-js/actual/array'
 import 'resize-observer-polyfill/dist/ResizeObserver.global'
 
 import { watchEffect } from 'vue'
