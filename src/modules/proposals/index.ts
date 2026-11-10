@@ -5,11 +5,12 @@ import { registerValidator } from '@/composables/useStateMachine'
 
 import { agendaItemType } from '../agendas/contentTypes'
 import { meetingExportPlugins } from '../exportImport/registry'
+import { meetingType } from '../meetings/contentTypes'
 import { plenarySuggestions } from '../plenary/registry'
 
 import useTextDocuments from './useTextDocuments'
-import { UNRESOLVED_STATES } from './constants'
 import { Proposal } from './types'
+import { isUnresolved } from './utils'
 import { proposalTypeRegistry } from './registry'
 import AddProposalModal from './AddProposalModal.vue'
 import AddTextProposalModal from './AddTextProposalModal.vue'
@@ -41,12 +42,15 @@ meetingExportPlugins.register({
 })
 
 agendaItemType.sm.registerGuard('close', (obj, t) => {
-  if (
-    useProposalStore().anyAiProposal(obj.pk, (p) =>
-      UNRESOLVED_STATES.includes(p.state)
-    )
-  )
+  if (useProposalStore().anyAiProposal(obj.pk, isUnresolved))
     return { text: t('proposal.agendaItemHasUnresolved') }
+})
+
+meetingType.sm.registerGuard('close', (meeting, t) => {
+  if (
+    useProposalStore().anyProposal((p) => p.m === meeting.pk && isUnresolved(p))
+  )
+    return { text: t('proposal.meetingHasUnresolved') }
 })
 
 function getFirstTagProposalCount(proposals: Proposal[]) {

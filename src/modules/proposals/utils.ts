@@ -1,6 +1,6 @@
 import { UNRESOLVED_STATES } from './constants'
-import type { ProposalState } from './types'
+import type { Proposal } from './types'
 
-export function isUnresolvedState(state: ProposalState) {
+export function isUnresolved({ state }: Pick<Proposal, 'state'>) {
   return UNRESOLVED_STATES.includes(state)
 }

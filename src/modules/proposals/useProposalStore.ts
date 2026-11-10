@@ -60,6 +60,13 @@ export default defineStore('proposals', () => {
     return sorted(iterProposals(predicate), keyFn, reverse)
   }
 
+  /**
+   * Scan every proposal for a match. Same caveat as filterProposals.
+   */
+  function anyProposal(predicate: Predicate<Proposal>): boolean {
+    return any(iterProposals(predicate))
+  }
+
   /* Index-backed lookups. Prefer these whenever the agenda item or meeting is
    * known — they only touch that key's proposals, so unrelated updates elsewhere
    * in the meeting don't invalidate the caller. */
@@ -129,6 +136,7 @@ export default defineStore('proposals', () => {
   return {
     anyAiDocument,
     anyAiProposal,
+    anyProposal,
     countAiProposals,
     filterProposals,
     getAiDocuments,

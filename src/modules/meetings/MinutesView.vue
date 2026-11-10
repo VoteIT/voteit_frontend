@@ -14,7 +14,7 @@ import { proposalType } from '../proposals/contentTypes'
 import { Proposal, ProposalState, isDiffProposal } from '../proposals/types'
 import useProposalStore from '../proposals/useProposalStore'
 import { PROPOSAL_STATE_ORDER } from '../proposals/constants'
-import { isUnresolvedState } from '../proposals/utils'
+import { isUnresolved } from '../proposals/utils'
 
 import useMeeting from './useMeeting'
 import useMeetingTitle from './useMeetingTitle'
@@ -139,7 +139,7 @@ const annotatedAgenda = computed(() => {
         // hasProposals: proposalStates.some(({ proposals }) => proposals.length),
         // body,
         hasUnresolved: proposalStates.some(
-          ({ state, proposals }) => isUnresolvedState(state) && proposals.length
+          ({ state, proposals }) => isUnresolved({ state }) && proposals.length
         ),
         pk,
         proposalStates: proposalStates.filter(

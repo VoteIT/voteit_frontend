@@ -17,7 +17,7 @@ import {
   getProposalBlockReason
 } from '../proposals/rules'
 import useProposalStore from '../proposals/useProposalStore'
-import { isUnresolvedState } from '../proposals/utils'
+import { isUnresolved } from '../proposals/utils'
 
 import { canChangeAgendaItem as canChange } from './rules'
 import useAgendaStore from './useAgendaStore'
@@ -130,7 +130,7 @@ export default function useAgendaItem(agendaId?: MaybeRef<number | undefined>) {
   )
 
   const hasUnresolvedProposals = computed(() =>
-    anyAiProposal(_agendaId.value, (p) => isUnresolvedState(p.state))
+    anyAiProposal(_agendaId.value, isUnresolved)
   )
 
   return {

@@ -1006,6 +1006,7 @@
     "denied": "Avslaget",
     "edit": "Redigera förslag",
     "fullProposalText": "Hela förslagstexten",
+    "meetingHasUnresolved": "Mötet har obehandlade förslag.\nDet är en bra idé att behandla färdigt alla förslag innan du stänger mötet. Vill du ändå stänga det?",
     "notFound": "Förslaget hittades inte",
     "ordering": "Förslagsordning",
     "postAs": "Posta som",

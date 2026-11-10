@@ -1006,6 +1006,7 @@
     "denied": "Denied",
     "edit": "Edit proposal",
     "fullProposalText": "Full proposal text",
+    "meetingHasUnresolved": "This meeting has unresolved proposals.\nIt's a good idea to resolve all proposals before closing the meeting. Do you still want to close it?",
     "notFound": "Proposal not found",
     "ordering": "Proposal order",
     "postAs": "Post as",
