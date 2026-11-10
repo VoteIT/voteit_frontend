@@ -1,4 +1,5 @@
 import type { RGB } from '@/utils/color'
+import type { MeetingRole, MeetingState } from '../meetings/types'
 
 export enum OrganisationRole {
   Manager = 'org_manager',
@@ -113,4 +114,46 @@ export interface CurrentTermsOfService {
   readonly must_accept: boolean
   /** Whether there is a newer global tos that require the local tos to be updates, for org admins. */
   readonly newer_global_tos: boolean
+}
+
+/** What removing a user would affect, least to most in need of care. */
+export enum RemovalClassification {
+  NoActivity = 'no_activity',
+  InactiveMeetings = 'inactive_meetings',
+  ActiveMeeting = 'active_meeting',
+  OngoingPoll = 'ongoing_poll',
+  OrganisationRoles = 'organisation_roles'
+}
+
+/** A meeting a user who asked to be removed is connected to. */
+export interface MeetingInvolvement {
+  readonly pk: number
+  readonly title: string
+  readonly state: MeetingState
+  readonly roles: MeetingRole[]
+  readonly used_invite: boolean
+  /** Titles of the user's meeting groups */
+  readonly groups: string[]
+  /** Ongoing polls where the user is in the electoral register */
+  readonly ongoing_polls: number
+  readonly votes: number
+  readonly speaker_entries: number
+  readonly proposals: number
+  readonly discussion_posts: number
+  /** Given or received */
+  readonly vote_transfers: number
+  readonly reactions: number
+}
+
+/** A user in the organisation who asked to be removed, for org managers. */
+export interface RemovalRequest {
+  readonly user: IUser
+  readonly removal_requested: string // ISO date
+  /** Before this, the user may still abort the request */
+  readonly removable_after: string // ISO date
+  /** The wait has passed, and it isn't the manager's own account */
+  readonly can_remove: boolean
+  readonly organisation_roles: OrganisationRole[]
+  readonly classification: RemovalClassification
+  readonly meetings: MeetingInvolvement[]
 }
