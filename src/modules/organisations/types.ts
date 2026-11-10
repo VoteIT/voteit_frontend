@@ -69,6 +69,8 @@ export interface IOrganisationUser extends IUser {
   login_provider: string | null
   /** Membership numbers tied to this account. Only ever sent for yourself. */
   member_ids: string[] | null
+  /** When the user asked to have their account removed, or null. */
+  removal_requested: string | null
 }
 
 /**

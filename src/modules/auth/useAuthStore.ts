@@ -14,6 +14,8 @@ export default defineStore('auth', () => {
 
   const isAnonymous = computed(() => user.value === null)
   const isAuthenticated = computed(() => !!user.value)
+  /** While a removal request stands, the user is kept on the abort page. See `./removalGate` */
+  const hasRequestedRemoval = computed(() => !!user.value?.removal_requested)
   const organizationRoles = useContextRoles<OrganisationRole>('organisation')
 
   function setAuthenticatedUser(_user: IOrganisationUser) {
@@ -76,6 +78,14 @@ export default defineStore('auth', () => {
     clearUser()
   }
 
+  /** Ask for removal of this account, or withdraw the request. */
+  async function setRemovalRequested(value: boolean) {
+    user.value = await profileType.api.listAction<IOrganisationUser>(
+      'request-removal',
+      { request_removal: value }
+    )
+  }
+
   async function switchUser(user: { readonly pk: number }) {
     await profileType.api.action('switch', user.pk)
     location.reload()
@@ -114,6 +124,7 @@ export default defineStore('auth', () => {
 
   return {
     alternateUsers,
+    hasRequestedRemoval,
     isAnonymous,
     isAuthenticated,
     user,
@@ -123,6 +134,7 @@ export default defineStore('auth', () => {
     fetchAuthenticatedUser,
     getUserRandomSortValue,
     logout,
+    setRemovalRequested,
     switchUser,
     updateProfile,
     uploadProfileImage,
