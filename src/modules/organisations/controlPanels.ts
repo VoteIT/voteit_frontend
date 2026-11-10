@@ -1,9 +1,11 @@
 import ContactInfoTab from './ContactInfoTab.vue'
 import GraphicalProfilePanel from './GraphicalProfilePanel.vue'
 import OrgRolesPanel from './OrgRolesPanel.vue'
+import RemovalRequestsPanel from './RemovalRequestsPanel.vue'
 import TermsOfServicePanel from './TermsOfServicePanel.vue'
 import { orgControlPanelPlugins } from './registry'
 import useContactInfo from './useContactInfo'
+import useRemovalRequests from './useRemovalRequests'
 import useTermsOfService from './useTermsOfService'
 
 orgControlPanelPlugins.register({
@@ -63,5 +65,20 @@ orgControlPanelPlugins.register({
   },
   useRequiresAttention() {
     return useTermsOfService(true).needsReview
+  }
+})
+
+orgControlPanelPlugins.register({
+  id: 'removalRequests',
+  component: RemovalRequestsPanel,
+  icon: 'mdi-account-remove',
+  getDescription(t) {
+    return t('organization.removalRequests.description')
+  },
+  getTitle(t) {
+    return t('organization.removalRequests.title')
+  },
+  useRequiresAttention() {
+    return useRemovalRequests(true).requiresAttention
   }
 })

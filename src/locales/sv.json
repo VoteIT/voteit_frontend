@@ -655,6 +655,43 @@
     "random": "Slumpmässig"
   },
   "organization": {
+    "removalRequests": {
+      "title": "Begäran om borttagning",
+      "description": "Användare som har bett om att få sina konton borttagna",
+      "intro": "De här användarna har bett om att få sina konton och personuppgifter borttagna. De kan ångra sig i några timmar efter att de frågat. Därefter kan ni ta bort dem. En användare som inte är kopplad till något raderas. Övriga anonymiseras, så att mötena behåller sitt innehåll men inte längre visar vem som skrev eller gjorde det.",
+      "empty": "Ingen har bett om att bli borttagen.",
+      "fetchFailed": "Kunde inte hämta begäranden om borttagning",
+      "refresh": "Uppdatera",
+      "requested": "Bad om det",
+      "removableAfter": "Kan tas bort",
+      "cantRemoveSelf": "Du kan inte ta bort ditt eget konto. En annan administratör behöver göra det.",
+      "remove": "Ta bort användare",
+      "confirmText": "{name} kommer att tas bort. Det går inte att ångra.",
+      "gone": "Den här begäran väntar inte längre. Användaren kan ha ångrat sig, eller så har någon annan hanterat den.",
+      "orgRoles": "Roller i organisationen",
+      "groups": "Grupper",
+      "usedInvite": "Gick med via inbjudan",
+      "result": {
+        "deleted": "{name} har raderats.",
+        "anonymised": "{name} har anonymiserats."
+      },
+      "classification": {
+        "no_activity": "Inte kopplad till något. Användaren kommer att raderas.",
+        "inactive_meetings": "Bara kopplad till möten som är stängda eller arkiverade.",
+        "active_meeting": "Kopplad till ett möte som är kommande eller pågår. Stäm av med mötets moderatorer först.",
+        "ongoing_poll": "Kan rösta i en pågående omröstning. Tar ni bort användaren nu påverkas omröstningen.",
+        "organisation_roles": "Har roller i organisationen. Se till att någon annan kan ta över."
+      },
+      "count": {
+        "ongoing_polls": "Inga pågående omröstningar | 1 pågående omröstning | {count} pågående omröstningar",
+        "votes": "Inga röster | 1 röst | {count} röster",
+        "vote_transfers": "Inga röstöverföringar | 1 röstöverföring | {count} röstöverföringar",
+        "proposals": "Inga förslag | 1 förslag | {count} förslag",
+        "discussion_posts": "Inga diskussionsinlägg | 1 diskussionsinlägg | {count} diskussionsinlägg",
+        "speaker_entries": "Ingen gång på talarlistan | 1 gång på talarlistan | {count} gånger på talarlistan",
+        "reactions": "Inga reaktioner | 1 reaktion | {count} reaktioner"
+      }
+    },
     "allYears": "Alla år",
     "cantLogin": "Organisationen är inte längre aktiv - inloggning avstängd",
     "cantRemoveSelf": "Du kan inte ta bort dig själv från organisationen.",

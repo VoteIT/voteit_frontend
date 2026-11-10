@@ -655,6 +655,43 @@
     "random": "Tilfældig"
   },
   "organization": {
+    "removalRequests": {
+      "title": "Anmodninger om sletning",
+      "description": "Brugere, der har bedt om at få deres konti slettet",
+      "intro": "Disse brugere har bedt om at få deres konti og personoplysninger slettet. De kan fortryde i nogle timer, efter de har spurgt. Derefter kan I fjerne dem. En bruger, der ikke er knyttet til noget, slettes. Alle andre anonymiseres, så møderne beholder deres indhold, men ikke længere viser, hvem der skrev eller gjorde det.",
+      "empty": "Ingen har bedt om at blive slettet.",
+      "fetchFailed": "Kunne ikke hente anmodninger om sletning",
+      "refresh": "Opdater",
+      "requested": "Bad om det",
+      "removableAfter": "Kan fjernes",
+      "cantRemoveSelf": "Du kan ikke fjerne din egen konto. En anden administrator skal gøre det.",
+      "remove": "Fjern bruger",
+      "confirmText": "{name} vil blive fjernet. Det kan ikke fortrydes.",
+      "gone": "Denne anmodning venter ikke længere. Brugeren kan have fortrudt, eller en anden har håndteret den.",
+      "orgRoles": "Roller i organisationen",
+      "groups": "Grupper",
+      "usedInvite": "Deltog via invitation",
+      "result": {
+        "deleted": "{name} er blevet slettet.",
+        "anonymised": "{name} er blevet anonymiseret."
+      },
+      "classification": {
+        "no_activity": "Ikke knyttet til noget. Brugeren vil blive slettet.",
+        "inactive_meetings": "Kun knyttet til møder, der er lukket eller arkiveret.",
+        "active_meeting": "Knyttet til et møde, der er kommende eller i gang. Tal med mødets moderatorer først.",
+        "ongoing_poll": "Kan stemme i en igangværende afstemning. Fjerner I brugeren nu, påvirker det afstemningen.",
+        "organisation_roles": "Har roller i organisationen. Sørg for, at en anden kan tage over."
+      },
+      "count": {
+        "ongoing_polls": "Ingen igangværende afstemninger | 1 igangværende afstemning | {count} igangværende afstemninger",
+        "votes": "Ingen stemmer | 1 stemme | {count} stemmer",
+        "vote_transfers": "Ingen stemmeoverdragelser | 1 stemmeoverdragelse | {count} stemmeoverdragelser",
+        "proposals": "Ingen forslag | 1 forslag | {count} forslag",
+        "discussion_posts": "Ingen indlæg | 1 indlæg | {count} indlæg",
+        "speaker_entries": "Ingen gange på talerlisten | 1 gang på talerlisten | {count} gange på talerlisten",
+        "reactions": "Ingen reaktioner | 1 reaktion | {count} reaktioner"
+      }
+    },
     "allYears": "Alle år",
     "cantLogin": "Organisationen er ikke længere aktiv - login er slået fra",
     "cantRemoveSelf": "Du kan ikke fjerne dig selv fra organisationen.",

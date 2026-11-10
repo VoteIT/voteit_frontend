@@ -9,6 +9,7 @@ import {
   contactInfoManagersRequirement,
   contactInfoPanelRequirement
 } from './useContactInfo'
+import { removalRequestsPanelRequirement } from './useRemovalRequests'
 import { tosPanelRequirement } from './useTermsOfService'
 
 router.addRoute({
@@ -41,7 +42,8 @@ router.addRoute({
     load: [
       tosPanelRequirement,
       contactInfoPanelRequirement,
-      contactInfoManagersRequirement
+      contactInfoManagersRequirement,
+      removalRequestsPanelRequirement
     ]
   }
 })

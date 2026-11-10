@@ -655,6 +655,43 @@
     "random": "Random"
   },
   "organization": {
+    "removalRequests": {
+      "title": "Removal requests",
+      "description": "Users who have asked to have their accounts removed",
+      "intro": "These users have asked to have their accounts and personal data removed. They can change their minds for a few hours after asking. After that you can remove them. A user who isn't connected to anything is deleted. Anyone else is anonymised, so meetings keep their content but no longer show who wrote or did it.",
+      "empty": "No one has asked to be removed.",
+      "fetchFailed": "Could not fetch removal requests",
+      "refresh": "Refresh",
+      "requested": "Asked",
+      "removableAfter": "Can be removed",
+      "cantRemoveSelf": "You can't remove your own account. Another administrator has to do it.",
+      "remove": "Remove user",
+      "confirmText": "{name} will be removed. This can't be undone.",
+      "gone": "This request is no longer pending. The user may have changed their mind, or someone else has handled it.",
+      "orgRoles": "Organisation roles",
+      "groups": "Groups",
+      "usedInvite": "Joined by invitation",
+      "result": {
+        "deleted": "{name} has been deleted.",
+        "anonymised": "{name} has been anonymised."
+      },
+      "classification": {
+        "no_activity": "Not connected to anything. The user will be deleted.",
+        "inactive_meetings": "Only connected to meetings that are closed or archived.",
+        "active_meeting": "Connected to a meeting that is upcoming or ongoing. Check with its moderators first.",
+        "ongoing_poll": "Can vote in an ongoing poll. Removing the user now affects the poll.",
+        "organisation_roles": "Has roles in the organisation. Make sure someone else can take over."
+      },
+      "count": {
+        "ongoing_polls": "No ongoing polls | 1 ongoing poll | {count} ongoing polls",
+        "votes": "No votes | 1 vote | {count} votes",
+        "vote_transfers": "No vote transfers | 1 vote transfer | {count} vote transfers",
+        "proposals": "No proposals | 1 proposal | {count} proposals",
+        "discussion_posts": "No discussion posts | 1 discussion post | {count} discussion posts",
+        "speaker_entries": "No speaker list entries | 1 speaker list entry | {count} speaker list entries",
+        "reactions": "No reactions | 1 reaction | {count} reactions"
+      }
+    },
     "allYears": "All years",
     "cantLogin": "Organization no longer active - login disabled",
     "cantRemoveSelf": "You cannot remove yourself from the organization.",
