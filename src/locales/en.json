@@ -185,7 +185,7 @@
       "step1": "Once you request removal, you can't use VoteIT with this account unless you withdraw the request.",
       "step2": "We email you a confirmation with a link to cancel.",
       "step3": "The request goes to the organisation, which handles it according to its own policy. If you take part in an ongoing meeting, removal may take longer than it otherwise would.",
-      "confirmTitle": "Remove my account",
+      "confirmTitle": "Request removal",
       "confirmText": "This is the start of removing your account. You can cancel until the organisation has handled the request.",
       "confirmWord": "confirm"
     },

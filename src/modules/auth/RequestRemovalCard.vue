@@ -27,14 +27,9 @@ async function requestRemoval() {
 <template>
   <v-card prepend-icon="mdi-account-remove" :title="$t('auth.removal.title')">
     <template #text>
-      <p class="mb-2">
+      <p>
         {{ $t('auth.removal.intro', { title: orgStore.organisation?.title }) }}
       </p>
-      <ul class="ml-4">
-        <li>{{ $t('auth.removal.step1') }}</li>
-        <li>{{ $t('auth.removal.step2') }}</li>
-        <li>{{ $t('auth.removal.step3') }}</li>
-      </ul>
     </template>
     <template #actions>
       <v-spacer />
@@ -43,7 +38,6 @@ async function requestRemoval() {
         :confirm="requestRemoval"
         :confirm-text="$t('auth.removal.confirmTitle')"
         :phrase="phrase"
-        :text="$t('auth.removal.confirmText')"
         :title="$t('auth.removal.confirmTitle')"
       >
         <template #activator="{ props }">
@@ -55,6 +49,12 @@ async function requestRemoval() {
             v-bind="props"
           />
         </template>
+        <p class="mb-2">{{ $t('auth.removal.confirmText') }}</p>
+        <ul class="ml-4">
+          <li>{{ $t('auth.removal.step1') }}</li>
+          <li>{{ $t('auth.removal.step2') }}</li>
+          <li>{{ $t('auth.removal.step3') }}</li>
+        </ul>
       </ConfirmPhraseDialog>
     </template>
   </v-card>

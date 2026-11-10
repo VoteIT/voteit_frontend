@@ -185,7 +185,7 @@
       "step1": "När du har begärt borttagning kan du inte använda VoteIT med det här kontot, om du inte återkallar begäran.",
       "step2": "Vi skickar en bekräftelse via e-post med en länk för att avbryta.",
       "step3": "Begäran går till organisationen, som hanterar den enligt sin egen policy. Om du deltar i ett pågående möte kan borttagningen ta längre tid än annars.",
-      "confirmTitle": "Ta bort mitt konto",
+      "confirmTitle": "Begär borttagning",
       "confirmText": "Det här startar borttagningen av ditt konto. Du kan avbryta tills organisationen har hanterat begäran.",
       "confirmWord": "bekräfta"
     },

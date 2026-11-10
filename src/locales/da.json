@@ -185,7 +185,7 @@
       "step1": "Når du har bedt om det, kan du ikke bruge VoteIT med denne konto, medmindre du trækker anmodningen tilbage.",
       "step2": "Vi sender dig en bekræftelse på e-mail med et link til at annullere.",
       "step3": "Anmodningen går til organisationen, som behandler den efter sin egen politik. Hvis du deltager i et igangværende møde, kan sletningen tage længere tid end ellers.",
-      "confirmTitle": "Slet min konto",
+      "confirmTitle": "Anmod om sletning",
       "confirmText": "Dette starter sletningen af din konto. Du kan annullere, indtil organisationen har behandlet anmodningen.",
       "confirmWord": "bekræft"
     },
