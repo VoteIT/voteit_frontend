@@ -11,6 +11,10 @@
   "close": "Close",
   "collapse": "Collapse",
   "color": "Color",
+  "confirm": "Confirm",
+  "confirmPhrase": {
+    "help": "To confirm, type {phrase} in the field below."
+  },
   "copied": "Copied",
   "create": "Create",
   "created": "Created",

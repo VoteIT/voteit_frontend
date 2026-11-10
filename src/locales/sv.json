@@ -11,6 +11,10 @@
   "close": "Stäng",
   "collapse": "Fäll ihop",
   "color": "Färg",
+  "confirm": "Bekräfta",
+  "confirmPhrase": {
+    "help": "Bekräfta genom att skriva {phrase} i fältet nedan."
+  },
   "copied": "Kopierad till urklipp",
   "create": "Skapa",
   "created": "Skapad",

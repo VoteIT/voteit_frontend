@@ -11,6 +11,10 @@
   "close": "Luk",
   "collapse": "Fold sammen",
   "color": "Farve",
+  "confirm": "Bekræft",
+  "confirmPhrase": {
+    "help": "Bekræft ved at skrive {phrase} i feltet nedenfor."
+  },
   "copied": "Kopieret til udklipsholderen",
   "create": "Opret",
   "created": "Oprettet",
