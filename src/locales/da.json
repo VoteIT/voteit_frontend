@@ -719,10 +719,6 @@
       "title": "Brugervilkår"
     }
   },
-  "participantNumber": {
-    "alreadyInList": "Deltagernummer {ids} står allerede på talerlisten | Deltagernumrene {ids} står allerede på talerlisten",
-    "doesNotExist": "Deltagernummer {ids} findes ikke i mødet | Deltagernumrene {ids} findes ikke i mødet"
-  },
   "permission": {
     "defaultLoginMessage": "Du skal logge ind for at se denne side.",
     "defaultMessage": "Du har ikke tilladelse til at se denne side.",
@@ -1171,7 +1167,6 @@
   "speaker": {
     "activateList": "Aktiver",
     "addByName": "Tilføj via navn",
-    "addByParticipantNumber": "Tilføj via deltagernummer",
     "addWithName": "Tilføj navngivet liste",
     "addQuick": "Hurtigopret liste",
     "agendaItemHasOngoingSpeaker": "Dette dagsordenspunkt har en talerliste med en aktiv taler.\nAfslut debatten, før du afslutter dagsordenspunktet.",
