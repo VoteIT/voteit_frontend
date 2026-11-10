@@ -327,6 +327,8 @@
     "noMatchingMeetings": "Fandt ingen møder, der matcher dit filter.",
     "yourMeetings": "Dit møde | Dine møder",
     "contactInfo": {
+      "dataProtectionContact": "Kontaktperson for databeskyttelse",
+      "dataProtectionContactHint": "Håndterer henvendelser om personoplysninger, f.eks. når brugere beder om at blive slettet. Skal være administrator. Vælger I ingen, får alle administratorer disse e-mails.",
       "description": "Kontakt- og faktureringsoplysninger for din organisation",
       "fetchFailed": "Kunne ikke hente kontaktoplysninger",
       "genericEmail": "E-mail til generel kontakt",

@@ -327,6 +327,8 @@
     "noMatchingMeetings": "Hittar inga möten som matchar dina filter.",
     "yourMeetings": "Ditt möte | Dina möten",
     "contactInfo": {
+      "dataProtectionContact": "Personuppgiftsansvarig (PUA)",
+      "dataProtectionContactHint": "Hanterar frågor om personuppgifter, till exempel när användare ber om att bli borttagna. Måste vara administratör. Väljer ni ingen får alla administratörer de här mailen.",
       "description": "Kontakt- och faktureringsuppgifter för din organisation",
       "fetchFailed": "Kunde inte hämta kontaktinformation",
       "genericEmail": "E-post för allmän kontakt",

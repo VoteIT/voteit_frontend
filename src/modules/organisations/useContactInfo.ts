@@ -3,6 +3,7 @@ import { computed, shallowRef, watchEffect } from 'vue'
 import type { RequirementFactory } from '@/loader/types'
 import { shared } from '@/utils'
 import restApi, { isApiError } from '@/utils/restApi'
+import { organisationType } from './contentTypes'
 import useOrgStore from './useOrgStore'
 
 export interface ContactInfo {
@@ -10,6 +11,8 @@ export interface ContactInfo {
   generic_email: string
   invoice_email: string
   invoice_info: string
+  /** User pk. Must be an organisation manager - cleared by the server when they stop being one. */
+  data_protection_contact: number | null
   modified: string // ISO date
   organisation: number
   pk: number
@@ -62,6 +65,23 @@ export const contactInfoPanelRequirement: RequirementFactory = (to) => {
     blocking: true,
     async load() {
       if (useOrgStore().canChangeOrganisation) await fetchContactInfo()
+    }
+  }
+}
+
+/**
+ * The data protection contact is picked among the organisation managers, so the
+ * panel needs the organisation's roles (and the users with them). The select
+ * can show up without them, so this doesn't hold the navigation.
+ */
+export const contactInfoManagersRequirement: RequirementFactory = (to) => {
+  if (to.params.panel !== 'contactInfo') return
+  return {
+    key: 'contact-info-managers',
+    async load() {
+      const { canChangeOrganisation, organisation } = useOrgStore()
+      if (canChangeOrganisation && organisation)
+        await organisationType.fetchRoles(organisation.pk)
     }
   }
 }

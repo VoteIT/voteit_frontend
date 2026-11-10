@@ -5,7 +5,10 @@ import AboutView from './AboutView.vue'
 import HomeView from './HomeView.vue'
 import OrgControlPanelView from './OrgControlPanelView.vue'
 import ProfileView from './ProfileView.vue'
-import { contactInfoPanelRequirement } from './useContactInfo'
+import {
+  contactInfoManagersRequirement,
+  contactInfoPanelRequirement
+} from './useContactInfo'
 import { tosPanelRequirement } from './useTermsOfService'
 
 router.addRoute({
@@ -34,5 +37,11 @@ router.addRoute({
   component: OrgControlPanelView,
   name: 'orgControlPanel',
   path: '/control-panel/:panel?',
-  meta: { load: [tosPanelRequirement, contactInfoPanelRequirement] }
+  meta: {
+    load: [
+      tosPanelRequirement,
+      contactInfoPanelRequirement,
+      contactInfoManagersRequirement
+    ]
+  }
 })

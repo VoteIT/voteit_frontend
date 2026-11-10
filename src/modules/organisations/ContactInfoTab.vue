@@ -3,8 +3,13 @@ import { computed, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 import useRules from '@/composables/useRules'
-import useContactInfo, { type ContactInfo } from './useContactInfo'
+import { getDisplayName } from '@/utils'
 import DefaultForm from '@/components/DefaultForm.vue'
+import { organisationType } from './contentTypes'
+import { OrganisationRole } from './types'
+import useContactInfo, { type ContactInfo } from './useContactInfo'
+import useOrgStore from './useOrgStore'
+import useUserDetails from './useUserDetails'
 
 const { t } = useI18n()
 const rules = useRules(t)
@@ -16,6 +21,20 @@ const {
   fetchContactInfo,
   saveContactInfo
 } = useContactInfo()
+const orgStore = useOrgStore()
+const { getRoleUserIds } = organisationType.useContextRoles()
+const { getUser } = useUserDetails()
+
+/** Organisation managers - the only ones allowed as data protection contact */
+const managerItems = computed(() => {
+  if (!orgStore.organisation) return []
+  return [...getRoleUserIds(orgStore.organisation.pk, OrganisationRole.Manager)]
+    .map((pk) => {
+      const user = getUser(pk)
+      return { value: pk, title: user ? getDisplayName(user) : `#${pk}` }
+    })
+    .sort((a, b) => a.title.localeCompare(b.title))
+})
 
 /**
  * What the form edits, as a new object - the form edits the object it's given,
@@ -25,9 +44,16 @@ function getEditable({
   generic_email,
   text,
   invoice_email,
-  invoice_info
+  invoice_info,
+  data_protection_contact
 }: ContactInfo) {
-  return { generic_email, text, invoice_email, invoice_info }
+  return {
+    generic_email,
+    text,
+    invoice_email,
+    invoice_info,
+    data_protection_contact
+  }
 }
 type EditableContactInfo = ReturnType<typeof getEditable>
 
@@ -79,29 +105,43 @@ async function saveHandler(data: EditableContactInfo) {
         <v-text-field
           :error-messages="errors.generic_email"
           :label="$t('home.contactInfo.genericEmail')"
+          prepend-inner-icon="mdi-email"
           :rules="[rules.email]"
           type="email"
           v-model="formData.generic_email"
         />
         <v-textarea
           :label="$t('home.contactInfo.text')"
+          prepend-inner-icon="mdi-card-account-details"
           v-model="formData.text"
         />
         <v-text-field
           :error-messages="errors.invoice_email"
           :label="$t('home.contactInfo.invoiceEmail')"
+          prepend-inner-icon="mdi-email-newsletter"
           :rules="[rules.email]"
           type="email"
           v-model="formData.invoice_email"
         />
         <v-textarea
           :label="$t('home.contactInfo.invoiceInfo')"
+          prepend-inner-icon="mdi-receipt-text"
           v-model="formData.invoice_info"
+        />
+        <v-select
+          clearable
+          :error-messages="errors.data_protection_contact"
+          :hint="$t('home.contactInfo.dataProtectionContactHint')"
+          :items="managerItems"
+          :label="$t('home.contactInfo.dataProtectionContact')"
+          persistent-hint
+          prepend-inner-icon="mdi-shield-account"
+          v-model="formData.data_protection_contact"
         />
       </template>
       <template #buttons="{ disabled, submitting }">
-        <div class="d-flex">
-          <p v-if="contactInfoModified" class="text-secondary">
+        <div class="d-flex mt-4">
+          <p v-if="contactInfoModified" class="text-warning">
             {{ $t('home.contactInfo.modified') }}
           </p>
           <v-spacer />

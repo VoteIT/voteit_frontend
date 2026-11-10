@@ -327,6 +327,8 @@
     "noMatchingMeetings": "Found no meetings that match your filter.",
     "yourMeetings": "Your meeting | Your meetings",
     "contactInfo": {
+      "dataProtectionContact": "Data protection contact",
+      "dataProtectionContactHint": "Handles personal data requests, such as users asking to be removed. Must be an organisation manager. If none is chosen, all organisation managers get these emails.",
       "description": "Contact and invoice details for your organisation",
       "fetchFailed": "Could not fetch contact info",
       "genericEmail": "Email for generic contact",
