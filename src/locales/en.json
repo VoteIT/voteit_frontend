@@ -776,6 +776,13 @@
     "viewAndChangeVote": "View and change vote",
     "votedProgress": "No one has voted | {percentage} % has voted ({voted} / {total}) | {percentage} % has voted ({voted} / {total})",
     "voteAddedInfo": "Your vote has been accepted.\nYou can change your vote at any time until the poll is closed.",
+    "voteError": {
+      "invalid": "Your vote couldn't be accepted:\n{detail}",
+      "network": "We couldn't reach the server, so your vote hasn't been confirmed. Check your connection and try again. Your vote will only be counted once.",
+      "rejected": "Your vote couldn't be accepted. The poll may have closed, or you may not be on the voter list. Contact a meeting official if you think this is wrong.",
+      "server": "Something went wrong on our side and your vote wasn't saved. Please try again. If it keeps happening, contact a meeting official.",
+      "timeout": "The server is taking longer than usual to answer, so we can't confirm your vote yet. It's safe to try again. Your vote will only be counted once."
+    },
     "winningProposal": "Winning proposal",
     "youHaveVoted": "You have voted",
     "youHaveNotVoted": "You have not voted",

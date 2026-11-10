@@ -776,6 +776,13 @@
     "viewAndChangeVote": "Visa och ändra röst",
     "votedProgress": "Ingen har röstat | {percentage} % har röstat ({voted} / {total}) | {percentage} % har röstat ({voted} / {total})",
     "voteAddedInfo": "Din röst har accepterats.\nDu kan ändra din röst fram till omröstningen avslutas.",
+    "voteError": {
+      "invalid": "Din röst kunde inte tas emot:\n{detail}",
+      "network": "Vi fick ingen kontakt med servern, så din röst är inte bekräftad. Kontrollera din uppkoppling och försök igen. Din röst räknas bara en gång.",
+      "rejected": "Din röst kunde inte tas emot. Omröstningen kan ha avslutats, eller så finns du inte med i röstlängden. Kontakta en mötesfunktionär om du tror att något är fel.",
+      "server": "Något gick fel hos oss och din röst sparades inte. Försök igen. Om det fortsätter, kontakta en mötesfunktionär.",
+      "timeout": "Servern svarar långsammare än vanligt, så vi kan inte bekräfta din röst ännu. Det är säkert att försöka igen. Din röst räknas bara en gång."
+    },
     "winningProposal": "Vinnande förslag",
     "youHaveVoted": "Du har röstat",
     "youHaveNotVoted": "Du har inte röstat",

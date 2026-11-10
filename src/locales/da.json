@@ -780,6 +780,13 @@
     "viewAndChangeVote": "Vis og ændr stemme",
     "votedProgress": "Ingen har stemt | {percentage} % har stemt ({voted} / {total}) | {percentage} % har stemt ({voted} / {total})",
     "voteAddedInfo": "Din stemme er modtaget.\nDu kan ændre din stemme når som helst, indtil afstemningen afsluttes.",
+    "voteError": {
+      "invalid": "Din stemme kunne ikke modtages:\n{detail}",
+      "network": "Vi kunne ikke få kontakt med serveren, så din stemme er ikke bekræftet. Tjek din forbindelse og prøv igen. Din stemme tælles kun én gang.",
+      "rejected": "Din stemme kunne ikke modtages. Afstemningen kan være lukket, eller du er måske ikke på listen over stemmeberettigede. Kontakt en mødeleder, hvis du mener, at det er en fejl.",
+      "server": "Noget gik galt hos os, og din stemme blev ikke gemt. Prøv igen. Kontakt en mødeleder, hvis det bliver ved.",
+      "timeout": "Serveren er længere tid om at svare end normalt, så vi kan ikke bekræfte din stemme endnu. Det er sikkert at prøve igen. Din stemme tælles kun én gang."
+    },
     "winningProposal": "Vindende forslag",
     "youHaveVoted": "Du har stemt",
     "youHaveNotVoted": "Du har ikke stemt",

@@ -10,6 +10,11 @@ import { Proposal } from '../proposals/types'
 import { Poll } from './types'
 import { pollPlugins } from './registry'
 import { voteType } from './contentTypes'
+import {
+  getInvalidVoteDetail,
+  getVoteErrorKind,
+  translateVoteError
+} from './voteErrors'
 
 const props = defineProps<{
   disabled?: boolean
@@ -31,21 +36,54 @@ const pollHelpText = computed(() => pollPlugin.value?.getHelp(t))
 
 const validVote = ref(props.modelValue) // Gets updates from method vote component, when valid.
 const submitting = ref(false)
+
+const retryIcons = {
+  timeout: 'mdi-timer-sand',
+  network: 'mdi-wifi-alert',
+  server: 'mdi-alert-circle-outline'
+} as const
+
+/**
+ * Sends the vote, offering to try again when that might help.
+ * The server upserts votes, so resending one that did get through is safe.
+ * Resolves true when the vote was accepted.
+ */
+async function submitVote(
+  msg: Parameters<typeof voteType.api.add>[0]
+): Promise<boolean> {
+  for (;;) {
+    try {
+      await voteType.api.add(msg)
+      return true
+    } catch (e) {
+      const kind = getVoteErrorKind(e)
+      if (kind === 'rejected') {
+        const detail = getInvalidVoteDetail(e)
+        await dialogAlert(
+          detail
+            ? t('poll.voteError.invalid', { detail })
+            : translateVoteError(kind, t),
+          ThemeColor.Warning
+        )
+        return false
+      }
+      const retry = await dialogQuery({
+        title: translateVoteError(kind, t),
+        icon: retryIcons[kind],
+        theme: ThemeColor.Warning,
+        yes: t('tryAgain'),
+        no: t('cancel')
+      })
+      if (!retry) return false
+    }
+  }
+}
+
 async function castVote() {
   if (!validVote.value) return
   submitting.value = true
-  const msg = {
-    poll: props.poll.pk,
-    vote: validVote.value
-  }
-  try {
-    await voteType.api.add(msg)
+  if (await submitVote({ poll: props.poll.pk, vote: validVote.value }))
     emit('votingComplete')
-  } catch {
-    dialogAlert(
-      'Critical error. Your vote was not accepted! Try again, or contact a meeting offical!'
-    )
-  }
   submitting.value = false
 }
 
@@ -62,14 +100,9 @@ async function abstainVote() {
     return
   }
   submitting.value = true
-  try {
-    await voteType.api.add({ poll: props.poll.pk, abstain: true })
+  if (await submitVote({ poll: props.poll.pk, abstain: true })) {
     validVote.value = undefined
     emit('votingComplete')
-  } catch {
-    dialogAlert(
-      'Critical error. Your abstain vote was not accepted! Try again, or contact a meeting offical!'
-    )
   }
   submitting.value = false
 }
