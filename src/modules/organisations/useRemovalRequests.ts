@@ -4,15 +4,15 @@ import type { RequirementFactory } from '@/loader/types'
 import { shared } from '@/utils'
 import restApi, { isApiError } from '@/utils/restApi'
 
-import type { RemovalRequest } from './types'
+import type { PostponeKind, RemovalRequest } from './types'
 import useOrgStore from './useOrgStore'
 
 /** Oldest first. Undefined until fetched. */
 const requests = shallowRef<RemovalRequest[]>()
 
-/** Someone is waiting for a manager to remove them. */
+/** Someone is waiting for a manager to remove them, and no one postponed it. */
 const requiresAttention = computed(() =>
-  requests.value?.some((r) => r.can_remove)
+  requests.value?.some((r) => r.can_remove && !r.postponed)
 )
 
 const fetchRequests = shared(async () => {
@@ -23,18 +23,19 @@ function dropRequest(user: number) {
   requests.value = requests.value?.filter((r) => r.user.pk !== user)
 }
 
+function replaceRequest(request: RemovalRequest) {
+  requests.value = requests.value?.map((r) =>
+    r.user.pk === request.user.pk ? request : r
+  )
+}
+
 /**
- * Deletes the user if nothing references them, anonymises them otherwise.
  * A 404 means the request is gone - withdrawn, or handled by someone else -
- * so the list is fetched again before rethrowing.
+ * so it's dropped and the list fetched again before rethrowing.
  */
-async function removeUser(user: number) {
+async function handleGone<T>(user: number, call: Promise<T>) {
   try {
-    const { result } = await restApi.post<{
-      result: 'deleted' | 'anonymised'
-    }>(`removal-requests/${user}/remove/`)
-    dropRequest(user)
-    return result
+    return await call
   } catch (e) {
     if (isApiError(e) && e.status === 404) {
       dropRequest(user)
@@ -42,6 +43,40 @@ async function removeUser(user: number) {
     }
     throw e
   }
+}
+
+/** Deletes the user if nothing references them, anonymises them otherwise. */
+async function removeUser(user: number) {
+  const { result } = await handleGone(
+    user,
+    restApi.post<{ result: 'deleted' | 'anonymised' }>(
+      `removal-requests/${user}/remove/`
+    )
+  )
+  dropRequest(user)
+  return result
+}
+
+/** Replaces any earlier postpone. `until` must be in the future. */
+async function postponeRequest(user: number, kind: PostponeKind, until: Date) {
+  replaceRequest(
+    await handleGone(
+      user,
+      restApi.post<RemovalRequest>(`removal-requests/${user}/postpone/`, {
+        kind,
+        until: until.toISOString()
+      })
+    )
+  )
+}
+
+async function clearPostponed(user: number) {
+  replaceRequest(
+    await handleGone(
+      user,
+      restApi.delete<RemovalRequest>(`removal-requests/${user}/postpone/`)
+    )
+  )
 }
 
 /**
@@ -74,6 +109,8 @@ export default function useRemovalRequests(quietCheck = false) {
     requests,
     requiresAttention,
     fetchRequests,
-    removeUser
+    removeUser,
+    postponeRequest,
+    clearPostponed
   }
 }

@@ -12,7 +12,9 @@ import useAuthStore from '@/modules/auth/useAuthStore'
 import { meetingType } from '@/modules/meetings/contentTypes'
 
 import { organisationType } from './contentTypes'
+import PostponeRemovalDialog from './PostponeRemovalDialog.vue'
 import {
+  PostponeKind,
   RemovalClassification,
   type MeetingInvolvement,
   type RemovalRequest
@@ -21,7 +23,8 @@ import useRemovalRequests from './useRemovalRequests'
 
 const { t } = useI18n()
 const authStore = useAuthStore()
-const { requests, fetchRequests, removeUser } = useRemovalRequests()
+const { requests, fetchRequests, removeUser, clearPostponed } =
+  useRemovalRequests()
 
 const classificationMeta: Record<
   RemovalClassification,
@@ -56,6 +59,22 @@ const classificationMeta: Record<
     icon: 'mdi-account-key',
     translate: () =>
       t('organization.removalRequests.classification.organisation_roles')
+  }
+}
+
+const postponeMeta: Record<
+  PostponeKind,
+  { color: ThemeColor; icon: string; translate: () => string }
+> = {
+  [PostponeKind.Remind]: {
+    color: ThemeColor.Info,
+    icon: 'mdi-bell-sleep',
+    translate: () => t('organization.removalRequests.postpone.reminding')
+  },
+  [PostponeKind.Block]: {
+    color: ThemeColor.Warning,
+    icon: 'mdi-hand-back-left',
+    translate: () => t('organization.removalRequests.postpone.blocked')
   }
 }
 
@@ -161,16 +180,32 @@ async function refresh() {
   refreshing.value = false
 }
 
+function isGone(e: unknown) {
+  // Withdrawn or handled by someone else - the row is gone
+  if (!isApiError(e) || e.status !== 404) return false
+  dialogAlert(t('organization.removalRequests.gone'), ThemeColor.Info)
+  return true
+}
+
+const clearing = shallowRef<number>()
+async function clear(request: RemovalRequest) {
+  clearing.value = request.user.pk
+  try {
+    await clearPostponed(request.user.pk)
+  } catch (e) {
+    if (!isGone(e))
+      dialogAlert(t('organization.removalRequests.postpone.clearFailed'))
+  }
+  clearing.value = undefined
+}
+
 async function remove(request: RemovalRequest) {
   let result: Awaited<ReturnType<typeof removeUser>>
   try {
     result = await removeUser(request.user.pk)
   } catch (e) {
-    // Withdrawn or handled by someone else - the row is gone, so is the dialog
-    if (isApiError(e) && e.status === 404) {
-      dialogAlert(t('organization.removalRequests.gone'), ThemeColor.Info)
-      return
-    }
+    // The row is gone, so is the dialog
+    if (isGone(e)) return
     throw e // Shown in the confirm dialog
   }
   const name = getDisplayName(request.user)
@@ -231,6 +266,33 @@ async function remove(request: RemovalRequest) {
           :text="classificationMeta[request.classification].translate()"
           variant="tonal"
         />
+        <v-alert
+          v-if="request.postponed"
+          class="mt-2"
+          :color="postponeMeta[request.postponed.kind].color"
+          density="compact"
+          :icon="postponeMeta[request.postponed.kind].icon"
+          variant="tonal"
+        >
+          <div class="d-flex align-center flex-wrap ga-2">
+            <span class="flex-grow-1">
+              {{ postponeMeta[request.postponed.kind].translate() }}
+              <Moment
+                :date="request.postponed.until"
+                future
+                ordinary
+                :prepend="$t('organization.removalRequests.postpone.until')"
+              />
+            </span>
+            <v-btn
+              :loading="clearing === request.user.pk"
+              size="small"
+              :text="$t('organization.removalRequests.postpone.clear')"
+              variant="text"
+              @click="clear(request)"
+            />
+          </div>
+        </v-alert>
         <p v-if="request.organisation_roles.length" class="mt-3">
           <strong>{{ $t('organization.removalRequests.orgRoles') }}:</strong>
           {{ getOrgRoles(request) }}
@@ -283,18 +345,40 @@ async function remove(request: RemovalRequest) {
           />
         </span>
         <v-spacer />
+        <PostponeRemovalDialog :request="request">
+          <template #activator="{ props }">
+            <v-btn
+              prepend-icon="mdi-clock-outline"
+              :text="
+                request.postponed
+                  ? $t('organization.removalRequests.postpone.change')
+                  : $t('organization.removalRequests.postpone.button')
+              "
+              variant="text"
+              v-bind="props"
+            />
+          </template>
+        </PostponeRemovalDialog>
         <ConfirmPhraseDialog
           color="error"
           :confirm="() => remove(request)"
           :confirm-text="$t('organization.removalRequests.remove')"
           :phrase="getPhrase(request)"
-          :text="
-            $t('organization.removalRequests.confirmText', {
-              name: getDisplayName(request.user)
-            })
-          "
           :title="$t('organization.removalRequests.remove')"
         >
+          <v-alert
+            v-if="request.postponed?.kind === PostponeKind.Block"
+            class="mb-4"
+            :text="$t('organization.removalRequests.postpone.blockedWarning')"
+            type="warning"
+          />
+          <p>
+            {{
+              $t('organization.removalRequests.confirmText', {
+                name: getDisplayName(request.user)
+              })
+            }}
+          </p>
           <template #activator="{ props }">
             <v-btn
               color="error"

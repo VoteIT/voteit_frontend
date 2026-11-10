@@ -2,7 +2,11 @@ import { beforeEach, expect, test, vi } from 'vitest'
 
 import { ApiError } from '@/utils/restApi'
 
-import { RemovalClassification, type RemovalRequest } from './types'
+import {
+  PostponeKind,
+  RemovalClassification,
+  type RemovalRequest
+} from './types'
 import useRemovalRequests from './useRemovalRequests'
 
 vi.mock('./useOrgStore', () => ({ default: () => ({}) }))
@@ -23,7 +27,7 @@ vi.mock('@/utils/restApi', async (importOriginal) => {
         api.gets++
         return api.requests
       },
-      async post(url: string) {
+      async post(url: string, body?: { kind: PostponeKind; until: string }) {
         if (api.removeStatus)
           throw new original.ApiError(
             api.removeStatus,
@@ -32,12 +36,21 @@ vi.mock('@/utils/restApi', async (importOriginal) => {
             'failed'
           )
         const pk = Number(url.split('/')[1])
+        if (url.endsWith('/postpone/'))
+          return { ...getRequest(pk), postponed: body }
         api.requests = api.requests.filter((r) => r.user.pk !== pk)
         return { result: 'deleted' }
+      },
+      async delete(url: string) {
+        return { ...getRequest(Number(url.split('/')[1])), postponed: null }
       }
     }
   }
 })
+
+function getRequest(pk: number) {
+  return api.requests.find((r) => r.user.pk === pk)!
+}
 
 function makeRequest(pk: number, can_remove = true): RemovalRequest {
   return {
@@ -47,7 +60,8 @@ function makeRequest(pk: number, can_remove = true): RemovalRequest {
     can_remove,
     organisation_roles: [],
     classification: RemovalClassification.NoActivity,
-    meetings: []
+    meetings: [],
+    postponed: null
   }
 }
 
@@ -88,4 +102,31 @@ test('other errors leave the list alone', async () => {
   api.removeStatus = 400
   await expect(removeUser(1)).rejects.toBeInstanceOf(ApiError)
   expect(requests.value?.map((r) => r.user.pk)).toEqual([1, 2])
+})
+
+test('postponing replaces the row, and silences attention', async () => {
+  const { requests, requiresAttention, postponeRequest, clearPostponed } =
+    useRemovalRequests()
+  const until = new Date('2026-12-01T00:00:00Z')
+  await postponeRequest(2, PostponeKind.Block, until)
+  expect(requests.value?.[1].postponed).toEqual({
+    kind: PostponeKind.Block,
+    until: until.toISOString()
+  })
+  expect(requiresAttention.value).toBe(false)
+  await clearPostponed(2)
+  expect(requests.value?.[1].postponed).toBeNull()
+  expect(requiresAttention.value).toBe(true)
+})
+
+test('postponing a request that is gone drops it and refetches', async () => {
+  const { requests, postponeRequest } = useRemovalRequests()
+  api.removeStatus = 404
+  api.requests = [makeRequest(1, false)]
+  const gets = api.gets
+  await expect(
+    postponeRequest(2, PostponeKind.Remind, new Date())
+  ).rejects.toBeInstanceOf(ApiError)
+  expect(requests.value?.map((r) => r.user.pk)).toEqual([1])
+  await vi.waitFor(() => expect(api.gets).toBe(gets + 1))
 })

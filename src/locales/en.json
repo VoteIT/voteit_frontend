@@ -690,6 +690,32 @@
         "discussion_posts": "No discussion posts | 1 discussion post | {count} discussion posts",
         "speaker_entries": "No speaker list entries | 1 speaker list entry | {count} speaker list entries",
         "reactions": "No reactions | 1 reaction | {count} reactions"
+      },
+      "postpone": {
+        "button": "Postpone",
+        "change": "Change postponement",
+        "title": "Postpone removal",
+        "kind": {
+          "remind": "Remind me later",
+          "remindHelp": "Stops reminders about this request until then.",
+          "block": "Don't remove yet",
+          "blockHelp": "Also tells other administrators to wait. It's only a note: removing still works."
+        },
+        "duration": "How long",
+        "durations": {
+          "day": "1 day",
+          "week": "1 week",
+          "twoWeeks": "2 weeks",
+          "month": "1 month",
+          "threeMonths": "3 months"
+        },
+        "save": "Postpone",
+        "clear": "Clear",
+        "clearFailed": "Could not clear the postponement",
+        "reminding": "Reminders paused",
+        "blocked": "An administrator has asked to wait with the removal",
+        "until": "until",
+        "blockedWarning": "An administrator has asked to wait with removing this user. Make sure it's OK before continuing."
       }
     },
     "allYears": "All years",

@@ -690,6 +690,32 @@
         "discussion_posts": "Inga diskussionsinlägg | 1 diskussionsinlägg | {count} diskussionsinlägg",
         "speaker_entries": "Ingen gång på talarlistan | 1 gång på talarlistan | {count} gånger på talarlistan",
         "reactions": "Inga reaktioner | 1 reaktion | {count} reaktioner"
+      },
+      "postpone": {
+        "button": "Skjut upp",
+        "change": "Ändra uppskjutning",
+        "title": "Skjut upp borttagning",
+        "kind": {
+          "remind": "Påminn mig senare",
+          "remindHelp": "Stoppar påminnelser om den här begäran tills dess.",
+          "block": "Ta inte bort än",
+          "blockHelp": "Säger också åt andra administratörer att vänta. Det är bara en notering: det går fortfarande att ta bort."
+        },
+        "duration": "Hur länge",
+        "durations": {
+          "day": "1 dag",
+          "week": "1 vecka",
+          "twoWeeks": "2 veckor",
+          "month": "1 månad",
+          "threeMonths": "3 månader"
+        },
+        "save": "Skjut upp",
+        "clear": "Rensa",
+        "clearFailed": "Kunde inte rensa uppskjutningen",
+        "reminding": "Påminnelser pausade",
+        "blocked": "En administratör har bett om att vänta med borttagningen",
+        "until": "till",
+        "blockedWarning": "En administratör har bett om att vänta med att ta bort den här användaren. Se till att det är okej innan du fortsätter."
       }
     },
     "allYears": "Alla år",

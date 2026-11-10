@@ -145,6 +145,19 @@ export interface MeetingInvolvement {
   readonly reactions: number
 }
 
+export enum PostponeKind {
+  /** Stops reminders, nothing more */
+  Remind = 'remind',
+  /** Also tells other managers not to remove yet. Advisory - removing still works. */
+  Block = 'block'
+}
+
+/** Set by a manager on a removal request, until a date in the future. */
+export interface PostponedRemoval {
+  readonly kind: PostponeKind
+  readonly until: string // ISO date
+}
+
 /** A user in the organisation who asked to be removed, for org managers. */
 export interface RemovalRequest {
   readonly user: IUser
@@ -156,4 +169,5 @@ export interface RemovalRequest {
   readonly organisation_roles: OrganisationRole[]
   readonly classification: RemovalClassification
   readonly meetings: MeetingInvolvement[]
+  readonly postponed: PostponedRemoval | null
 }

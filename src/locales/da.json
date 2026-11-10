@@ -690,6 +690,32 @@
         "discussion_posts": "Ingen indlæg | 1 indlæg | {count} indlæg",
         "speaker_entries": "Ingen gange på talerlisten | 1 gang på talerlisten | {count} gange på talerlisten",
         "reactions": "Ingen reaktioner | 1 reaktion | {count} reaktioner"
+      },
+      "postpone": {
+        "button": "Udskyd",
+        "change": "Ændr udskydelse",
+        "title": "Udskyd fjernelse",
+        "kind": {
+          "remind": "Påmind mig senere",
+          "remindHelp": "Stopper påmindelser om denne anmodning indtil da.",
+          "block": "Fjern ikke endnu",
+          "blockHelp": "Beder også andre administratorer om at vente. Det er kun en note: fjernelse virker stadig."
+        },
+        "duration": "Hvor længe",
+        "durations": {
+          "day": "1 dag",
+          "week": "1 uge",
+          "twoWeeks": "2 uger",
+          "month": "1 måned",
+          "threeMonths": "3 måneder"
+        },
+        "save": "Udskyd",
+        "clear": "Ryd",
+        "clearFailed": "Kunne ikke rydde udskydelsen",
+        "reminding": "Påmindelser sat på pause",
+        "blocked": "En administrator har bedt om at vente med fjernelsen",
+        "until": "indtil",
+        "blockedWarning": "En administrator har bedt om at vente med at fjerne denne bruger. Sørg for, at det er i orden, før du fortsætter."
       }
     },
     "allYears": "Alle år",
