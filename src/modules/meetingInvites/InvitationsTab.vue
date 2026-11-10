@@ -438,7 +438,7 @@ async function clearSelectedAnnotations() {
         <div class="d-flex ga-1">
           <QueryDialog
             :text="$t('invites.confirmRevoke', selectedInvites.length)"
-            @confirmed="revokeSelected"
+            :confirm="revokeSelected"
           >
             <template #activator="{ props }">
               <v-btn
@@ -455,7 +455,7 @@ async function clearSelectedAnnotations() {
             :text="
               $t('invites.confirmClearAnnotations', selectedInvites.length)
             "
-            @confirmed="clearSelectedAnnotations"
+            :confirm="clearSelectedAnnotations"
           >
             <template #activator="{ props }">
               <v-btn
@@ -470,7 +470,7 @@ async function clearSelectedAnnotations() {
           <QueryDialog
             color="warning"
             :text="$t('invites.confirmDelete', selectedInvites.length)"
-            @confirmed="deleteSelected"
+            :confirm="deleteSelected"
           >
             <template #activator="{ props }">
               <v-btn

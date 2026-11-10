@@ -151,7 +151,7 @@ async function deleteNote(note: number) {
             v-if="personalNotes.length"
             color="warning"
             :text="$t('notes.confirmDeleteAll')"
-            @confirmed="deleteAll"
+            :confirm="deleteAll"
           >
             <template #activator="{ props }">
               <v-btn
@@ -270,7 +270,7 @@ async function deleteNote(note: number) {
                   <QueryDialog
                     color="warning"
                     :text="$t('notes.confirmDelete')"
-                    @confirmed="deleteNote(note.pk)"
+                    :confirm="() => deleteNote(note.pk)"
                   >
                     <template #activator="{ props }">
                       <v-btn

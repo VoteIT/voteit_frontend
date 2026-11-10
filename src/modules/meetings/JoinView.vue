@@ -141,7 +141,7 @@ const noAccess = computed(
                 <QueryDialog
                   color="warning"
                   :text="$t('join.asModeratorQuery')"
-                  @confirmed="joinAsModerator"
+                  :confirm="joinAsModerator"
                 >
                   <template #activator="{ props }">
                     <v-btn :text="$t('join.asModerator')" v-bind="props" />

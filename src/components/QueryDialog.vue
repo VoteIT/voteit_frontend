@@ -1,21 +1,22 @@
 <script lang="ts" setup>
 /**
  * Confirmation dialog with its own activator.
+ * Closes when `confirm` resolves, and shows the error if it rejects.
  * Don't use inside a v-menu: its dialog is part of the menu content, which keeps the menu from closing.
  * Call dialogQuery() from the menu item's click handler instead.
  */
-import { inject, ref } from 'vue'
+import { inject, ref, shallowRef } from 'vue'
 import { useI18n } from 'vue-i18n'
 
+import { parseRestError } from '@/utils/restApi'
 import { Color } from '@/utils/types'
 
 const dialogWidth = inject('dialogWidth', 640)
 
 const { t } = useI18n()
 
-const emit = defineEmits(['confirmed'])
-
 interface Props {
+  confirm: () => unknown
   confirmText?: string
   modelValue?: boolean
   persistent?: boolean
@@ -28,14 +29,24 @@ const props = withDefaults(defineProps<Props>(), {
 })
 
 const isActive = ref(props.modelValue)
+const error = shallowRef<string>()
+const working = shallowRef(false)
 
 function close() {
   isActive.value = false
 }
 
-function confirm() {
-  emit('confirmed')
-  close()
+async function submit() {
+  if (working.value) return
+  working.value = true
+  error.value = undefined
+  try {
+    await props.confirm()
+    close()
+  } catch (e) {
+    error.value = Object.values(parseRestError(e)).flat().join(' ')
+  }
+  working.value = false
 }
 </script>
 
@@ -43,7 +54,8 @@ function confirm() {
   <v-dialog
     v-model="isActive"
     :width="`${dialogWidth}px`"
-    :persistent="persistent"
+    :persistent="persistent || working"
+    @after-leave="error = undefined"
   >
     <template #activator="attrs">
       <slot name="activator" v-bind="attrs"></slot>
@@ -53,6 +65,7 @@ function confirm() {
         <v-btn
           v-if="!persistent"
           class="mt-n2 mr-n2"
+          :disabled="working"
           icon="mdi-close"
           size="small"
           variant="text"
@@ -64,14 +77,22 @@ function confirm() {
           {{ text }}
         </slot>
       </p>
+      <v-alert v-if="error" class="mx-4 mt-4" :text="error" type="error" />
       <div class="text-right mt-4">
-        <slot name="buttons" :close="close">
-          <v-btn class="mr-1" :text="$t('no')" variant="text" @click="close" />
+        <slot name="buttons" :close="close" :submit="submit" :working="working">
+          <v-btn
+            class="mr-1"
+            :disabled="working"
+            :text="$t('no')"
+            variant="text"
+            @click="close"
+          />
           <v-btn
             :color="color"
+            :loading="working"
             :text="confirmText || t('yes')"
             variant="flat"
-            @click="confirm"
+            @click="submit"
           />
         </slot>
       </div>

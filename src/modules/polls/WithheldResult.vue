@@ -58,7 +58,7 @@ const showResult = ref(false)
           />
           <QueryDialog
             :text="$t('poll.result.withheldPublishConfirm')"
-            @confirmed="publishNow"
+            :confirm="publishNow"
           >
             <template #activator="{ props }">
               <v-btn

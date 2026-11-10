@@ -101,7 +101,7 @@
             <QueryDialog
               :text="$t('accessPolicy.confirmDelete')"
               color="warning"
-              @confirmed="deletePolicy(p)"
+              :confirm="() => deletePolicy(p)"
             >
               <template #activator="{ props }">
                 <v-btn

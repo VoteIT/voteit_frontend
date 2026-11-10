@@ -213,7 +213,7 @@ async function saveImage(close: () => void) {
                           v-if="!image.blob && authStore.user.image"
                           color="warning"
                           :text="$t('img.clearUploadedConfirmation')"
-                          @confirmed="authStore.clearProfileImage"
+                          :confirm="authStore.clearProfileImage"
                         >
                           <template #activator="{ props }">
                             <v-btn

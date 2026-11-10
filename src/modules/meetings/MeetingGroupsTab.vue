@@ -578,7 +578,7 @@ const deleteSelected = handler(async () => {
                   groupsToDelete.length
                 )
               "
-              @confirmed="deleteSelected"
+              :confirm="deleteSelected"
             >
               <template #activator="{ props }">
                 <v-btn

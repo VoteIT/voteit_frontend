@@ -122,8 +122,8 @@ const stubs = {
   QueryDialog: {
     template:
       '<div><slot name="activator" :props="{}"></slot>' +
-      '<button class="query-confirm" @click="$emit(\'confirmed\')"></button></div>',
-    emits: ['confirmed']
+      '<button class="query-confirm" @click="confirm()"></button></div>',
+    props: ['confirm']
   }
 }
 

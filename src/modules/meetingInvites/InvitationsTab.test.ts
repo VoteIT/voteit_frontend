@@ -105,8 +105,7 @@ vi.mock('@/components/DefaultDialog.vue', () => ({
 vi.mock('@/components/QueryDialog.vue', () => ({
   default: {
     name: 'QueryDialog',
-    props: ['text', 'color'],
-    emits: ['confirmed'],
+    props: ['text', 'color', 'confirm'],
     template: '<div><slot name="activator" :props="{}" /></div>'
   }
 }))
@@ -168,7 +167,7 @@ async function confirm(wrapper: VueWrapper, key: string) {
     .findAllComponents({ name: 'QueryDialog' })
     .find((d) => d.props('text') === key)
   if (!dialog) throw new Error(`No query dialog for ${key}`)
-  dialog.vm.$emit('confirmed')
+  await dialog.props('confirm')()
   await flushPromises()
 }
 

@@ -115,7 +115,7 @@ onBeforeUnmount(invalidated.dispose)
                       title: connection.title
                     })
               "
-              @confirmed="removeConnection(connection)"
+              :confirm="() => removeConnection(connection)"
             >
               <template #activator="{ props }">
                 <v-btn

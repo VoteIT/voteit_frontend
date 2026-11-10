@@ -359,7 +359,7 @@ function tagFilter(tags: string | string[], query: string) {
         v-if="canDeleteAgendaItem(item)"
         color="warning"
         :text="$t('agenda.deleteItemConfirm')"
-        @confirmed="agendaItemType.api.delete(value)"
+        :confirm="() => agendaItemType.api.delete(value)"
       >
         <template #activator="{ props }">
           <v-btn
@@ -387,7 +387,7 @@ function tagFilter(tags: string | string[], query: string) {
         <QueryDialog
           color="warning"
           :text="$t('agenda.deleteSelectedConfirm', bulkEdit.selected.length)"
-          @confirmed="deleteSelected"
+          :confirm="deleteSelected"
         >
           <template #activator="{ props }">
             <v-btn

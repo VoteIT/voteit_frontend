@@ -144,7 +144,7 @@ const isVisible = computed(() => !props.mode || !!proposalNote.value)
           <QueryDialog
             color="warning"
             :text="$t('notes.confirmDelete')"
-            @confirmed="clearNote"
+            :confirm="clearNote"
           >
             <template #activator="{ props }">
               <v-btn

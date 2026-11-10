@@ -141,7 +141,7 @@ onBeforeUnmount(() => {
         />
       </DefaultDialog>
       <QueryDialog
-        @confirmed="cancel"
+        :confirm="cancel"
         :text="$t('poll.confirmCancel')"
         color="warning"
       >

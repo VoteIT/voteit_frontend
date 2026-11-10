@@ -49,7 +49,7 @@ async function dialogSetActive() {
       </p>
       <div class="text-right mt-4">
         <QueryDialog
-          @confirmed="dismiss"
+          :confirm="dismiss"
           :color="ThemeColor.Warning"
           :text="$t('activeUsers.confirmDismiss')"
         >

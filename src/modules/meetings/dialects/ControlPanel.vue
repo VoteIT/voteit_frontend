@@ -100,7 +100,7 @@ const removeDialect = handler(
               title: meetingDialect.title
             })
           "
-          @confirmed="removeDialect"
+          :confirm="removeDialect"
         >
           <template #activator="{ props }">
             <v-btn
@@ -135,7 +135,7 @@ const removeDialect = handler(
     >
       <template #actions>
         <QueryDialog
-          @confirmed="installDialect(name)"
+          :confirm="() => installDialect(name)"
           :text="$t('meeting.dialects.installConfirm', { title })"
           color="warning"
         >

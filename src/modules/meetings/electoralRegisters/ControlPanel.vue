@@ -29,7 +29,7 @@
           </v-chip>
         </v-card-actions>
       </v-card>
-      <QueryDialog v-else @confirmed="currentName = method.name">
+      <QueryDialog v-else :confirm="() => (currentName = method.name)">
         <template #activator="activator">
           <v-card
             :title="method.title"

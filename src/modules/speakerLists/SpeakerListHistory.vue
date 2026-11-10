@@ -92,7 +92,7 @@ async function deleteHistory(pk: number) {
               </template>
             </DefaultDialog>
             <QueryDialog
-              @confirmed="deleteHistory(pk)"
+              :confirm="() => deleteHistory(pk)"
               :text="$t('speaker.confirmSpeakerDeletion')"
               color="warning"
             >

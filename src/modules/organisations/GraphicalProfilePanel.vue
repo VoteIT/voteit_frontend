@@ -53,7 +53,7 @@ async function saveProfileColor(color?: RGB) {
 }
 
 function saveColor() {
-  if (contrastOk.value) saveProfileColor(draftColor.value)
+  if (contrastOk.value) return saveProfileColor(draftColor.value)
 }
 
 async function resetColor() {
@@ -114,7 +114,7 @@ function uploadLogo() {
       color="warning"
       :confirm-text="$t('reset')"
       :text="$t('organization.graphicalProfile.resetColorConfirm')"
-      @confirmed="resetColor"
+      :confirm="resetColor"
     >
       <template #activator="{ props }">
         <v-btn
@@ -129,7 +129,7 @@ function uploadLogo() {
       color="warning"
       :confirm-text="$t('save')"
       :text="$t('organization.graphicalProfile.saveColorConfirm')"
-      @confirmed="saveColor"
+      :confirm="saveColor"
     >
       <template #activator="{ props }">
         <v-btn
@@ -177,7 +177,7 @@ function uploadLogo() {
       color="warning"
       :confirm-text="$t('organization.graphicalProfile.removeLogo')"
       :text="$t('organization.graphicalProfile.removeLogoConfirm')"
-      @confirmed="saveLogo(undefined)"
+      :confirm="() => saveLogo(undefined)"
     >
       <template #activator="{ props }">
         <v-btn

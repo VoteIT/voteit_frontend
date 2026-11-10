@@ -275,7 +275,7 @@ onBeforeMount(fetchTokenData)
           v-else
           color="warning"
           :text="$t('tokenAPI.revokeConfirm')"
-          @confirmed="revokeKey(item.prefix)"
+          :confirm="() => revokeKey(item.prefix)"
         >
           <template #activator="{ props }">
             <v-btn
