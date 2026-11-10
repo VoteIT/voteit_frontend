@@ -26,9 +26,18 @@ const props = defineProps<{
   ordinary?: boolean
   prepend?: string
   inSeconds?: boolean
+  /**
+   * The date is meant to be in the future, e.g. a deadline. Without this, a
+   * future date is taken to mean the server clock is ahead of ours, which
+   * shifts every relative time in the app.
+   */
+  future?: boolean
 }>()
 
-const { dateTime, serverNow } = useServerDateTime(computed(() => props.date))
+const { dateTime, serverNow } = useServerDateTime(
+  computed(() => props.date),
+  !props.future
+)
 const fromNow = ref('')
 
 const exactDate = computed(() => formatDate(props.date, DATETIME_LONG))

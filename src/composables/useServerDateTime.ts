@@ -36,10 +36,14 @@ function serverNow() {
   return Date.now() + serverAhead.value
 }
 
-export default function useServerDateTime(date: Ref<string>) {
+/**
+ * @param adjust A date in the future is taken as a sign that the server clock is
+ * ahead of ours. Pass false for dates that are meant to be in the future.
+ */
+export default function useServerDateTime(date: Ref<string>, adjust = true) {
   /** The date in epoch milliseconds */
   const dateTime = computed(() => parseISO(date.value))
-  adjustServerAhead(dateTime.value)
+  if (adjust) adjustServerAhead(dateTime.value)
 
   return {
     dateTime,
