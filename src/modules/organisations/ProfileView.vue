@@ -17,6 +17,7 @@ import CropImageField from '@/components/inputs/CropImageField.vue'
 import { useDisplay } from 'vuetify'
 
 import LoginMethods from '../auth/LoginMethods.vue'
+import RequestRemovalCard from '../auth/RequestRemovalCard.vue'
 import useAuthStore from '../auth/useAuthStore'
 
 import useOrgStore from './useOrgStore'
@@ -286,7 +287,10 @@ async function saveImage(close: () => void) {
           <BackBtn />
         </v-col>
         <v-col v-bind="cols.wideLeft.right">
-          <GdprAlert />
+          <div class="d-flex flex-column ga-4">
+            <GdprAlert />
+            <RequestRemovalCard />
+          </div>
         </v-col>
       </v-row>
     </v-container>

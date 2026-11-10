@@ -179,6 +179,16 @@
         "missing": "Linket er ufuldstændigt. Start login forfra."
       }
     },
+    "removal": {
+      "title": "Glem mig",
+      "intro": "Du kan bede om at få din konto og dine personoplysninger hos {title} slettet.",
+      "step1": "Når du har bedt om det, kan du ikke bruge VoteIT med denne konto, medmindre du trækker anmodningen tilbage.",
+      "step2": "Vi sender dig en bekræftelse på e-mail med et link til at annullere.",
+      "step3": "Anmodningen går til organisationen, som behandler den efter sin egen politik. Hvis du deltager i et igangværende møde, kan sletningen tage længere tid end ellers.",
+      "confirmTitle": "Slet min konto",
+      "confirmText": "Dette starter sletningen af din konto. Du kan annullere, indtil organisationen har behandlet anmodningen.",
+      "confirmWord": "bekræft"
+    },
     "linkAccount": {
       "cancel": "Afbryd login",
       "description": "Du loggede ind med {provider}, og vi har allerede en konto her med den e-mailadresse. Overtag den for at beholde møderne på den, eller start forfra med en ny.",
