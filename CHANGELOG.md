@@ -4,6 +4,16 @@ Document notable changes here.
 
 Version format is `major`.`minor`.`patch`. Until major version 1 is realeased, API changes accours on minor version bumps, but never on patch version bumps.
 
+## 1.7.0 (unreleased)
+
+- Account removal: users can ask to be forgotten from a "Forget me" card on the profile page. While a request is pending they're sent to a page where they can abort it
+- Removal requests control panel: organisation managers see who has asked to be removed, what each user is connected to, and when they can be removed. Removing asks for the userid to be typed and says whether the user was deleted or anonymised. Requests can be postponed, with a warning when removing a user anyway
+- Organisation contact info includes a data protection contact
+- Closing a meeting with published or voting proposals asks the moderator to confirm, like closing an agenda item does
+- Failed votes show a translated message that depends on what went wrong, and offer to try again on timeouts, lost connection or server errors, instead of an untranslated "Critical error" alert
+- Confirmation dialogs wait for the confirm action to finish before closing
+- Polyfills for newer JS APIs come from the Vite legacy plugin, targeting the supported browsers (Chrome/Edge 88, Firefox 78, Safari 14.1), replacing core-js
+
 ## 1.6.0 (2026-11-09)
 
 - Participant lists handle user emails being left out, which the server now only sends to moderators and organisation managers. Participant search matches on email only when it is available
