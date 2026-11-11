@@ -60,11 +60,18 @@ function getSubTitle(m: Meeting) {
   return `${new Date(date).getFullYear()} · ${state}`
 }
 
+// The backend refuses these as clone sources (see ModeratorMeetingField).
+const UNCLONEABLE_STATES = new Set([
+  MeetingState.Archiving,
+  MeetingState.Archived,
+  MeetingState.Deleting
+])
+
 const loadingMeetings = ref(false)
 const cloneMeetings = computed(() =>
   meetingStore.moderatedMeetings
     .filter(
-      (m) => m.pk !== meetingId.value && m.state !== MeetingState.Deleting
+      (m) => m.pk !== meetingId.value && !UNCLONEABLE_STATES.has(m.state)
     )
     .map((m) => ({
       title: m.title,
