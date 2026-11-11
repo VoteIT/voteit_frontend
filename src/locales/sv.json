@@ -994,7 +994,8 @@
       "private": "Privat | Privata",
       "upcoming": "Kommande",
       "withheld": "Dolt resultat | Dolda resultat"
-    }
+    },
+    "voteCleared": "Din röst rensades efter mötet."
   },
   "plenary": {
     "broadcastAI": "Sänd denna",

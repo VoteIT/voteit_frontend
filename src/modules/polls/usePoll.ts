@@ -16,6 +16,7 @@ import {
 import { pollPlugins } from './registry'
 import { PollState } from './types'
 import usePollStore from './usePollStore'
+import { isClearedVote } from './utils'
 
 export default function usePoll(pollRef: Ref<number | undefined>) {
   const { t } = useI18n()
@@ -74,6 +75,9 @@ export default function usePoll(pollRef: Ref<number | undefined>) {
   const isOngoing = computed(() => poll.value?.state === PollState.Ongoing)
   const isWithheld = computed(() => poll.value?.state === PollState.Withheld)
   const userVote = computed(() => poll.value && store.getUserVote(poll.value))
+  const userVoteCleared = computed(
+    () => !!userVote.value && isClearedVote(userVote.value)
+  )
 
   const canChange = computed(() => poll.value && canChangePoll(poll.value))
   const canDelete = computed(() => poll.value && canDeletePoll(poll.value))
@@ -137,6 +141,7 @@ export default function usePoll(pollRef: Ref<number | undefined>) {
     nextUnvoted,
     resultComponent,
     userVote,
+    userVoteCleared,
     voteComponent,
     voteCount
   }

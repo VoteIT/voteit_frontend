@@ -30,7 +30,8 @@ export interface StateContent extends BaseContent {
 export interface Vote {
   pk: number
   abstain: boolean
-  vote: object
+  /** Null when abstaining, or - with abstain false - when cleared after the meeting */
+  vote: object | null
   poll: number
 }
 

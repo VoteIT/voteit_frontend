@@ -288,7 +288,7 @@ watch(isOpen, (value) => {
                 :key="poll.pk"
                 :poll="poll"
                 :proposals="proposals"
-                :model-value="userVote?.vote"
+                :model-value="userVote?.vote ?? undefined"
                 @voting-complete="changeVote = false"
               />
               <template v-else-if="userVote">

@@ -47,6 +47,7 @@ const {
   isWithheld,
   pollMethodName,
   userVote,
+  userVoteCleared,
   canDelete,
   canVote,
   resultComponent,
@@ -290,7 +291,7 @@ const erPreliminary = computed(() => poll.value?.state === PollState.Upcoming)
         :disabled="!canVote"
         :poll="poll"
         :proposals="proposals"
-        :modelValue="userVote?.vote"
+        :modelValue="userVote?.vote ?? undefined"
         @votingComplete="votingComplete = true"
       />
       <div class="mt-6">
@@ -308,10 +309,15 @@ const erPreliminary = computed(() => poll.value?.state === PollState.Upcoming)
           <template #activator="{ props }">
             <v-btn
               color="secondary mb-1"
+              :disabled="userVoteCleared"
               prepend-icon="mdi-vote"
               :text="$t('poll.showVote')"
               v-bind="props"
             />
+            <span v-if="userVoteCleared" class="ml-2 text-secondary">
+              <v-icon icon="mdi-information-outline" size="small" />
+              {{ $t('poll.voteCleared') }}
+            </span>
           </template>
           <template v-slot="{ close }">
             <p v-if="!userVote">
@@ -319,6 +325,10 @@ const erPreliminary = computed(() => poll.value?.state === PollState.Upcoming)
             </p>
             <p v-else-if="userVote.abstain">
               {{ $t('poll.abstained') }}
+            </p>
+            <!-- Not abstaining, so cleared -->
+            <p v-else-if="!userVote.vote">
+              {{ $t('poll.voteCleared') }}
             </p>
             <PollBallot
               v-else

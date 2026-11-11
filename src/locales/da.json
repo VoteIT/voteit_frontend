@@ -994,7 +994,8 @@
       "private": "Privat | Private",
       "upcoming": "Kommende",
       "withheld": "Tilbageholdt resultat | Tilbageholdte resultater"
-    }
+    },
+    "voteCleared": "Din stemme blev ryddet efter mødet."
   },
   "plenary": {
     "broadcastAI": "Send dette",

@@ -994,7 +994,8 @@
       "private": "Private",
       "upcoming": "Upcoming",
       "withheld": "Withheld result | Withheld results"
-    }
+    },
+    "voteCleared": "Your vote was cleared after the meeting."
   },
   "plenary": {
     "broadcastAI": "Broadcast this",
