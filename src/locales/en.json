@@ -780,6 +780,17 @@
       "requiredTerms": "Required terms",
       "saveCorrection": "Save correction",
       "title": "Terms of service"
+    },
+    "voteRetention": {
+      "title": "Vote retention",
+      "description": "When the content of votes may be removed after a meeting",
+      "intro": "Once a meeting has closed and its polls are done. What each person voted is no longer needed. When the retention period is over, the content of votes can be removed. Results and the number of votes are kept. Only polls that are finished, cancelled or closed without a result are affected.",
+      "days": "Retention period",
+      "daysSuffix": "days",
+      "daysHint": "Counted from when the meeting closed. After that, users can clear their own votes.",
+      "autoClear": "Activate automatic clearing of votes",
+      "autoClearHint": "Runs once a day to clear votes according to the retention period below. Cleared votes can't be restored, and users aren't notified.",
+      "confirmAutoClear": "The content of votes in meetings that closed more than {days} days ago will be removed within a day. This can't be undone. Save anyway?"
     }
   },
   "permission": {

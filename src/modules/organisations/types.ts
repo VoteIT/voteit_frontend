@@ -39,6 +39,10 @@ export interface IOrganisation {
   help_info: string
   logo: string | null
   page_title: string
+  /** Days after a meeting closed before its votes may be cleared. At least 1. */
+  vote_retention_days: number
+  /** Clear votes daily once the retention period is over */
+  auto_clear_votes: boolean
   readonly active: boolean
   readonly components: OrganisationComponent[]
   readonly pk: number

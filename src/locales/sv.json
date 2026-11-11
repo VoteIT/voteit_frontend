@@ -780,6 +780,17 @@
       "requiredTerms": "Obligatoriska villkor",
       "saveCorrection": "Spara korrigering",
       "title": "Användarvillkor"
+    },
+    "voteRetention": {
+      "title": "Lagring av röster",
+      "description": "När innehållet i röster får tas bort efter ett möte",
+      "intro": "När ett möte har avslutats och dess omröstningar är klara behövs det inte längre vad var och en röstade. När lagringstiden är slut kan innehållet i rösterna tas bort. Resultat och antal röster sparas. Det gäller bara omröstningar som är avslutade, avbrutna eller stängda utan resultat.",
+      "days": "Lagringstid",
+      "daysSuffix": "dagar",
+      "daysHint": "Räknas från när mötet avslutades. Därefter kan användare rensa sina egna röster.",
+      "autoClear": "Aktivera automatisk rensning av röster",
+      "autoClearHint": "Körs en gång per dygn för att rensa röster enligt lagringstiden oven. Rensade röster går inte att återställa, och användarna meddelas inte.",
+      "confirmAutoClear": "Innehållet i röster från möten som avslutades för mer än {days} dagar sedan tas bort inom ett dygn. Det går inte att ångra. Spara ändå?"
     }
   },
   "permission": {

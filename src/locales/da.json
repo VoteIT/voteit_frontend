@@ -780,6 +780,17 @@
       "requiredTerms": "Obligatoriske vilkår",
       "saveCorrection": "Gem rettelse",
       "title": "Brugervilkår"
+    },
+    "voteRetention": {
+      "title": "Opbevaring af stemmer",
+      "description": "Hvornår indholdet af stemmer må slettes efter et møde",
+      "intro": "Når et møde er afsluttet og dets afstemninger er færdige, er der ikke længere brug for, hvad hver enkelt stemte. Når opbevaringsperioden er slut, kan indholdet af stemmerne slettes. Resultater og antal stemmer bevares. Det gælder kun afstemninger, der er afsluttet, annulleret eller lukket uden resultat.",
+      "days": "Opbevaringsperiode",
+      "daysSuffix": "dage",
+      "daysHint": "Regnes fra, da mødet blev afsluttet. Derefter kan brugerne rydde deres egne stemmer.",
+      "autoClear": "Aktivér automatisk rydning af stemmer",
+      "autoClearHint": "Kører én gang i døgnet for at rydde stemmer efter opbevaringsperioden nedenfor. Ryddede stemmer kan ikke gendannes, og brugerne får ikke besked.",
+      "confirmAutoClear": "Indholdet af stemmer fra møder, der blev afsluttet for mere end {days} dage siden, slettes inden for et døgn. Det kan ikke fortrydes. Gem alligevel?"
     }
   },
   "permission": {

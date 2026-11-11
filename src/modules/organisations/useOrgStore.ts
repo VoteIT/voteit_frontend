@@ -82,7 +82,15 @@ export default defineStore('organisation', () => {
 
   async function updateOrganisation(
     partial: Partial<
-      Pick<IOrganisation, 'body' | 'colors' | 'help_info' | 'page_title'>
+      Pick<
+        IOrganisation,
+        | 'auto_clear_votes'
+        | 'body'
+        | 'colors'
+        | 'help_info'
+        | 'page_title'
+        | 'vote_retention_days'
+      >
     >
   ) {
     currentOrganisation.value = await restApi.patch<IOrganisation>(

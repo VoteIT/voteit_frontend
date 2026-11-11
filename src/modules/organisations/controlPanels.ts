@@ -3,6 +3,7 @@ import GraphicalProfilePanel from './GraphicalProfilePanel.vue'
 import OrgRolesPanel from './OrgRolesPanel.vue'
 import RemovalRequestsPanel from './RemovalRequestsPanel.vue'
 import TermsOfServicePanel from './TermsOfServicePanel.vue'
+import VoteRetentionPanel from './VoteRetentionPanel.vue'
 import { orgControlPanelPlugins } from './registry'
 import useContactInfo from './useContactInfo'
 import useRemovalRequests from './useRemovalRequests'
@@ -80,5 +81,17 @@ orgControlPanelPlugins.register({
   },
   useRequiresAttention() {
     return useRemovalRequests(true).requiresAttention
+  }
+})
+
+orgControlPanelPlugins.register({
+  id: 'voteRetention',
+  component: VoteRetentionPanel,
+  icon: 'mdi-delete-clock',
+  getDescription(t) {
+    return t('organization.voteRetention.description')
+  },
+  getTitle(t) {
+    return t('organization.voteRetention.title')
   }
 })
