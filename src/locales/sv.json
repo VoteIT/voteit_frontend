@@ -790,7 +790,17 @@
       "daysHint": "Räknas från när mötet avslutades. Därefter kan användare rensa sina egna röster.",
       "autoClear": "Aktivera automatisk rensning av röster",
       "autoClearHint": "Körs en gång per dygn för att rensa röster enligt lagringstiden oven. Rensade röster går inte att återställa, och användarna meddelas inte.",
-      "confirmAutoClear": "Innehållet i röster från möten som avslutades för mer än {days} dagar sedan tas bort inom ett dygn. Det går inte att ångra. Spara ändå?"
+      "confirmAutoClear": "Innehållet i röster från möten som avslutades för mer än {days} dagar sedan tas bort inom ett dygn. Det går inte att ångra. Spara ändå?",
+      "profileDays": "Dina röster sparas i en dag efter att ett möte har avslutats. | Dina röster sparas i {count} dagar efter att ett möte har avslutats.",
+      "profileAuto": "Därefter rensas innehållet i dina röster automatiskt.",
+      "profileManual": "Därefter kan du själv rensa innehållet i dina röster.",
+      "profileKept": "Resultat och antal röster sparas alltid.",
+      "clearMine": "Rensa mina röster",
+      "clearInfo": "Det här tar bort vad du röstade i möten som avslutades för längre sedan än lagringstiden. Resultat och antal röster sparas, och du kan fortfarande se att du röstade. Rensade röster går inte att återställa.",
+      "cleared": "Inga röster rensades | En röst rensades | {count} röster rensades",
+      "nothingCleared": "Det fanns inga röster att rensa.",
+      "pendingTitle": "Går inte att rensa ännu",
+      "pendingItem": "{meeting}: en röst, kan rensas från {date} | {meeting}: {count} röster, kan rensas från {date}"
     }
   },
   "permission": {

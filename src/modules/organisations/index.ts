@@ -24,7 +24,9 @@ router.addRoute({
 router.addRoute({
   component: ProfileView,
   name: 'profile',
-  path: '/profile'
+  path: '/profile',
+  // Titles of meetings in the vote retention card
+  meta: { load: meetingListRequirement }
 })
 
 router.addRoute({

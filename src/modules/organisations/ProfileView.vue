@@ -24,6 +24,7 @@ import useOrgStore from './useOrgStore'
 import { profileType } from './contentTypes'
 import SwitchProfileDialog from './SwitchProfileDialog.vue'
 import GdprAlert from './GdprAlert.vue'
+import VoteRetentionCard from './VoteRetentionCard.vue'
 
 const { smAndUp } = useDisplay()
 
@@ -289,6 +290,7 @@ async function saveImage(close: () => void) {
         <v-col v-bind="cols.wideLeft.right">
           <div class="d-flex flex-column ga-4">
             <GdprAlert />
+            <VoteRetentionCard />
             <RequestRemovalCard />
           </div>
         </v-col>

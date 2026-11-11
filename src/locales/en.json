@@ -790,7 +790,17 @@
       "daysHint": "Counted from when the meeting closed. After that, users can clear their own votes.",
       "autoClear": "Activate automatic clearing of votes",
       "autoClearHint": "Runs once a day to clear votes according to the retention period below. Cleared votes can't be restored, and users aren't notified.",
-      "confirmAutoClear": "The content of votes in meetings that closed more than {days} days ago will be removed within a day. This can't be undone. Save anyway?"
+      "confirmAutoClear": "The content of votes in meetings that closed more than {days} days ago will be removed within a day. This can't be undone. Save anyway?",
+      "profileDays": "Your votes are kept for one day after a meeting has closed. | Your votes are kept for {count} days after a meeting has closed.",
+      "profileAuto": "After that, the content of your votes is cleared automatically.",
+      "profileManual": "After that, you can clear the content of your votes yourself.",
+      "profileKept": "Results and the number of votes are always kept.",
+      "clearMine": "Clear my votes",
+      "clearInfo": "This removes what you voted in meetings that closed more than the retention period ago. Results and the number of votes are kept, and you can still see that you voted. Cleared votes can't be restored.",
+      "cleared": "No votes were cleared | One vote cleared | {count} votes cleared",
+      "nothingCleared": "There were no votes to clear.",
+      "pendingTitle": "Not yet possible to clear",
+      "pendingItem": "{meeting}: one vote, can be cleared from {date} | {meeting}: {count} votes, can be cleared from {date}"
     }
   },
   "permission": {

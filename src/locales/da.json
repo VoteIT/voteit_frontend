@@ -790,7 +790,17 @@
       "daysHint": "Regnes fra, da mødet blev afsluttet. Derefter kan brugerne rydde deres egne stemmer.",
       "autoClear": "Aktivér automatisk rydning af stemmer",
       "autoClearHint": "Kører én gang i døgnet for at rydde stemmer efter opbevaringsperioden nedenfor. Ryddede stemmer kan ikke gendannes, og brugerne får ikke besked.",
-      "confirmAutoClear": "Indholdet af stemmer fra møder, der blev afsluttet for mere end {days} dage siden, slettes inden for et døgn. Det kan ikke fortrydes. Gem alligevel?"
+      "confirmAutoClear": "Indholdet af stemmer fra møder, der blev afsluttet for mere end {days} dage siden, slettes inden for et døgn. Det kan ikke fortrydes. Gem alligevel?",
+      "profileDays": "Dine stemmer gemmes i én dag, efter et møde er afsluttet. | Dine stemmer gemmes i {count} dage, efter et møde er afsluttet.",
+      "profileAuto": "Derefter ryddes indholdet af dine stemmer automatisk.",
+      "profileManual": "Derefter kan du selv rydde indholdet af dine stemmer.",
+      "profileKept": "Resultater og antal stemmer gemmes altid.",
+      "clearMine": "Ryd mine stemmer",
+      "clearInfo": "Dette sletter, hvad du stemte i møder, der blev afsluttet for længere tid siden end opbevaringsperioden. Resultater og antal stemmer bevares, og du kan stadig se, at du har stemt. Ryddede stemmer kan ikke gendannes.",
+      "cleared": "Ingen stemmer blev ryddet | Én stemme ryddet | {count} stemmer ryddet",
+      "nothingCleared": "Der var ingen stemmer at rydde.",
+      "pendingTitle": "Kan ikke ryddes endnu",
+      "pendingItem": "{meeting}: én stemme, kan ryddes fra {date} | {meeting}: {count} stemmer, kan ryddes fra {date}"
     }
   },
   "permission": {
