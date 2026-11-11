@@ -8,7 +8,7 @@ import useErrorHandler from '@/composables/useErrorHandler'
 
 import useAgenda from '../agendas/useAgenda'
 import { meetingType } from '../meetings/contentTypes'
-import type { Meeting } from '../meetings/types'
+import { MeetingState, type Meeting } from '../meetings/types'
 import useMeetingId from '../meetings/useMeetingId'
 import useMeetingGroups from '../meetings/useMeetingGroups'
 import useMeetingStore from '../meetings/useMeetingStore'
@@ -63,7 +63,9 @@ function getSubTitle(m: Meeting) {
 const loadingMeetings = ref(false)
 const cloneMeetings = computed(() =>
   meetingStore.moderatedMeetings
-    .filter((m) => m.pk !== meetingId.value)
+    .filter(
+      (m) => m.pk !== meetingId.value && m.state !== MeetingState.Deleting
+    )
     .map((m) => ({
       title: m.title,
       value: m.pk,
