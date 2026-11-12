@@ -1257,7 +1257,7 @@
     "agendaItemHasOngoingSpeaker": "This agenda item has a speaker list with an active speaker.\nFinish the debate before before closing the agenda item.",
     "bubbleChoose": "Choose speaker list to follow",
     "bubbleDescription": "Active speaker lists",
-    "bubbleSwitch": "Switch speaker list",
+    "bubbleSwitch": "Switch room",
     "bubbleTitle": "Speaker lists",
     "cantManageList": "You can't manage this list.",
     "closeList": "Close list",
