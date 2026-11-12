@@ -29,6 +29,13 @@ function isActiveSystem(system: SpeakerSystem): boolean {
   )
 }
 
+/**
+ * Active system with an active speaker list - shown in the meeting bubble.
+ */
+export function hasActiveList(system: SpeakerSystem): boolean {
+  return isActiveSystem(system) && !!system.active_list
+}
+
 function isArchivedSystem(system: SpeakerSystem): boolean {
   return system.state === SpeakerSystemState.Archived
 }

@@ -3,10 +3,26 @@ import { registerValidator } from '@/composables/useStateMachine'
 
 import { agendaItemType } from '../agendas/contentTypes'
 import { meetingExportPlugins } from '../exportImport/registry'
+import { meetingBubblePlugins } from '../meetings/registry'
 import useRoomStore from '../rooms/useRoomStore'
 
 import useSpeakerStore from './useSpeakerStore'
 import * as rules from './rules'
+import SpeakerListsBubble from './SpeakerListsBubble.vue'
+
+meetingBubblePlugins.register({
+  id: 'speakerLists',
+  component: SpeakerListsBubble,
+  icon: 'mdi-bullhorn',
+  order: 5,
+  checkActive(meeting) {
+    return (
+      useSpeakerStore().getSpeakerSystems(meeting.pk, rules.hasActiveList)
+        .length > 0
+    )
+  },
+  requireAttention: false
+})
 
 function getDownloadFormat(system: number, format: 'csv' | 'json') {
   return {
