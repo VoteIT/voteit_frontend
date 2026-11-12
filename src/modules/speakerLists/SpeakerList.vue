@@ -1,9 +1,8 @@
 <script setup lang="ts">
-import { computed, ref, toRef } from 'vue'
+import { computed, toRef } from 'vue'
 
 import User from '@/components/User.vue'
 
-import useAuthStore from '../auth/useAuthStore'
 import useRoom from '../rooms/useRoom'
 import { IMeetingRoom } from '../rooms/types'
 
@@ -11,24 +10,19 @@ import { canChangeSpeakerList } from './rules'
 import { SpeakerList } from './types'
 import useSpeakerSystem from './useSpeakerSystem'
 import EnterLeaveButton from './EnterLeaveButton.vue'
+import SpeakerQueue from './SpeakerQueue.vue'
 
 const props = defineProps<{
   list: SpeakerList
   room: IMeetingRoom
 }>()
 
-const authStore = useAuthStore()
 const { speakerSystem } = useSpeakerSystem(toRef(props.list, 'room'))
 const { getRoomRoute } = useRoom()
-
-const queue = computed(() =>
-  props.list.queue.filter((user) => user !== props.list.current)
-)
 
 const isActive = computed(
   () => speakerSystem.value?.active_list === props.list.pk
 )
-const expandQueue = ref(false)
 
 const canChange = computed(() => canChangeSpeakerList(props.list))
 
@@ -58,35 +52,7 @@ const fullscreenPath = computed(
         {{ $t('speaker.currentlySpeaking') }}:
         <strong><User :pk="list.current" /></strong>
       </p>
-      <h4>
-        {{ $t('speaker.queue') }}
-        <v-btn
-          :class="{ expanded: expandQueue }"
-          variant="text"
-          size="small"
-          v-if="
-            queue.length > 1 &&
-            (queue.length !== 2 || queue[1] !== authStore.user?.pk)
-          "
-          @click="expandQueue = !expandQueue"
-          icon="mdi-chevron-down"
-        />
-      </h4>
-      <div v-if="queue.length" class="mb-2">
-        <template v-for="(userPk, i) in queue" :key="userPk">
-          <v-expand-transition>
-            <div
-              :class="{ self: userPk === authStore.user?.pk }"
-              v-show="expandQueue || i === 0 || userPk === authStore.user?.pk"
-            >
-              {{ i + 1 }}. <User :pk="userPk" />
-            </div>
-          </v-expand-transition>
-        </template>
-      </div>
-      <p v-else class="mb-2">
-        <em>{{ $t('speaker.queueEmpty') }}</em>
-      </p>
+      <SpeakerQueue :list="list" />
       <EnterLeaveButton :list="list" />
     </div>
     <template v-if="canChange || isActive">
@@ -144,12 +110,4 @@ const fullscreenPath = computed(
 .speaker-list
   ol
     padding-left: 1.5em
-
-  .self
-    font-weight: 700
-
-  .mdi-chevron-down
-    transition: transform .2s
-  .expanded .mdi-chevron-down
-    transform: rotate(180deg)
 </style>
