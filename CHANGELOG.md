@@ -13,6 +13,9 @@ Version format is `major`.`minor`.`patch`. Until major version 1 is realeased, A
 - Failed votes show a translated message that depends on what went wrong, and offer to try again on timeouts, lost connection or server errors, instead of an untranslated "Critical error" alert
 - Confirmation dialogs wait for the confirm action to finish before closing
 - Polyfills for newer JS APIs come from the Vite legacy plugin, targeting the supported browsers (Chrome/Edge 88, Firefox 78, Safari 14.1), replacing core-js
+- Speaker list meeting bubble: shows the active speaker list with its queue and a button to enter or leave it. When several rooms have active lists, the user picks which one to follow, and the choice is remembered per meeting
+- Text documents: paragraphs with change proposals have a "Show proposals" button, opening a dialog with the paragraph and its proposals. Arrow keys or Previous/Next buttons step between paragraphs with proposals
+- Text document form uses Vuetify fields with validation
 
 ## 1.6.0 (2026-11-09)
 
