@@ -66,12 +66,8 @@ const collapsed = ref(false)
 </script>
 
 <template>
-  <v-card class="my-2 proposal-text" :border="true">
-    <v-card-title class="d-flex">
-      <!-- Empty title not really allowed, so no translation needed here -->
-      <span class="text-truncate flex-grow-1">
-        {{ document.title || '-- text document --' }}
-      </span>
+  <v-card class="my-2 proposal-text" :border="true" :title="document.title">
+    <template #append>
       <v-btn
         v-if="perms.change"
         icon="mdi-pencil"
@@ -91,7 +87,7 @@ const collapsed = ref(false)
         :class="{ collapsed }"
         @click="collapsed = !collapsed"
       />
-    </v-card-title>
+    </template>
     <v-expand-transition>
       <div v-show="!collapsed">
         <template v-for="p in document.paragraphs" :key="p.pk">

@@ -1,28 +1,33 @@
 <template>
   <main>
-    <form @submit.prevent="save()">
-      <v-text-field v-model="formData.title" required :label="$t('title')" />
+    <v-form @submit.prevent="save()" v-slot="{ isValid }">
+      <v-text-field
+        v-model="formData.title"
+        :rules="[rules.required]"
+        :label="$t('title')"
+      />
       <v-text-field
         v-model="formData.base_tag"
-        required
+        :rules="[rules.required]"
         :label="$t('proposal.textBaseTag')"
         @change="cleanBaseTag()"
       />
-      <textarea
-        class="form-control"
+      <v-textarea
         v-model="formData.body"
-        required
-      ></textarea>
+        :rules="[rules.required]"
+        :label="$t('textBody')"
+      />
       <div class="btn-group text-right">
         <v-btn
           color="primary"
-          :disabled="saving"
+          :disabled="!isValid.value"
+          :loading="saving"
           prepend-icon="mdi-check-all"
           :text="$t('save')"
           type="submit"
         />
       </div>
-    </form>
+    </v-form>
   </main>
 </template>
 
@@ -37,6 +42,7 @@ import useErrorHandler from '@/composables/useErrorHandler'
 import useAgendaItem from '../agendas/useAgendaItem'
 
 import { ProposalText, proposalTextType } from './contentTypes'
+import useRules from '@/composables/useRules'
 
 const props = defineProps<{
   data?: ProposalText
@@ -45,6 +51,7 @@ const props = defineProps<{
 const { t } = useI18n()
 const { handled } = useErrorHandler({ target: 'dialog' })
 const { agendaId } = useAgendaItem()
+const rules = useRules(t)
 const formData = reactive<Pick<ProposalText, 'base_tag' | 'body' | 'title'>>({
   base_tag: props.data?.base_tag ?? t('proposal.textBaseTagDefault'),
   body: props.data?.body ?? '',
