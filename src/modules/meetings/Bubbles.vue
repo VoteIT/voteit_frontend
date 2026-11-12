@@ -57,7 +57,11 @@ function setOpen(id: string, value: boolean) {
         />
       </template>
       <v-sheet rounded class="pa-4 mb-3" elevation="8">
-        <component :is="component" @update:modelValue="setOpen(id, $event)" />
+        <component
+          :is="component"
+          :modelValue="id === openBubble"
+          @update:modelValue="setOpen(id, $event)"
+        />
       </v-sheet>
     </v-overlay>
   </div>

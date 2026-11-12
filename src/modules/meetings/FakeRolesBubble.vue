@@ -2,6 +2,9 @@
 import useMeetingId from './useMeetingId'
 import { setFakeRoles } from './rules'
 
+defineProps<{ modelValue?: boolean }>()
+defineEmits(['update:modelValue'])
+
 const meetingId = useMeetingId()
 </script>
 

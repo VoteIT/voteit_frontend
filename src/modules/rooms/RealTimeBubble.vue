@@ -9,6 +9,9 @@ import useRooms from '../rooms/useRooms'
 
 import { IMeetingRoom } from './types'
 
+defineProps<{ modelValue?: boolean }>()
+defineEmits(['update:modelValue'])
+
 const { t } = useI18n()
 
 const meetingId = useMeetingId()
