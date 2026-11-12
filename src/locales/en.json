@@ -620,7 +620,8 @@
   "navigation": {
     "back": "Back",
     "continue": "Continue",
-    "next": "Next"
+    "next": "Next",
+    "previous": "Previous"
   },
   "network": {
     "connected": "Connected",
@@ -1093,6 +1094,7 @@
     "agendaItemHasUnresolved": "This agenda item has unresolved proposals.\nIt's a good idea to resolve all proposals before closing the agenda item. Do you still want to close it?",
     "approved": "Approved",
     "change": "Propose change",
+    "changeProposalCount": "No change proposals | One change proposal | {count} change proposals",
     "countInMeeting": "No proposals in meeting | One proposal in meeting | {count} proposals in meeting",
     "deletePrompt": "You are about to delete a proposal permanently.\nAre you sure?",
     "denied": "Denied",
@@ -1109,6 +1111,7 @@
     "proposals": "Proposals",
     "retract": "Retract",
     "retractPrompt": "Are you sure you want to retract this proposal?",
+    "showParagraphProposals": "Show proposals",
     "textAdd": "Add proposal text",
     "textBaseTag": "Base tag",
     "textBaseTagDefault": "paragraph",

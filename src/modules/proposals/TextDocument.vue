@@ -13,6 +13,8 @@ import useAgendaStore from '../agendas/useAgendaStore'
 import { ProposalText, proposalTextType } from './contentTypes'
 import EditTextDocumentModal from './EditProposalTextModal.vue'
 import AddTextProposalModal from './AddTextProposalModal.vue'
+import ParagraphProposalsDialog from './ParagraphProposalsDialog.vue'
+import { isDiffProposal } from './types'
 import useProposalStore from './useProposalStore'
 import { canChangeDocument, canDeleteDocument, canAddProposal } from './rules'
 
@@ -23,7 +25,7 @@ const props = defineProps<{
 const { t } = useI18n()
 const { handled } = useErrorHandler({ target: 'dialog' })
 
-const { countAiProposals } = useProposalStore()
+const { anyAiProposal, countAiProposals } = useProposalStore()
 const { getAgendaItem } = useAgendaStore()
 
 const perms = computed(() => {
@@ -44,6 +46,20 @@ const proposalCount = computed(() => {
   }
   return mapping
 })
+
+/** Paragraphs that have change proposals, in document order */
+const changedParagraphs = computed(() =>
+  props.document.paragraphs.filter((p) =>
+    anyAiProposal(
+      props.document.agenda_item,
+      (prop) => isDiffProposal(prop) && prop.paragraph === p.pk
+    )
+  )
+)
+const changedPks = computed(
+  () => new Set(changedParagraphs.value.map((p) => p.pk))
+)
+const dialogParagraph = ref<number>()
 
 function editDocument() {
   openModal({
@@ -93,26 +109,44 @@ const collapsed = ref(false)
         <template v-for="p in document.paragraphs" :key="p.pk">
           <v-divider />
           <v-card-text>
-            <Tag :name="p.tag" :count="proposalCount[p.tag]" />
+            <Tag :name="p.tag" />
             <p class="mt-2 proposal-text-paragraph">{{ p.body }}</p>
           </v-card-text>
-          <v-card-actions v-if="perms.addProposal">
-            <AddTextProposalModal :paragraph="p">
+          <v-card-actions v-if="perms.addProposal || changedPks.has(p.pk)">
+            <AddTextProposalModal v-if="perms.addProposal" :paragraph="p">
               <template #activator="{ props }">
                 <v-btn
                   color="primary"
                   prepend-icon="mdi-text-box-plus-outline"
                   size="small"
                   :text="$t('proposal.change')"
-                  variant="elevated"
+                  variant="flat"
                   v-bind="props"
                 />
               </template>
             </AddTextProposalModal>
+            <v-badge
+              v-if="changedPks.has(p.pk)"
+              color="secondary"
+              :content="proposalCount[p.tag]"
+            >
+              <v-btn
+                prepend-icon="mdi-text-box-search-outline"
+                size="small"
+                :text="$t('proposal.showParagraphProposals')"
+                variant="tonal"
+                @click="dialogParagraph = p.pk"
+              />
+            </v-badge>
           </v-card-actions>
         </template>
       </div>
     </v-expand-transition>
+    <ParagraphProposalsDialog
+      v-model="dialogParagraph"
+      :document="document"
+      :paragraphs="changedParagraphs"
+    />
   </v-card>
 </template>
 

@@ -620,7 +620,8 @@
   "navigation": {
     "back": "Tilbage",
     "continue": "Fortsæt",
-    "next": "Næste"
+    "next": "Næste",
+    "previous": "Forrige"
   },
   "network": {
     "connected": "Forbundet",
@@ -1093,6 +1094,7 @@
     "agendaItemHasUnresolved": "Dette dagsordenspunkt har ubehandlede forslag.\nDet er en god idé at behandle alle forslag, før du afslutter dagsordenspunktet. Vil du stadig afslutte det?",
     "approved": "Vedtaget",
     "change": "Foreslå ændring",
+    "changeProposalCount": "Ingen ændringsforslag | Ét ændringsforslag | {count} ændringsforslag",
     "countInMeeting": "Ingen forslag i mødet | Ét forslag i mødet | {count} forslag i mødet",
     "deletePrompt": "Du er ved at slette et forslag permanent.\nEr du sikker?",
     "denied": "Forkastet",
@@ -1109,6 +1111,7 @@
     "proposals": "Forslag",
     "retract": "Træk tilbage",
     "retractPrompt": "Er du sikker på, at du vil trække dette forslag tilbage?",
+    "showParagraphProposals": "Vis forslag",
     "textAdd": "Tilføj forslagstekst",
     "textBaseTag": "Grundtag",
     "textBaseTagDefault": "afsnit",

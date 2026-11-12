@@ -620,7 +620,8 @@
   "navigation": {
     "back": "Tillbaka",
     "continue": "Fortsätt",
-    "next": "Nästa"
+    "next": "Nästa",
+    "previous": "Föregående"
   },
   "network": {
     "connected": "Uppkopplad",
@@ -1093,6 +1094,7 @@
     "agendaItemHasUnresolved": "Dagordningspunkten har obehandlade förslag.\nDet är en bra idé att behandla färdigt alla förslag innan du stänger en dagordningspunkt. Vill du ändå stänga den?",
     "approved": "Bifallet",
     "change": "Föreslå ändring",
+    "changeProposalCount": "Inga ändringsförslag | Ett ändringsförslag | {count} ändringsförslag",
     "countInMeeting": "Inga förslag i mötet | Ett förslag i mötet | {count} förslag i mötet",
     "deletePrompt": "Du håller på att permanent radera ett förslag.\nÄr du säker?",
     "denied": "Avslaget",
@@ -1109,6 +1111,7 @@
     "proposals": "Förslag",
     "retract": "Dra tillbaka",
     "retractPrompt": "Är du säker på att du vill dra tillbaka det här förslaget?",
+    "showParagraphProposals": "Visa förslag",
     "textAdd": "Lägg till förslagstext",
     "textBaseTag": "Grundtagg",
     "textBaseTagDefault": "stycke",
