@@ -80,13 +80,20 @@ function insertAfter(
   return [...columns.slice(0, index), column, ...columns.slice(index)]
 }
 
+/**
+ * Add a "voter" column to the role matrix, which shows if the user is in the current electoral register.
+ * If the meeting is upcoming, do not add the column.
+ * If the meeting has an auto_always electoral register policy, replace the potential voter column with the voter column.
+ * Otherwise, insert the voter column after the potential voter column.
+ * When auto_always is set and meeting is not ongoing, make the column read-only.
+ */
 meetingRolePlugins.register({
   contentType: 'meeting',
   id: 'voter',
   transform(columns, meeting) {
-    const { currentElectoralRegister } = useElectoralRegisters(
-      toRef(meeting, 'pk')
-    )
+    // Not for upcoming meetings
+    if (meeting.state === MeetingState.Upcoming) return columns
+    const { currentElectoralRegister } = useElectoralRegisters(meeting.pk)
 
     // Partial column defintion, for updating or inserting with new name
     const columnDefinition: Omit<RoleMatrixColumn, 'name'> = {
@@ -107,13 +114,26 @@ meetingRolePlugins.register({
       icon: 'mdi-star'
     }
 
+    /**
+     * Return a new column with the given column definition, and the given column's name.
+     * If the meeting is not ongoing, make the column read-only.
+     */
+    function replaceColumn(column: RoleMatrixColumn) {
+      if (meeting.state === MeetingState.Ongoing)
+        return { ...column, ...columnDefinition }
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const { setValue, ...readOnlyColumn } = column
+      return {
+        ...readOnlyColumn,
+        ...columnDefinition
+      }
+    }
+
     // Replace parts of potential voter column,
     // or insert with new name
     return meeting.er_policy_name === 'auto_always'
       ? columns.map((c) => {
-          return c.name === MeetingRole.PotentialVoter
-            ? { ...c, ...columnDefinition }
-            : c
+          return c.name === MeetingRole.PotentialVoter ? replaceColumn(c) : c
         })
       : insertAfter(columns, MeetingRole.PotentialVoter, {
           ...columnDefinition,
