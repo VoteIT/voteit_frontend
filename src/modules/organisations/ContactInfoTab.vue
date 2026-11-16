@@ -147,7 +147,7 @@ async function saveHandler(data: EditableContactInfo) {
           <v-spacer />
           <v-btn
             color="primary"
-            :disabled="disabled || !contactInfoModified"
+            :disabled="disabled || (!contactInfoModified && !requiresCheck)"
             :loading="submitting"
             :text="$t('save')"
             type="submit"
