@@ -57,9 +57,9 @@ function choose(room: number) {
         class="mr-4 mt-1"
       />
       <div class="flex-grow-1">
-        <h2>{{ $t('speaker.bubbleTitle') }}</h2>
+        <h2>{{ $t('speaker.bubbleTitle', activeSystems.length) }}</h2>
         <p class="text-secondary">
-          {{ $t('speaker.bubbleDescription') }}
+          {{ selected?.roomTitle ?? $t('speaker.bubbleChoose') }}
         </p>
       </div>
       <v-menu v-if="selected && activeSystems.length > 1">
@@ -92,9 +92,6 @@ function choose(room: number) {
       @update:modelValue="emit('update:modelValue', $event)"
     />
     <v-list v-else class="mx-n2 mb-n3">
-      <v-list-subheader>
-        {{ $t('speaker.bubbleChoose') }}
-      </v-list-subheader>
       <v-list-item
         v-for="{ system, roomTitle } in activeSystems"
         :key="system.pk"
