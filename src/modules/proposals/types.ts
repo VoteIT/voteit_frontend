@@ -37,6 +37,21 @@ export type DiffProposal = Proposal & {
   paragraph: number
 }
 
+/** States shown for a text paragraph; denied, retracted and unhandled are left out */
+export const paragraphProposalStates: ReadonlySet<ProposalState> = new Set([
+  ProposalState.Published,
+  ProposalState.Voting,
+  ProposalState.Approved
+])
+
+/**
+ * A proposal belongs to a paragraph by its tag, not only diff proposals made
+ * from it: one tagged by hand (e.g. to move the paragraph) counts as well.
+ */
+export function isVisibleParagraphProposal(prop: Proposal, tag: string) {
+  return prop.tags.includes(tag) && paragraphProposalStates.has(prop.state)
+}
+
 export function isProposal(prop?: Proposal): prop is Proposal {
   return !!prop
 }

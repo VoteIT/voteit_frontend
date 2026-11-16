@@ -1,24 +1,32 @@
 <script lang="ts" setup>
 import { computed } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { onKeyStroke } from '@vueuse/core'
 
 import DefaultDialog from '@/components/DefaultDialog.vue'
 import Tag from '@/components/Tag.vue'
+import WorkflowState from '@/components/WorkflowState.vue'
 
 import ProposalSheet from './ProposalSheet.vue'
 import useProposalStore from './useProposalStore'
-import type { ProposalText, TextParagraph } from './contentTypes'
+import {
+  proposalType,
+  type ProposalText,
+  type TextParagraph
+} from './contentTypes'
+import { isVisibleParagraphProposal, paragraphProposalStates } from './types'
 
 const props = defineProps<{
   document: ProposalText
-  /** Paragraphs that have change proposals, in document order */
+  /** Paragraphs that have visible proposals, in document order */
   paragraphs: TextParagraph[]
 }>()
 
 /** pk of the paragraph being shown */
 const current = defineModel<number | undefined>()
 
-const { getAiProposals } = useProposalStore()
+const { t, locale } = useI18n()
+const { getAiProposals, countAiProposals } = useProposalStore()
 
 const index = computed(() =>
   props.paragraphs.findIndex((p) => p.pk === current.value)
@@ -33,8 +41,26 @@ const proposals = computed(() => {
   const tag = paragraph.value?.tag
   if (!tag) return []
   return getAiProposals(props.document.agenda_item, (prop) =>
-    prop.tags.includes(tag)
+    isVisibleParagraphProposal(prop, tag)
   )
+})
+/** E.g. "2 denied and 1 retracted", in state machine order */
+const hiddenSummary = computed(() => {
+  const tag = paragraph.value?.tag
+  if (!tag) return
+  const parts = proposalType.sm
+    .getStateList(({ state }) => !paragraphProposalStates.has(state))
+    .map(({ state, translate }) => {
+      const count = countAiProposals(
+        props.document.agenda_item,
+        (prop) => prop.tags.includes(tag) && prop.state === state
+      )
+      return count
+        ? `${count} ${translate(t, count).toLocaleLowerCase(locale.value)}`
+        : ''
+    })
+    .filter(Boolean)
+  return new Intl.ListFormat(locale.value).format(parts)
 })
 
 const isOpen = computed({
@@ -90,6 +116,16 @@ keyNav('ArrowRight', () => next.value)
           border
           :key="prop.pk"
           :proposal="prop"
+        >
+          <template #actions>
+            <WorkflowState :contentType="proposalType" :object="prop" />
+          </template>
+        </ProposalSheet>
+        <v-alert
+          v-if="hiddenSummary"
+          :text="
+            $t('proposal.hiddenChangeProposals', { states: hiddenSummary })
+          "
         />
       </div>
       <div class="d-flex flex-wrap ga-2 mt-4">

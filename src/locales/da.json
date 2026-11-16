@@ -1100,6 +1100,7 @@
     "denied": "Forkastet",
     "edit": "Rediger forslag",
     "fullProposalText": "Hele forslagsteksten",
+    "hiddenChangeProposals": "Ændringsforslag, der ikke vises: {states}",
     "meetingHasUnresolved": "Dette møde har ubehandlede forslag.\nDet er en god idé at behandle alle forslag, før du afslutter mødet. Vil du stadig afslutte det?",
     "notFound": "Forslaget blev ikke fundet",
     "ordering": "Rækkefølge af forslag",

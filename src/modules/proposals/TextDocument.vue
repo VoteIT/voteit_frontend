@@ -14,7 +14,7 @@ import { ProposalText, proposalTextType } from './contentTypes'
 import EditTextDocumentModal from './EditProposalTextModal.vue'
 import AddTextProposalModal from './AddTextProposalModal.vue'
 import ParagraphProposalsDialog from './ParagraphProposalsDialog.vue'
-import { isDiffProposal } from './types'
+import { isVisibleParagraphProposal } from './types'
 import useProposalStore from './useProposalStore'
 import { canChangeDocument, canDeleteDocument, canAddProposal } from './rules'
 
@@ -25,7 +25,7 @@ const props = defineProps<{
 const { t } = useI18n()
 const { handled } = useErrorHandler({ target: 'dialog' })
 
-const { anyAiProposal, countAiProposals } = useProposalStore()
+const { countAiProposals } = useProposalStore()
 const { getAgendaItem } = useAgendaStore()
 
 const perms = computed(() => {
@@ -41,20 +41,15 @@ const proposalCount = computed(() => {
   const mapping: Record<string, number> = {}
   for (const p of props.document.paragraphs) {
     mapping[p.tag] = countAiProposals(props.document.agenda_item, (prop) =>
-      prop.tags.includes(p.tag)
+      isVisibleParagraphProposal(prop, p.tag)
     )
   }
   return mapping
 })
 
-/** Paragraphs that have change proposals, in document order */
+/** Paragraphs that have visible proposals, in document order */
 const changedParagraphs = computed(() =>
-  props.document.paragraphs.filter((p) =>
-    anyAiProposal(
-      props.document.agenda_item,
-      (prop) => isDiffProposal(prop) && prop.paragraph === p.pk
-    )
-  )
+  props.document.paragraphs.filter((p) => proposalCount.value[p.tag])
 )
 const changedPks = computed(
   () => new Set(changedParagraphs.value.map((p) => p.pk))
