@@ -4,7 +4,7 @@ Document notable changes here.
 
 Version format is `major`.`minor`.`patch`. Until major version 1 is realeased, API changes accours on minor version bumps, but never on patch version bumps.
 
-## 1.7.0 (unreleased)
+## 1.7.0 (2026-11-17)
 
 - Account removal: users can ask to be forgotten from a "Forget me" card on the profile page. While a request is pending they're sent to a page where they can abort it
 - Removal requests control panel: organisation managers see who has asked to be removed, what each user is connected to, and when they can be removed. Removing asks for the userid to be typed and says whether the user was deleted or anonymised. Requests can be postponed, with a warning when removing a user anyway
