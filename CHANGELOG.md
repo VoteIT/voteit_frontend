@@ -4,6 +4,10 @@ Document notable changes here.
 
 Version format is `major`.`minor`.`patch`. Until major version 1 is realeased, API changes accours on minor version bumps, but never on patch version bumps.
 
+## 1.7.2 (2026-11-19)
+
+- Docker image is based on nginx-unprivileged and runs as a non-root user. It listens on port 8080 instead of 80, so deployments must point to the new port
+
 ## 1.7.1 (2026-11-19)
 
 - Base image updates

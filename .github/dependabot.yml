@@ -12,7 +12,7 @@ updates:
       actions:
         patterns: ["*"]
 
-  # Refreshes the nginx digest in the Dockerfile. The tag stays 1-alpine-slim;
+  # Refreshes the nginx-unprivileged digest in the Dockerfile. The tag stays 1-alpine-slim;
   # what moves is which build of it we get, which is where Alpine's security
   # fixes arrive.
   - package-ecosystem: docker
