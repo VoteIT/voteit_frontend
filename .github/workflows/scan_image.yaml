@@ -115,3 +115,11 @@ jobs:
         env:
           TRIVY_SKIP_DB_UPDATE: true
           TRIVY_SKIP_JAVA_DB_UPDATE: true
+
+      # Trivy cannot see nginx's own CVEs in this image -- see docker.yaml.
+      # This is the check that would have caught CVE-2026-123007 in 1.7.0.
+      - name: Check nginx against nginx.org advisories
+        if: ${{ !cancelled() && steps.image.outputs.ref != '' }}
+        env:
+          IMAGE: ${{ steps.image.outputs.ref }}
+        run: .github/scripts/check_nginx_image.sh "$IMAGE"

@@ -99,10 +99,10 @@ jobs:
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
 
-      # Build without pushing, so the scan below decides whether this image is
-      # allowed to leave the runner at all. The image stays in the runner's
-      # docker daemon; the push step further down sends the very bytes that
-      # were scanned, rather than rebuilding them.
+      # Build without pushing, so the scans below run before the job holds a
+      # registry credential. The image stays in the runner's docker daemon;
+      # the push step further down sends the very bytes that were scanned,
+      # rather than rebuilding them.
       - name: Build docker image
         uses: docker/build-push-action@c3c9e263c25d99ce0380d002d59b67737d91b0dc # v7.4.0
         with:
@@ -118,11 +118,10 @@ jobs:
           TAGS: ${{ steps.meta.outputs.tags }}
         run: echo "ref=$(head -n 1 <<<"$TAGS")" >> "$GITHUB_OUTPUT"
 
-      # Two passes over the same image, because they answer different
-      # questions. This one reports: every fixable finding, at any severity,
-      # goes to the Security tab so it is visible and tracked even when it is
-      # not bad enough to stop a release. It must not fail the job, or the
-      # upload below never runs.
+      # The scans here report, they never stop a release: every fixable
+      # finding, at any severity, goes to the Security tab, and the weekly
+      # scan_image.yaml is what fails (and mails the maintainers) while a
+      # published image is affected.
       - name: Scan image with Trivy (report)
         uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25 # v0.36.0
         with:
@@ -142,22 +141,34 @@ jobs:
           sarif_file: trivy-results.sarif
           category: trivy-image
 
-      # A failure here means a fixable HIGH/CRITICAL is in the image -- which is
-      # worth stopping a release for. Trivy is already installed and the
+      # The same findings, HIGH/CRITICAL only, as a table in the job log for
+      # whoever is watching the release. Trivy is already installed and the
       # vulnerability database is cached from the pass above, so this is a
       # second read of local data, not a second download.
-      - name: Scan image with Trivy (gate)
+      - name: Scan image with Trivy (summary)
         uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25 # v0.36.0
         with:
           image-ref: ${{ steps.image.outputs.ref }}
           format: table
           severity: HIGH,CRITICAL
           ignore-unfixed: true
-          exit-code: 1
+          exit-code: 0
           skip-setup-trivy: true
         env:
           TRIVY_SKIP_DB_UPDATE: true
           TRIVY_SKIP_JAVA_DB_UPDATE: true
+
+      # Trivy never sees nginx itself: the base installs it from nginx.org's
+      # apk repository, which Alpine's security database does not cover. So
+      # ask the image which nginx it has and check that against nginx.org's
+      # advisories directly. Report-only like the Trivy passes: matches show as
+      # annotations on the run and a table in the job summary, and
+      # continue-on-error keeps them from stopping the push.
+      - name: Check nginx against nginx.org advisories
+        continue-on-error: true
+        env:
+          IMAGE: ${{ steps.image.outputs.ref }}
+        run: .github/scripts/check_nginx_image.sh "$IMAGE"
 
       # Keep the login as late as possible: it writes the credential to
       # ~/.docker/config.json, where every later step can read it. Everything
