@@ -16,7 +16,7 @@ import useProposalStore from '../proposals/useProposalStore'
 import useReactionStore from '../reactions/useReactionStore'
 
 import { meetingDataType } from './contentTypes'
-import type { PreviewResponse } from './types'
+import { normalizePreview, type Preview, type PreviewResponse } from './types'
 import useExportImport from './useExportImport'
 
 const { t } = useI18n()
@@ -48,7 +48,7 @@ for (const option of baseIncludeOptions.value) values[option.key] = true
 const hasExistingItems = computed(() => agenda.value.length > 0)
 
 const file = ref<File | null>(null)
-const previewResult = ref<PreviewResponse | null>(null)
+const previewResult = ref<Preview | null>(null)
 const importDone = ref(false)
 const working = ref(false)
 
@@ -299,13 +299,13 @@ const importWarnings = computed<ImportWarning[]>(() => {
     const buttonMatches = preview.reaction_buttons
       .filter((button) => {
         const match = existingButtons.find(
-          (b) => lc(b.title) === lc(button.title)
+          (b) => lc(b.title) === lc(button.title ?? '')
         )
         return (
           !!match &&
           (match.color !== button.color ||
             match.target !== (button.target ?? null) ||
-            match.icon !== button.icon)
+            match.icon !== (button.icon ?? ''))
         )
       })
       .map((button) => button.title)
@@ -455,10 +455,11 @@ async function runPreview() {
   if (sourceMeetingId.value === null && !file.value) return
   working.value = true
   try {
-    previewResult.value =
+    previewResult.value = normalizePreview(
       sourceMeetingId.value !== null
         ? await previewClone(meetingId.value, sourceMeetingId.value)
         : await previewYamlImport(meetingId.value, file.value!)
+    )
   } catch (e) {
     handleRestError(e)
     file.value = null
@@ -583,6 +584,7 @@ async function runImport() {
           rounded
         >
           <v-list-subheader
+            v-if="previewResult.meta?.title"
             :title="
               $t('exportImport.importFrom', { title: previewResult.meta.title })
             "
