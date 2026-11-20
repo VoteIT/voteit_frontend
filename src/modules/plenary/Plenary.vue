@@ -156,6 +156,15 @@ function startPoll(methodName: Poll['method_name'], settings: object | null) {
   })
 }
 
+/**
+ * Reason starting polls isn't possible, regardless of method
+ */
+const pollStartBlocker = computed(() => {
+  if (!isModerator.value) return t('plenary.onlyManageSpeakers')
+  if (!meetingAndAiOngoing.value)
+    return t('poll.meetingAndAgendaMustBeOngoing')
+})
+
 const pollMethodMenu = computed(() => {
   const quickStartMethods: QuickStartMethod[] = [
     {
@@ -187,13 +196,9 @@ const pollMethodMenu = computed(() => {
       const proposalCountValid =
         proposalCount >= proposalsMin &&
         (!proposalsMax || proposalCount <= proposalsMax)
-      const disabled =
-        !isModerator.value || !meetingAndAiOngoing.value || !proposalCountValid
-      let subtitle: string | undefined
-      if (!isModerator.value) subtitle = t('plenary.onlyManageSpeakers')
-      else if (!meetingAndAiOngoing.value)
-        subtitle = t('poll.meetingAndAgendaMustBeOngoing')
-      else if (!proposalCountValid)
+      const disabled = !!pollStartBlocker.value || !proposalCountValid
+      let subtitle = pollStartBlocker.value
+      if (!subtitle && !proposalCountValid)
         subtitle = proposalsExact
           ? t('plenary.selectExactProposals', proposalsMin)
           : t('plenary.selectMinProposals', proposalsMin)
