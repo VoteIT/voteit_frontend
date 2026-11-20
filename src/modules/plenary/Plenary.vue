@@ -32,9 +32,12 @@ import AppBar from './AppBar.vue'
 import AgendaNavigation from './AgendaNavigation.vue'
 import BroadcastMenu from './BroadcastMenu.vue'
 import DecisionsTab from './DecisionsTab.vue'
-import { QuickStartMethod } from './types'
-import usePlenary from './usePlenary'
+import usePlenary, {
+  QUICK_START_METHODS,
+  quickStartMethods
+} from './usePlenary'
 import StartPollModal from './StartPollModal.vue'
+import StartOtherPollModal from './StartOtherPollModal.vue'
 import PollModal from './PollModal.vue'
 
 const { t } = useI18n()
@@ -156,46 +159,36 @@ function startPoll(methodName: Poll['method_name'], settings: object | null) {
   })
 }
 
+function startOtherPoll() {
+  const close = openModal({
+    component: StartOtherPollModal,
+    props: {
+      proposals: selectedProposals.value,
+      onCancel: () => close()
+    },
+    title: () => roomOpenPoll.value?.title ?? t('plenary.startPoll'),
+    onClose: () => handleBroadcast({ poll: null })
+  })
+}
+
 /**
  * Reason starting polls isn't possible, regardless of method
  */
 const pollStartBlocker = computed(() => {
   if (!isModerator.value) return t('plenary.onlyManageSpeakers')
-  if (!meetingAndAiOngoing.value)
-    return t('poll.meetingAndAgendaMustBeOngoing')
+  if (!meetingAndAiOngoing.value) return t('poll.meetingAndAgendaMustBeOngoing')
 })
 
-const pollMethodMenu = computed(() => {
-  const quickStartMethods: QuickStartMethod[] = [
-    {
-      ...getPollMethod('combined_simple')!,
-      settings: null,
-      title: t('poll.method.combined_simple')
-    },
-    {
-      ...getPollMethod('majority')!,
-      settings: null,
-      title: t('poll.method.majority')
-    },
-    {
-      ...getPollMethod('schulze')!,
-      proposalsMin: 3,
-      settings: null,
-      title: t('poll.method.schulze')
-    },
-    {
-      ...getPollMethod('schulze')!,
-      settings: { deny_proposal: true },
-      title: t('poll.method.schulzeAddDeny')
-    }
-  ]
-  return quickStartMethods.map(
-    ({ id, proposalsMax, proposalsMin, settings, title }) => {
-      const proposalsExact = proposalsMin === proposalsMax
+const pollMethodMenu = computed(() =>
+  quickStartMethods.map(
+    ({ getTitle, method, proposalsMin: minOverride, settings }) => {
+      const plugin = getPollMethod(method)!
+      const proposalsMin = minOverride ?? plugin.proposalsMin
+      const proposalsExact = proposalsMin === plugin.proposalsMax
       const proposalCount = selectedProposals.value.length
       const proposalCountValid =
         proposalCount >= proposalsMin &&
-        (!proposalsMax || proposalCount <= proposalsMax)
+        (!plugin.proposalsMax || proposalCount <= plugin.proposalsMax)
       const disabled = !!pollStartBlocker.value || !proposalCountValid
       let subtitle = pollStartBlocker.value
       if (!subtitle && !proposalCountValid)
@@ -205,13 +198,36 @@ const pollMethodMenu = computed(() => {
       return {
         disabled,
         prependIcon: 'mdi-vote',
-        id,
+        id: plugin.id,
         settings,
         subtitle,
-        title
+        title: getTitle(t)
       }
     }
   )
+)
+
+/**
+ * Menu item for poll methods that aren't quick start options.
+ * Hidden if there are no such methods for this organisation.
+ */
+const otherPollMethodItem = computed(() => {
+  const otherMethods = pollPlugins.getActivePlugins(
+    ({ id }) => !QUICK_START_METHODS.has(id)
+  )
+  if (!otherMethods.length) return
+  const proposalsMin = Math.min(...otherMethods.map((m) => m.proposalsMin))
+  const proposalCountValid = selectedProposals.value.length >= proposalsMin
+  return {
+    disabled: !!pollStartBlocker.value || !proposalCountValid,
+    prependIcon: 'mdi-dots-horizontal',
+    subtitle:
+      pollStartBlocker.value ??
+      (proposalCountValid
+        ? undefined
+        : t('plenary.selectMinProposals', proposalsMin)),
+    title: t('plenary.otherPollMethod')
+  }
 })
 
 const ongoingPollCount = computed(
@@ -390,6 +406,11 @@ onUnmounted(() => cleanupResize?.())
                 :key="id"
                 v-bind="item"
                 @click="startPoll(id, settings)"
+              />
+              <v-list-item
+                v-if="otherPollMethodItem"
+                v-bind="otherPollMethodItem"
+                @click="startOtherPoll"
               />
               <v-divider v-if="menuPollStates.length" class="my-3" />
               <template v-for="{ title, polls } in menuPollStates" :key="title">
