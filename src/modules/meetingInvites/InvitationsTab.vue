@@ -7,6 +7,7 @@ import { useI18n } from 'vue-i18n'
 import CheckboxMultipleSelect from '@/components/inputs/CheckboxMultipleSelect.vue'
 import DefaultDialog from '@/components/DefaultDialog.vue'
 import QueryDialog from '@/components/QueryDialog.vue'
+import DataTableSelectAll from '@/components/DataTableSelectAll.vue'
 import useChannel from '@/socket/useChannel'
 import usePermission from '@/composables/usePermission'
 
@@ -365,6 +366,14 @@ async function clearSelectedAnnotations() {
     show-select
     v-model="selectedInviteIds"
   >
+    <template
+      #header.data-table-select="{ allSelected, someSelected, selectAll }"
+    >
+      <DataTableSelectAll
+        v-model="selectedInviteIds"
+        v-bind="{ allSelected, someSelected, selectAll }"
+      />
+    </template>
     <template
       v-for="scope in existingInviteScopes"
       #[`header.user_data.${scope.id}`]="{ column, getSortIcon }"

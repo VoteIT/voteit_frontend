@@ -14,6 +14,7 @@ import useRules from '@/composables/useRules'
 import useErrorHandler from '@/composables/useErrorHandler'
 import DefaultForm from '@/components/DefaultForm.vue'
 import TagEdit from '@/components/TagEdit.vue'
+import DataTableSelectAll from '@/components/DataTableSelectAll.vue'
 
 import useAuthStore from '../auth/useAuthStore'
 import useUserDetails from '../organisations/useUserDetails'
@@ -420,6 +421,14 @@ const deleteSelected = handler(async () => {
       "
       v-model="selected"
     >
+      <template
+        #header.data-table-select="{ allSelected, someSelected, selectAll }"
+      >
+        <DataTableSelectAll
+          v-model="selected"
+          v-bind="{ allSelected, someSelected, selectAll }"
+        />
+      </template>
       <template
         v-for="sw in groupSwitches"
         #[`header.${sw.prop}`]

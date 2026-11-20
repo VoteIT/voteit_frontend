@@ -4,6 +4,10 @@ Document notable changes here.
 
 Version format is `major`.`minor`.`patch`. Until major version 1 is realeased, API changes accours on minor version bumps, but never on patch version bumps.
 
+## Unreleased
+
+- Bugfix: The select-all checkbox in the agenda, invitation and meeting group tables selects the rows on the current page, but deselecting now clears the whole selection. Before, rows on other pages stayed selected and were included in bulk actions
+
 ## 1.7.3 (2026-11-19)
 
 - Bugfix: Meeting import no longer fails when the file leaves out optional sections or fields, such as reaction buttons or the meeting title

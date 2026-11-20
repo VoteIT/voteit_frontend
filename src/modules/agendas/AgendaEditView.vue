@@ -8,6 +8,7 @@ import { ThemeColor } from '@/utils/types'
 import DefaultDialog from '@/components/DefaultDialog.vue'
 import Headline from '@/components/Headline.vue'
 import QueryDialog from '@/components/QueryDialog.vue'
+import DataTableSelectAll from '@/components/DataTableSelectAll.vue'
 import useErrorHandler from '@/composables/useErrorHandler'
 import usePermission from '@/composables/usePermission'
 
@@ -297,6 +298,14 @@ function tagFilter(tags: string | string[], query: string) {
     :items="agenda"
     class="mb-2"
   >
+    <template
+      #header.data-table-select="{ allSelected, someSelected, selectAll }"
+    >
+      <DataTableSelectAll
+        v-model="bulkEdit.selected"
+        v-bind="{ allSelected, someSelected, selectAll }"
+      />
+    </template>
     <template #no-data>
       <em class="text-secondary">
         {{ $t('agenda.editNoItems') }}
