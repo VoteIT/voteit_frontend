@@ -18,6 +18,10 @@ const props = defineProps<{
   methodName: Poll['method_name']
   proposals: Proposal[]
   settings: object | null
+  // Optional form values - quick start uses defaults
+  title?: string
+  p_ord?: Poll['p_ord']
+  withheld_result?: boolean
 }>()
 
 defineEmits<{
@@ -74,8 +78,10 @@ async function createPoll() {
     method_name: props.methodName,
     start: true,
     settings: props.settings,
-    title: nextPollTitle.value
+    title: props.title ?? nextPollTitle.value,
+    withheld_result: props.withheld_result // Boolean props default to false
   }
+  if (props.p_ord) pollData.p_ord = props.p_ord
   try {
     const { pk } = await create(pollData)
     createdId.value = pk

@@ -13,6 +13,8 @@ const props = defineProps<{
   createHandler(data: typeof poll, start: boolean): Promise<void>
   pollMethod: Omit<PollPlugin, 'criterion'>
   proposals: number
+  /** Only offer "Create and start", e.g. in the plenary view */
+  startOnly?: boolean
   title: string
 }>()
 
@@ -65,6 +67,7 @@ async function createPoll(start = false) {
     />
     <div class="d-flex justify-end ga-1">
       <v-btn
+        v-if="!startOnly"
         color="primary"
         :disabled="!isValid.value"
         :loading="working"
