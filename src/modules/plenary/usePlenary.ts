@@ -6,6 +6,8 @@ import { ProposalState, Proposal, isProposal } from '@/modules/proposals/types'
 import useProposalStore from '@/modules/proposals/useProposalStore'
 import useRoom from '../rooms/useRoom'
 
+import { QuickStartMethod } from './types'
+
 export const plenaryViewMode = useStorage<'discussion' | 'decisions' | 'split'>(
   'plenary:viewMode',
   'decisions',
@@ -20,6 +22,41 @@ export const broadcastFollowAgendaItem = useStorage<boolean | undefined>(
   undefined,
   localStorage,
   { serializer: StorageSerializers.object }
+)
+
+/**
+ * Poll methods offered as quick start options in the plenary polls menu.
+ * Other methods are started via StartOtherPollModal.
+ */
+export const quickStartMethods: readonly QuickStartMethod[] = [
+  {
+    getTitle: (t) => t('poll.method.combined_simple'),
+    method: 'combined_simple',
+    settings: null
+  },
+  {
+    getTitle: (t) => t('poll.method.majority'),
+    method: 'majority',
+    settings: null
+  },
+  {
+    getTitle: (t) => t('poll.method.schulze'),
+    method: 'schulze',
+    proposalsMin: 3,
+    settings: null
+  },
+  {
+    getTitle: (t) => t('poll.method.schulzeAddDeny'),
+    method: 'schulze',
+    settings: { deny_proposal: true }
+  }
+]
+
+/**
+ * Poll method names that have quick start options
+ */
+export const QUICK_START_METHODS: ReadonlySet<string> = new Set(
+  quickStartMethods.map(({ method }) => method)
 )
 
 const stateFilter = ref([ProposalState.Published, ProposalState.Voting])
