@@ -7,6 +7,7 @@ Version format is `major`.`minor`.`patch`. Until major version 1 is realeased, A
 ## Unreleased
 
 - Bugfix: The select-all checkbox in the agenda, invitation and meeting group tables selects the rows on the current page, but deselecting now clears the whole selection. Before, rows on other pages stayed selected and were included in bulk actions
+- Bugfix: Meeting import and clone no longer show duplicate warnings while the import is running. The imported content reached the meeting before the import finished, so it was flagged as colliding with itself
 
 ## 1.7.3 (2026-11-19)
 

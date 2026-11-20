@@ -340,6 +340,14 @@ const importWarnings = computed<ImportWarning[]>(() => {
   return warnings
 })
 
+// The import's own content reaches the stores over the socket before the REST
+// call returns, which would make the file collide with itself. Hold on to the
+// warnings as they were when the user confirmed until the request settles.
+const frozenWarnings = shallowRef<ImportWarning[] | null>(null)
+const shownWarnings = computed(
+  () => frozenWarnings.value ?? importWarnings.value
+)
+
 function itemSubtitle(item: { proposals: unknown[]; discussions: unknown[] }) {
   const parts: string[] = []
   if (item.proposals.length)
@@ -471,6 +479,7 @@ async function runPreview() {
 async function runImport() {
   if (sourceMeetingId.value === null && !file.value) return
   working.value = true
+  frozenWarnings.value = importWarnings.value
   await handled(async () => {
     const options = valuesFor('clear', 'import', 'include')
     if (sourceMeetingId.value !== null)
@@ -478,6 +487,7 @@ async function runImport() {
     else await confirmYamlImport(meetingId.value, file.value!, options)
     importDone.value = true
   })
+  frozenWarnings.value = null
   working.value = false
 }
 </script>
@@ -550,7 +560,7 @@ async function runImport() {
           "
         />
         <v-alert
-          v-if="importWarnings.length"
+          v-if="shownWarnings.length"
           variant="tonal"
           color="warning"
           class="mb-4"
@@ -561,7 +571,7 @@ async function runImport() {
             class="import-warnings"
           >
             <v-list-item
-              v-for="warning in importWarnings"
+              v-for="warning in shownWarnings"
               :class="{ 'no-clamp': !warning.clamp }"
               :key="warning.key"
               :title="warning.title"
