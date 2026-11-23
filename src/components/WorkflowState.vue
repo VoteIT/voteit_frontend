@@ -3,7 +3,7 @@
   setup
   generic="T extends StateContent, CT extends ContentType<T, any, any>"
 >
-import { computed, ref } from 'vue'
+import { computed, shallowRef } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 import { Color } from '@/utils/types'
@@ -43,7 +43,7 @@ const isUserModifiable = computed<boolean>(
   () => props.admin && !currentState.value?.final
 )
 
-const working = ref(false)
+const working = shallowRef(false)
 
 async function sendEvent(event: Event) {
   working.value = true
@@ -63,7 +63,6 @@ async function sendEvent(event: Event) {
     <template #activator="{ props }">
       <v-btn
         append-icon="mdi-chevron-down"
-        class="text-no-wrap"
         :color="currentState.color || color"
         :disabled="working"
         :prepend-icon="currentState.icon"
@@ -88,24 +87,19 @@ async function sendEvent(event: Event) {
       />
     </v-list>
   </v-menu>
-  <v-btn
+  <v-chip
     v-else-if="currentState"
-    class="text-no-wrap"
     :color="currentState.color || color"
-    disabled
     :prepend-icon="currentState.icon"
     size="x-small"
     :text="currentState.translate($t)"
     variant="flat"
   />
-  <v-btn
+  <v-chip
     v-else
-    class="text-no-wrap"
     :color="color"
-    disabled
     prepend-icon="mdi-help"
     size="x-small"
     :text="`Unknown state: ${props.object.state}`"
-    variant="flat"
   />
 </template>
