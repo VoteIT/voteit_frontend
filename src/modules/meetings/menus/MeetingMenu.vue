@@ -3,11 +3,13 @@ import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 import CollapsibleMenu from '@/components/CollapsibleMenu.vue'
+import useControlPanelAttention from '../useControlPanelAttention'
 import useMeeting from '../useMeeting'
 import { meetingNavPlugins } from '../registry'
 
 const { t } = useI18n()
 const { canChange, meeting, meetingRoute } = useMeeting()
+const { hasAttention } = useControlPanelAttention()
 
 function* iterMeetingItems() {
   if (!meeting.value) return
@@ -34,7 +36,7 @@ function* iterMeetingItems() {
     yield* plugin.iterItems({ meeting: meeting.value, menu: 'meeting', t })
   if (canChange.value)
     yield {
-      icons: ['mdi-cog'],
+      icons: hasAttention.value ? ['mdi-alert-circle', 'mdi-cog'] : ['mdi-cog'],
       title: t('meeting.controlPanel'),
       to: { name: 'settings' }
     }

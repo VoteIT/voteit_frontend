@@ -8,6 +8,7 @@ import usePermission from '@/composables/usePermission'
 
 import { meetingSettingsPlugins } from './registry'
 import MeetingToolbar from './MeetingToolbar.vue'
+import useControlPanelAttention from './useControlPanelAttention'
 import useMeeting from './useMeeting'
 import useMeetingTitle from './useMeetingTitle'
 import './controlPanels'
@@ -17,6 +18,7 @@ import { cols } from '@/utils/defaults'
 const { t } = useI18n()
 const route = useRoute()
 const { isModerator, meeting } = useMeeting()
+const { requiresAttention } = useControlPanelAttention()
 
 useMeetingTitle(t('settings'))
 usePermission(isModerator, { to: computed(() => ({ name: 'meeting' })) })
@@ -27,6 +29,7 @@ const panelPlugins = computed(() => {
     return {
       description: panel.getDescription && panel.getDescription(t),
       disabled: !!panel.isDisabled?.(meeting.value as Meeting),
+      requiresAttention: requiresAttention(panel.id),
       title: panel.getTitle(t),
       to:
         panel.route ??
@@ -52,6 +55,9 @@ const panels = computed(() =>
     ),
     (p) => p.title.toLocaleLowerCase()
   )
+)
+const advancedRequiresAttention = computed(() =>
+  advancedPanels.value.some((p) => p.requiresAttention)
 )
 const currentPanel = computed(() => route.params.panel as string | undefined)
 const currentPlugin = computed(() =>
@@ -108,7 +114,11 @@ const breadcrumbs = computed(() => {
           append-icon="mdi-chevron-down"
           :text="$t('meeting.advancedSettings')"
           v-bind="props"
-        />
+        >
+          <template v-if="advancedRequiresAttention" #prepend>
+            <v-icon color="warning" icon="mdi-alert-circle" />
+          </template>
+        </v-btn>
       </template>
       <v-list>
         <v-list-item
@@ -118,7 +128,11 @@ const breadcrumbs = computed(() => {
           :subtitle="panel.description"
           :title="panel.title"
           :to="panel.to"
-        />
+        >
+          <template v-if="panel.requiresAttention" #append>
+            <v-icon color="warning" icon="mdi-alert-circle" />
+          </template>
+        </v-list-item>
       </v-list>
     </v-menu>
   </MeetingToolbar>
@@ -140,6 +154,7 @@ const breadcrumbs = computed(() => {
           id,
           description,
           disabled,
+          requiresAttention,
           title,
           to,
           quickComponent
@@ -156,6 +171,11 @@ const breadcrumbs = computed(() => {
             <span class="flex-grow-1 text-truncate">
               {{ title }}
             </span>
+            <v-icon
+              v-if="requiresAttention"
+              color="warning"
+              icon="mdi-alert-circle"
+            />
             <v-icon icon="mdi-chevron-right" v-if="to" />
           </div>
         </template>
