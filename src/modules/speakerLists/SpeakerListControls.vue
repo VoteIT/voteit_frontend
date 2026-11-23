@@ -142,15 +142,27 @@ onKeyStroke(
     <p v-else>
       <em>{{ $t('speaker.cantManageList') }}</em>
     </p>
-    <v-sheet elevation="4" rounded="lg" v-if="currentSpeaker" class="my-4 pa-3">
-      <div class="d-flex mb-2 align-center">
-        <UserAvatar :pk="currentSpeaker.user" class="mr-2" />
-        <User :pk="currentSpeaker.user" style="font-size: 1.2rem" />
-      </div>
-      <p class="text-h3 text-right">
+    <v-card elevation="4" rounded="lg" v-if="currentSpeaker" class="my-4">
+      <template #prepend>
+        <UserAvatar :pk="currentSpeaker.user" />
+      </template>
+      <template #title>
+        <User :pk="currentSpeaker.user" />
+      </template>
+      <template v-if="currentSpeaker.annotations.length" #subtitle>
+        <div
+          v-for="({ icon, text }, i) in currentSpeaker.annotations"
+          :key="i"
+          class="text-wrap"
+        >
+          <v-icon :icon="icon" size="small" />
+          {{ text }}
+        </div>
+      </template>
+      <div class="text-h3 text-right pa-3 pt-0">
         <Moment in-seconds ordinary :date="currentSpeaker.started" />
-      </p>
-    </v-sheet>
+      </div>
+    </v-card>
     <v-list
       v-if="speakerGroups.length"
       density="comfortable"

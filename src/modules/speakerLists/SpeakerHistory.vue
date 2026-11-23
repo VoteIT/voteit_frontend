@@ -9,6 +9,7 @@ import User from '@/components/User.vue'
 import useMeeting from '../meetings/useMeeting'
 import useRoomStore from '../rooms/useRoomStore'
 
+import useSpeakerAnnotations from './useSpeakerAnnotations'
 import useSpeakerHistory from './useSpeakerHistory'
 import useSpeakerSystems from './useSpeakerSystems'
 
@@ -26,6 +27,7 @@ const speakerSystem = computed(() => {
   return Number(currentTab.value) || undefined
 })
 const { history } = useSpeakerHistory(meetingId, speakerSystem)
+const { annotateSpeaker } = useSpeakerAnnotations(meetingId, t)
 
 function secondsToTimeDisplay(seconds: number) {
   return durationToString(seconds * 1000)
@@ -64,7 +66,7 @@ const annotatedHistory = computed(
   () =>
     history.value &&
     history.value.map((e) => ({
-      ...e,
+      ...annotateSpeaker(e),
       timeSpoken: secondsToTimeDisplay(e.seconds_spoken)
     }))
 )
@@ -116,11 +118,24 @@ const annotatedHistory = computed(
       </thead>
       <tbody>
         <tr
-          v-for="{ user, times_spoken, timeSpoken } in annotatedHistory"
+          v-for="{
+            annotations,
+            user,
+            times_spoken,
+            timeSpoken
+          } in annotatedHistory"
           :key="user"
         >
           <td>
             <User :pk="user" userid />
+            <div
+              v-for="({ icon, text }, i) in annotations"
+              :key="i"
+              class="text-caption text-secondary"
+            >
+              <v-icon :icon="icon" size="small" />
+              {{ text }}
+            </div>
           </td>
           <td>
             {{ times_spoken }}

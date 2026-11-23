@@ -7,6 +7,7 @@ Version format is `major`.`minor`.`patch`. Until major version 1 is realeased, A
 ## 1.8.0 (Unreleased)
 
 - Tags are shown as chips, and `#tags` in rich text and in the editor look the same. Tags typed in the editor get their color right away, and the pointer only shows where clicking a tag does something. Disabled tags can no longer be clicked
+- Speaker handling shows group memberships (and gender, when used) for the current speaker, like the queue does. Speaker statistics show them under each name. [#364](https://github.com/VoteIT/voteit_frontend/issues/364)
 - Bugfix: Flag buttons that can't be toggled keep their color instead of looking disabled. Fixes [#415](https://github.com/VoteIT/voteit_frontend/issues/415)
 
 ## 1.7.5 (2026-11-23)
