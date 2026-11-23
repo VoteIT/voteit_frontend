@@ -45,16 +45,28 @@ export default function useTags(el?: Ref<HTMLElement | null>) {
         outerClickHandler(tagElem.dataset.value)
     }
 
+    function attach(elem: HTMLElement) {
+      elem.addEventListener('click', clickHandler)
+      // Lets CSS give tags a pointer only where clicking them does something
+      if (outerClickHandler) elem.classList.add('tags-clickable')
+    }
+
     onMounted(() => {
       if (!el.value) return
-      el.value.addEventListener('click', clickHandler)
+      attach(el.value)
       setTagColors(el.value)
     })
     onUpdated(() => {
       if (el.value) setTagColors(el.value)
     })
     watch(el, (elem) => {
-      if (elem) elem.addEventListener('click', clickHandler)
+      if (elem) attach(elem)
     })
+  }
+
+  return {
+    refreshTagColors() {
+      if (el?.value) setTagColors(el.value)
+    }
   }
 }

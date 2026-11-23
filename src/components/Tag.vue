@@ -14,9 +14,14 @@ const props = defineProps<{
   count?: number
 }>()
 
-const style = computed(() => ({ backgroundColor: stringToHSL(props.name) }))
+const color = computed(() => stringToHSL(props.name))
+const clickable = computed(() => !!clickHandler && !props.disabled)
 const badge = computed(() => !!props.count)
 const badgeContent = computed(() => String(props.count))
+
+function onClick() {
+  if (clickable.value) clickHandler?.(props.name)
+}
 </script>
 
 <template>
@@ -27,39 +32,20 @@ const badgeContent = computed(() => String(props.count))
     offset-y="-2"
     color="secondary"
   >
-    <span
-      class="voteit-tag"
-      :class="{ disabled, 'cursor-pointer': !!clickHandler }"
-      :style="style"
+    <v-chip
+      :class="{ disabled }"
+      :closable="closer"
+      :color="color"
+      :link="clickable"
+      :ripple="clickable"
       data-denotation-char="#"
       :data-value="name"
-      @click="clickHandler?.(name)"
+      size="x-small"
+      variant="flat"
+      @click="onClick"
+      @click:close="$emit('remove')"
     >
-      <v-icon size="x-small" icon="mdi-tag-outline" />
       #{{ name }}
-      <v-icon
-        v-if="closer"
-        size="x-small"
-        icon="mdi-close"
-        @click.stop="$emit('remove')"
-      />
-    </span>
+    </v-chip>
   </v-badge>
 </template>
-
-<style lang="sass" scoped>
-.voteit-tag
-  white-space: nowrap
-  padding: .2em .6em
-  border-radius: 4px
-  color: #000
-  font-size: 10pt
-
-span[data-denotation-char="#"]
-  user-select: unset
-
-.mdi-close
-  position: relative
-  top: -2px
-  left: 5px
-</style>

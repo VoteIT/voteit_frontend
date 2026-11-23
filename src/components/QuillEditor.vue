@@ -176,6 +176,7 @@ onMounted(() => {
       return console.error(
         'Quill text-change event triggered, but editor is not available'
       )
+    refreshTagColors() // Newly typed #tags trigger no Vue update
     emit('update:modelValue', editor.root.innerHTML.replaceAll(/&nbsp;/g, ' ')) // Replace all non-beaking spaces - they often show up by accident
   })
   if (props.autofocus) focus()
@@ -198,7 +199,7 @@ function setText(value: string = '') {
   editor.root.innerHTML = value
 }
 
-useTags(editorElement)
+const { refreshTagColors } = useTags(editorElement)
 
 defineExpose({
   focus,
@@ -240,6 +241,10 @@ defineExpose({
 
 .ql-tooltip
   z-index: 100
+
+// quill.core.css sets Helvetica on .ql-container - give mentions the app font, like Tag chips
+.ql-container .mention
+  font-family: 'Noto sans'
 
 ul.ql-mention-list
   padding: 0 !important

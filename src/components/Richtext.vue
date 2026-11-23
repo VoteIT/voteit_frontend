@@ -123,12 +123,28 @@ watch(contentElem, (el) => {
   p
     font-size: 10.5pt
     line-height: 1.5
+  // Mimics <v-chip size="x-small" variant="flat"> as rendered by Tag.vue
   .mention
+    display: inline-flex
+    align-items: center
+    vertical-align: middle
+    width: auto
+    height: 20px
+    padding: 0 8px
+    margin-right: 0
+    border-radius: 9999px
     background-color: rgba(var(--v-theme-primary), .3)
+    font-size: .625rem
+    line-height: 1
     white-space: nowrap
-    padding: .05em .6em
-    border-radius: 4px
-    font-size: 10pt
+    > span
+      margin: 0
+    &[data-denotation-char="#"]
+      color: #000
+
+// Set by useTags on containers where a tag click does something
+.tags-clickable .mention[data-denotation-char="#"]
+  cursor: pointer
 
 .overflow-fade
   clip-path: inset(0)
