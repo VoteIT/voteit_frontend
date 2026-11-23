@@ -9,6 +9,7 @@ Version format is `major`.`minor`.`patch`. Until major version 1 is realeased, A
 - Tags are shown as chips, and `#tags` in rich text and in the editor look the same. Tags typed in the editor get their color right away, and the pointer only shows where clicking a tag does something. Disabled tags can no longer be clicked
 - Speaker handling shows group memberships (and gender, when used) for the current speaker, like the queue does. Speaker statistics show them under each name. [#364](https://github.com/VoteIT/voteit_frontend/issues/364)
 - Meeting control panel warnings show in the meeting menu, on the panel cards and on the advanced settings menu: when the meeting is listed but has no active access policy, or when the dialect requires a component that's turned off. [#366](https://github.com/VoteIT/voteit_frontend/issues/366)
+- Vote transfers (main and substitute): Lists of members and transfer targets are in alphabetical order, with a search field when there are more than 5. Transfers that involve you are shown first, and returning a vote is its own button that asks for confirmation. The transfer menu says that a transfer applies to polls started from then on. [#387](https://github.com/VoteIT/voteit_frontend/issues/387)
 - Bugfix: Flag buttons that can't be toggled keep their color instead of looking disabled. Fixes [#415](https://github.com/VoteIT/voteit_frontend/issues/415)
 
 ## 1.7.5 (2026-11-23)
