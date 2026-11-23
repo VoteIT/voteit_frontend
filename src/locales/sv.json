@@ -205,6 +205,19 @@
       "thisIsMine": "Det är jag",
       "title": "Är det här ditt konto?"
     },
+    "chooseAccount": {
+      "description": "Du har mer än ett konto här med samma VoteIT ID. Välj vilket du vill använda, eller slå ihop dem till ett så att det här inte händer igen.",
+      "meetings": "Kommande och pågående möten:",
+      "merge": "Slå ihop till ett konto",
+      "mergeBlocked": "Kontona kan inte slås ihop här. Välj ett att använda, eller kontakta VoteIT för att få dem ihopslagna.",
+      "mergeConfirm": "Slå ihop kontona till ett? Det går inte att ångra.",
+      "mergeHelp": "Allt på de andra kontona flyttas till ett av dem, och framöver har du bara det kontot.",
+      "mergeRefused": "Kontona kunde inte slås ihop. Välj ett att använda tills vidare.",
+      "mergeTitle": "Slå ihop kontona",
+      "noMeetings": "Inga kommande eller pågående möten",
+      "title": "Vilket konto vill du använda?",
+      "useThis": "Använd det här kontot"
+    },
     "loginMethods": {
       "title": "Sätt att logga in",
       "description": "De tjänster du kan använda för att logga in på det här kontot.",

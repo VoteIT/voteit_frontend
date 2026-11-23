@@ -205,6 +205,19 @@
       "thisIsMine": "This is me",
       "title": "Is this account yours?"
     },
+    "chooseAccount": {
+      "description": "You have more than one account here with the same VoteIT ID. Choose which one to use, or merge them into one so this doesn't happen again.",
+      "meetings": "Upcoming and ongoing meetings:",
+      "merge": "Merge into one account",
+      "mergeBlocked": "These accounts can't be merged here. Choose one to use, or contact VoteIT to have them merged.",
+      "mergeConfirm": "Merge these accounts into one? This can't be undone.",
+      "mergeHelp": "Everything on the other accounts is moved to one of them, and you'll only have that one from now on.",
+      "mergeRefused": "The accounts couldn't be merged. Choose one to use for now.",
+      "mergeTitle": "Merge the accounts",
+      "noMeetings": "No upcoming or ongoing meetings",
+      "title": "Which account do you want to use?",
+      "useThis": "Use this account"
+    },
     "loginMethods": {
       "title": "Ways to log in",
       "description": "The services you can use to sign in to this account.",

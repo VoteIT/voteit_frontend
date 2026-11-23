@@ -1,6 +1,7 @@
 import router from '@/router'
 import AbortRemovalView from './AbortRemovalView.vue'
 import AcceptTosView from './AcceptTosView.vue'
+import ChooseAccountView from './ChooseAccountView.vue'
 import ErrorView from './ErrorView.vue'
 import LinkAccountView from './LinkAccountView.vue'
 import './removalGate'
@@ -22,6 +23,14 @@ router.addRoute({
   component: LinkAccountView,
   // The login that sent them here is paused half way through, so there is no
   // session yet - the partial token in the query is what stands in for one
+  meta: { anonymous: true }
+})
+
+router.addRoute({
+  path: '/choose-account',
+  name: 'auth:chooseAccount',
+  component: ChooseAccountView,
+  // Paused on several accounts for one VoteIT ID, before there's a session
   meta: { anonymous: true }
 })
 

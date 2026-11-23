@@ -205,6 +205,19 @@
       "thisIsMine": "Det er mig",
       "title": "Er dette din konto?"
     },
+    "chooseAccount": {
+      "description": "Du har mere end én konto her med samme VoteIT ID. Vælg hvilken du vil bruge, eller læg dem sammen til én, så det ikke sker igen.",
+      "meetings": "Kommende og igangværende møder:",
+      "merge": "Læg sammen til én konto",
+      "mergeBlocked": "Kontiene kan ikke lægges sammen her. Vælg én at bruge, eller kontakt VoteIT for at få dem lagt sammen.",
+      "mergeConfirm": "Læg kontiene sammen til én? Det kan ikke fortrydes.",
+      "mergeHelp": "Alt på de andre konti flyttes til én af dem, og fremover har du kun den konto.",
+      "mergeRefused": "Kontiene kunne ikke lægges sammen. Vælg én at bruge indtil videre.",
+      "mergeTitle": "Læg kontiene sammen",
+      "noMeetings": "Ingen kommende eller igangværende møder",
+      "title": "Hvilken konto vil du bruge?",
+      "useThis": "Brug denne konto"
+    },
     "loginMethods": {
       "title": "Måder at logge ind på",
       "description": "De tjenester, du kan bruge til at logge ind på denne konto.",
