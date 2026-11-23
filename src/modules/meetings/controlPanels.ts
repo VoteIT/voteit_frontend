@@ -1,10 +1,17 @@
+import { computed, watchEffect } from 'vue'
+
 import AccessPolicies from './accessPolicies/ControlPanel.vue'
 import APQuick from './accessPolicies/QuickPanel.vue'
 import ElectoralRegisters from './electoralRegisters/ControlPanel.vue'
 import ERQuick from './electoralRegisters/QuickPanel.vue'
 import DialectQuick from './dialects/QuickPanel.vue'
 import DialectControlPanel from './dialects/ControlPanel.vue'
+import {
+  loadAccessPolicies,
+  useAccessPolicyState
+} from './accessPolicies/useAccessPolicies'
 import { meetingSettingsPlugins } from './registry'
+import useMeeting from './useMeeting'
 
 meetingSettingsPlugins.register({
   id: 'dialect',
@@ -26,6 +33,18 @@ meetingSettingsPlugins.register({
   icon: 'mdi-key',
   getTitle(t) {
     return t('accessPolicy.plural')
+  },
+  useRequiresAttention() {
+    const { canChange, meeting, meetingId } = useMeeting()
+    const { hasActivePolicy } = useAccessPolicyState(meetingId)
+    // Only those who can change the meeting may read its access policies
+    watchEffect(() => {
+      if (canChange.value && meetingId.value)
+        loadAccessPolicies(meetingId.value)
+    })
+    return computed(
+      () => !!meeting.value?.visible_in_lists && !hasActivePolicy.value
+    )
   }
 })
 

@@ -10,8 +10,10 @@ import ProposalPrintButton from './ProposalPrintButton.vue'
 import ProposalPrintView from './ProposalPrintView.vue'
 import ControlPanel from './ControlPanel.vue'
 
+const COMPONENT_NAME = 'proposal_print'
+
 function checkActive(meeting: Meeting) {
-  return useMeetingComponent(meeting.pk, 'proposal_print').componentActive.value
+  return useMeetingComponent(meeting.pk, COMPONENT_NAME).componentActive.value
 }
 
 proposalButtonPlugins.register({
@@ -21,7 +23,7 @@ proposalButtonPlugins.register({
 })
 
 meetingSettingsPlugins.register({
-  id: 'printing',
+  id: COMPONENT_NAME,
   icon: 'mdi-printer',
   quickComponent: ControlPanel,
   getTitle(t) {

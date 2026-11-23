@@ -1,4 +1,4 @@
-import { Component } from 'vue'
+import { Component, Ref } from 'vue'
 import { ComposerTranslation } from 'vue-i18n'
 
 import { MenuItem, TreeMenuLink } from '@/utils/types'
@@ -23,6 +23,11 @@ interface SettingsTab {
   disabled?: boolean
 }
 
+/**
+ * A panel that turns a meeting component on and off has the component's name
+ * as id. It then requires attention when the dialect requires that component
+ * and it's turned off.
+ */
 interface SettingsPlugin extends MeetingPlugin {
   component?: Component<any, { path: string; translationKey: string }>
   quickComponent?: Component
@@ -37,6 +42,11 @@ interface SettingsPlugin extends MeetingPlugin {
   getDescription?(t: ComposerTranslation): string
   getTabs?(meeting: Meeting, t: ComposerTranslation): SettingsTab[]
   getTitle(t: ComposerTranslation): string
+  /**
+   * Composable, called once in the setup of whatever shows attention - so a
+   * panel may start fetching what it needs to know.
+   */
+  useRequiresAttention?(): Ref<boolean | undefined>
 }
 
 interface MeetingSlotPlugin extends MeetingPlugin {
