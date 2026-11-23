@@ -2,7 +2,7 @@
   <FlagButton
     v-if="isFlagButton(button)"
     :button="button"
-    :disabled="readonly || !canReact"
+    :readonly="readonly || !canReact"
     :working="working"
     v-model="reacted"
   />

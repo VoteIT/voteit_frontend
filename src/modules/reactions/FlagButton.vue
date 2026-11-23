@@ -7,16 +7,16 @@
     <template #activator="{ props }">
       <span v-bind="props">
         <v-btn
-          v-if="modelValue || !disabled"
+          v-if="modelValue || !readonly"
           v-bind="$attrs"
           :color="button.color"
-          :disabled="disabled"
           :loading="working"
           :prepend-icon="button.icon"
+          :readonly="readonly"
           size="small"
           :text="button.title"
           :variant="variant"
-          @click.prevent="emit('update:modelValue', !modelValue)"
+          @click.prevent="!readonly && emit('update:modelValue', !modelValue)"
         />
       </span>
     </template>
@@ -30,7 +30,7 @@ import { IFlagButton } from './types'
 
 const props = defineProps<{
   button: IFlagButton
-  disabled?: boolean
+  readonly?: boolean
   working?: boolean
   modelValue?: boolean
 }>()

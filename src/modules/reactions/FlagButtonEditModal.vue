@@ -88,7 +88,6 @@ async function save() {
         <FlagButton
           :button="transformedData"
           v-model="previewActive"
-          :can-toggle="true"
         >
           <template #userList>
             <UserList v-if="authStore.user" :user-ids="[authStore.user.pk]" />

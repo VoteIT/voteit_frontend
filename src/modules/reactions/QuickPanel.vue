@@ -28,7 +28,6 @@ const model = reactive<Record<number, boolean>>({})
       <FlagButton
         v-if="isFlagButton(button)"
         :button="button"
-        can-toggle
         v-model="model[button.pk]"
       />
       <div v-else>
