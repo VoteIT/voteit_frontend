@@ -7,7 +7,10 @@ import vuetify from '@/plugins/vuetify'
 import { AgendaItem, AgendaState } from './types'
 import AgendaEditView from './AgendaEditView.vue'
 
-const { mockListAction } = vi.hoisted(() => ({ mockListAction: vi.fn() }))
+const { mockListAction, mockHasOngoingPolls } = vi.hoisted(() => ({
+  mockListAction: vi.fn(),
+  mockHasOngoingPolls: vi.fn()
+}))
 
 // The agenda items the store would hold. Tests mutate this to stand in for the
 // socket updates that follow a delete.
@@ -27,10 +30,20 @@ vi.mock('./useAgendaStore', () => ({
 vi.mock('./contentTypes', () => ({
   agendaItemType: {
     api: { listAction: mockListAction, patch: vi.fn(), delete: vi.fn() },
-    sm: { getState: () => undefined, getStateList: () => [] }
+    sm: {
+      getState: () => undefined,
+      getStateList: () =>
+        ['upcoming', 'closed'].map((state) => ({
+          state,
+          translate: () => state
+        }))
+    }
   }
 }))
-vi.mock('./rules', () => ({ canDeleteAgendaItem: () => false }))
+vi.mock('./rules', () => ({
+  canDeleteAgendaItem: () => false,
+  hasOngoingPolls: mockHasOngoingPolls
+}))
 vi.mock('./AgendaOrdering.vue', () => ({ default: { template: '<div />' } }))
 
 vi.mock('../meetings/useMeeting', () => ({
@@ -62,13 +75,16 @@ vi.mock('@/components/QueryDialog.vue', () => ({
   }
 }))
 
-function agendaItem(pk: number): AgendaItem {
+function agendaItem(
+  pk: number,
+  state: AgendaState = AgendaState.Upcoming
+): AgendaItem {
   return {
     pk,
     meeting: 1,
     title: `Item ${pk}`,
     tags: [],
-    state: AgendaState.Upcoming,
+    state,
     order: pk,
     block_proposals: false,
     block_discussion: false
@@ -118,6 +134,7 @@ async function clickSelectAll(wrapper: VueWrapper) {
 
 beforeEach(() => {
   vi.clearAllMocks()
+  mockHasOngoingPolls.mockReturnValue(false)
   items.value = Array.from({ length: 30 }, (_, i) => agendaItem(i + 1))
   // Deleting drops the items from the store, as the socket update would
   mockListAction.mockImplementation(
@@ -184,4 +201,49 @@ test('Items deleted elsewhere leave the selection', async () => {
   await flushPromises()
   expect(selected(wrapper)).not.toContain(3)
   expect(selected(wrapper)).toHaveLength(24)
+})
+
+function stateButton(wrapper: VueWrapper, state: string) {
+  return wrapper
+    .findAllComponents({ name: 'VBtn' })
+    .find((b) => b.text() === `agenda.setTo ${state}`)!
+}
+
+async function selectItems(wrapper: VueWrapper, pks: number[]) {
+  table(wrapper).vm.$emit('update:modelValue', pks)
+  await flushPromises()
+}
+
+test('Warns about selected ongoing items with ongoing polls', async () => {
+  items.value = [agendaItem(1, AgendaState.Ongoing), agendaItem(2)]
+  mockHasOngoingPolls.mockImplementation(({ pk }: AgendaItem) => pk === 1)
+  const wrapper = await mountView()
+
+  await selectItems(wrapper, [2])
+  expect(wrapper.text()).not.toContain('agenda.cantLeaveOngoing')
+
+  await selectItems(wrapper, [1, 2])
+  expect(wrapper.text()).toContain('agenda.cantLeaveOngoing')
+})
+
+test('No warning for ongoing items without ongoing polls', async () => {
+  items.value = [agendaItem(1, AgendaState.Ongoing)]
+  const wrapper = await mountView()
+  await selectItems(wrapper, [1])
+  expect(wrapper.text()).not.toContain('agenda.cantLeaveOngoing')
+  expect(stateButton(wrapper, 'closed').props('disabled')).toBe(false)
+})
+
+test('State change is disabled when only locked items would change', async () => {
+  items.value = [agendaItem(1, AgendaState.Ongoing), agendaItem(2)]
+  mockHasOngoingPolls.mockImplementation(({ pk }: AgendaItem) => pk === 1)
+  const wrapper = await mountView()
+
+  await selectItems(wrapper, [1])
+  expect(stateButton(wrapper, 'closed').props('disabled')).toBe(true)
+  expect(stateButton(wrapper, 'upcoming').props('disabled')).toBe(true)
+
+  // An item that can change enables it again
+  await selectItems(wrapper, [1, 2])
+  expect(stateButton(wrapper, 'closed').props('disabled')).toBe(false)
 })

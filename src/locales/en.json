@@ -126,6 +126,7 @@
     "allowDiscussion": "Allow discussion",
     "blockProposals": "Disallow proposals",
     "blockDiscussion": "Disallow discussion",
+    "cantLeaveOngoing": "One selected agenda item has ongoing polls and can't be changed from ongoing | {count} selected agenda items have ongoing polls and can't be changed from ongoing",
     "changeMany": "Change one agenda item | Change {count} agenda items",
     "changeManyFailed": "Operation failed for one agenda item ({reason}) | Operation failed for {count} agenda items ({reason})",
     "deleteItemConfirm": "You are about to delete an Agenda Item permanently.\nAre you sure?",

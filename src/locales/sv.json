@@ -126,6 +126,7 @@
     "allowDiscussion": "Tillåt diskussion",
     "blockProposals": "Stäng av förslag",
     "blockDiscussion": "Stäng av diskussion",
+    "cantLeaveOngoing": "En vald dagordningspunkt har pågående omröstningar och kan inte ändras från pågående | {count} valda dagordningspunkter har pågående omröstningar och kan inte ändras från pågående",
     "changeMany": "Ändra en dagordningspunkt | Ändra {count} dagordningspunkter",
     "changeManyFailed": "Åtgärden misslyckades för en dagordningspunkt ({reason}) | Åtgärden misslyckades för {count} dagordningspunkter ({reason})",
     "deleteItemConfirm": "Du är på väg att radera en dagordningspunkt.\nÄr du säker?",

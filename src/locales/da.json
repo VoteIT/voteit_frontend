@@ -126,6 +126,7 @@
     "allowDiscussion": "Tillad diskussion",
     "blockProposals": "Slå forslag fra",
     "blockDiscussion": "Slå diskussion fra",
+    "cantLeaveOngoing": "Ét valgt dagsordenspunkt har igangværende afstemninger og kan ikke ændres fra igangværende | {count} valgte dagsordenspunkter har igangværende afstemninger og kan ikke ændres fra igangværende",
     "changeMany": "Ændr ét dagsordenspunkt | Ændr {count} dagsordenspunkter",
     "changeManyFailed": "Handlingen mislykkedes for ét dagsordenspunkt ({reason}) | Handlingen mislykkedes for {count} dagsordenspunkter ({reason})",
     "deleteItemConfirm": "Du er ved at slette et dagsordenspunkt permanent.\nEr du sikker?",

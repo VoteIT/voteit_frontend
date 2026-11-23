@@ -21,7 +21,7 @@ import useAgenda from './useAgenda'
 import useAgendaStore from './useAgendaStore'
 import useAgendaTags from './useAgendaTags'
 import { AgendaItem, AgendaState } from './types'
-import { canDeleteAgendaItem } from './rules'
+import { canDeleteAgendaItem, hasOngoingPolls } from './rules'
 import { agendaItemType } from './contentTypes'
 import AgendaOrdering from './AgendaOrdering.vue'
 
@@ -205,12 +205,24 @@ const setTitle = handler(
 )
 
 /**
- * Used to disable state selection if all selected AI:s are already that state,
+ * Selected agenda items that can't leave ongoing state, because they have ongoing polls.
+ */
+const lockedOngoing = computed(() =>
+  selectedAgendaItems.value.filter(
+    (ai) => ai.state === AgendaState.Ongoing && hasOngoingPolls(ai)
+  )
+)
+
+/**
+ * Used to disable state selection if no selected AI can change to that state
+ * (already that state, or locked in ongoing by ongoing polls),
  * of if target is ongoing and meeting is not ongoing,
  */
 function canSetState(target: AgendaState) {
   return (
-    selectedAgendaItems.value.some((ai) => ai.state !== target) &&
+    selectedAgendaItems.value.some(
+      (ai) => ai.state !== target && !lockedOngoing.value.includes(ai)
+    ) &&
     !(
       target === AgendaState.Ongoing &&
       meeting.value?.state !== MeetingState.Ongoing
@@ -409,6 +421,12 @@ function tagFilter(tags: string | string[], query: string) {
           </template>
         </QueryDialog>
       </div>
+      <v-alert
+        v-if="lockedOngoing.length"
+        density="compact"
+        :text="$t('agenda.cantLeaveOngoing', lockedOngoing.length)"
+        type="warning"
+      />
       <div class="d-flex flex-wrap ga-1">
         <v-btn
           color="primary"
