@@ -1,28 +1,19 @@
 <script setup lang="ts">
-import { computed } from 'vue'
-
 import { dialogAlert } from '@/utils'
 
-import useMeeting from './useMeeting'
-import { isActiveMeeting } from './rules'
-import useMeetingComponent from './useMeetingComponent'
+import useRequiredComponent from './useRequiredComponent'
 
 const props = defineProps<{ componentName: string; switchLabel: string }>()
 
-const { meeting, meetingId } = useMeeting()
-const isBlocked = computed(() =>
-  meeting.value?.dialect?.block_components?.includes(props.componentName)
-)
-const isRequired = computed(
-  () =>
-    isActiveMeeting(meeting.value) &&
-    (meeting.value?.dialect?.configure_components || []).some(
-      ({ name }) => name === props.componentName
-    )
-)
-const { component, componentActive, addComponent, setComponentState } =
-  useMeetingComponent(meetingId, props.componentName)
-const warnRequired = computed(() => !componentActive.value && isRequired.value)
+const {
+  component,
+  componentActive,
+  isBlocked,
+  isRequired,
+  warnRequired,
+  addComponent,
+  setComponentState
+} = useRequiredComponent(props.componentName)
 
 async function setActive(state: boolean) {
   try {
