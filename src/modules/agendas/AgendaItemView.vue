@@ -294,7 +294,10 @@ provide(TagClickHandlerKey, async (tagName) => {
             />
           </template>
         </v-tooltip>
-        <AllowProposalsSwitch class="ml-4 flex-grow-0" color="primary" />
+        <AllowProposalsSwitch
+          class="ml-4 flex-grow-0 d-none d-sm-block"
+          color="primary"
+        />
         <v-spacer />
         <AgendaFilters ref="filterComponent" />
       </v-col>
