@@ -386,7 +386,7 @@ const currentERText = computed(() => {
                 {{ $t('electoralRegister.voterCount', weights.length) }}
               </span>
               <small class="text-secondary flex-grow-1">
-                <span v-if="source">
+                <span v-if="source" class="d-none d-sm-inline">
                   {{ getErMethod(source)?.title || source }},
                 </span>
                 {{ formatDate(created, DATETIME_SHORT) }}
