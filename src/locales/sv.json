@@ -1141,7 +1141,7 @@
     },
     "cantChange": "Du har inte rätt att ändra det här förslaget",
     "cantRetract": "Du har inte rätt att dra tillbaka det här förslaget",
-    "approveDenyConfirm": "Det ser ut som att du vill bifalla eller avslå ett annat förslag. Det behövs inget förslag för det, eftersom du gör det när du röstar. Publicera ändå?",
+    "approveDenyConfirm": "Det ser ut som att du vill bifalla eller avslå något. Vanligtvis behöver du inte lägga bifall eller avslag som ett eget förslag i VoteIT, men det finns undantag. Vill du fortsätta?",
     "publishCount": "Publicera | Publicera ett förslag | Publicera {count} förslag",
     "splitParagraphs": "Lägg varje stycke som ett eget förslag",
     "publish": "Publicera förslag"

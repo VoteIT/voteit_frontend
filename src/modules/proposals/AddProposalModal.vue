@@ -156,10 +156,7 @@ async function saveProposal() {
   if (
     isNewPlainProposal.value &&
     pending.some(isApproveDenyProposal) &&
-    !(await dialogQuery({
-      title: t('proposal.approveDenyConfirm'),
-      theme: ThemeColor.Warning
-    }))
+    !(await dialogQuery(t('proposal.approveDenyConfirm')))
   ) {
     saving.value = false
     return

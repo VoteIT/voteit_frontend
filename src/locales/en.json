@@ -1141,7 +1141,7 @@
     },
     "cantChange": "You don't have permission to change this proposal",
     "cantRetract": "You don't have permission to retract this proposal",
-    "approveDenyConfirm": "It looks like you're approving or rejecting another proposal. You don't need a proposal for that, because you can do it when voting. Publish anyway?",
+    "approveDenyConfirm": "It looks like you want to approve or reject something. Usually you don't need to add approval or rejection as a separate proposal in VoteIT, but there are exceptions. Do you want to continue?",
     "publishCount": "Publish | Publish one proposal | Publish {count} proposals",
     "splitParagraphs": "Post each paragraph as a separate proposal",
     "publish": "Publish proposal"
