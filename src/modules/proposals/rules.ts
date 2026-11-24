@@ -7,7 +7,9 @@ import {
 } from '../agendas/rules'
 import { AgendaItem } from '../agendas/types'
 import useAgendaStore from '../agendas/useAgendaStore'
+import useAuthStore from '../auth/useAuthStore'
 import { isFinishedMeeting, isModerator, isProposer } from '../meetings/rules'
+import useGroupStore from '../meetings/useGroupStore'
 import usePollStore from '../polls/usePollStore'
 
 import { ProposalText } from './contentTypes'
@@ -81,12 +83,27 @@ export function canDeleteProposal(proposal: Proposal): boolean {
   return canChangeProposal(proposal) && !isUsedInPoll(proposal)
 }
 
+/**
+ * Proposals posted as a meeting group may be retracted by any member of that group.
+ */
+function isAuthorOrGroupAuthorMember(proposal: Proposal): boolean {
+  if (isAuthor(proposal)) return true
+  const { user } = useAuthStore()
+  return (
+    !!user &&
+    proposal.meeting_group !== null &&
+    useGroupStore().isGroupMember(proposal.meeting_group, user.pk)
+  )
+}
+
 export function canRetractProposal(proposal: Proposal): boolean {
   const agendaItem = useAgendaStore().getAgendaItem(proposal.agenda_item)
   if (!agendaItem) return false
   if (isFinishedAI(agendaItem) || !isPublishedProposal(proposal)) return false
   return (
-    isAIModerator(agendaItem) ||
-    (isAuthor(proposal) && !isProposalBlocked(agendaItem))
+    !!isAIModerator(agendaItem) ||
+    (isAuthorOrGroupAuthorMember(proposal) &&
+      !!isProposer(agendaItem.meeting) &&
+      !isProposalBlocked(agendaItem))
   )
 }
