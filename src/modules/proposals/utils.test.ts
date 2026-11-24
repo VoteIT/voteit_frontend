@@ -1,6 +1,6 @@
 import { describe, expect, test } from 'vitest'
 
-import { getParagraphs, isApproveDenyProposal } from './utils'
+import { getExtraTags, getParagraphs, isApproveDenyProposal } from './utils'
 
 describe('getParagraphs', () => {
   test('empty body has no paragraphs', () => {
@@ -48,5 +48,17 @@ describe('isApproveDenyProposal', () => {
     ''
   ])('%s is not approve/deny', (html) => {
     expect(isApproveDenyProposal(html)).toBe(false)
+  })
+})
+
+describe('getExtraTags', () => {
+  test('excludes own prop id and tags in text', () => {
+    expect(
+      getExtraTags({
+        body: '<p>See <span class="mention" data-denotation-char="#" data-value="in-text">#in-text</span></p>',
+        prop_id: 'own-1',
+        tags: ['own-1', 'in-text', 'other-1']
+      })
+    ).toEqual(['other-1'])
   })
 })

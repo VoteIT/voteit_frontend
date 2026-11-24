@@ -1,5 +1,7 @@
 import { stripHTML } from '@/utils'
 
+import { getHTMLTags } from '../meetings/useTags'
+
 import { UNRESOLVED_STATES } from './constants'
 import type { Proposal } from './types'
 
@@ -29,4 +31,16 @@ const approveDenyPattern =
  */
 export function isApproveDenyProposal(html: string): boolean {
   return approveDenyPattern.test(stripHTML(html))
+}
+
+/**
+ * Tags that are neither the proposal's own id nor written in its text.
+ */
+export function getExtraTags({
+  body,
+  prop_id,
+  tags
+}: Pick<Proposal, 'body' | 'prop_id' | 'tags'>) {
+  const docTags = getHTMLTags(body)
+  return tags.filter((tag) => !docTags.has(tag) && tag !== prop_id)
 }

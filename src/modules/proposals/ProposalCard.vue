@@ -26,9 +26,6 @@
         </v-defaults-provider>
       </div>
       <ProposalText :proposal="p" class="my-3" />
-      <div class="mt-6 mb-3" v-if="extraTags.length">
-        <Tag v-for="tag in extraTags" :key="tag" :name="tag" class="mr-1" />
-      </div>
       <div class="author text-secondary d-flex flex-wrap align-end">
         <AuthorName :author="p" icon :prepend-text="$t('by')">
           <template #appendMain>
@@ -38,6 +35,7 @@
         <v-spacer />
         <slot name="bottom-right"></slot>
       </div>
+      <ProposalExtraTags :proposal="p" class="my-3" />
       <v-sheet v-if="$slots.vote" class="vote-slot">
         <slot name="vote"></slot>
       </v-sheet>
@@ -144,7 +142,6 @@ import useAgendaFilter from '../agendas/useAgendaFilter'
 import Comments from '../discussions/Comments.vue'
 import useDiscussionStore from '../discussions/useDiscussionStore'
 import useMeeting from '../meetings/useMeeting'
-import { getHTMLTags } from '../meetings/useTags'
 import AuthorName from '../meetings/AuthorName.vue'
 
 import { proposalType } from './contentTypes'
@@ -153,6 +150,7 @@ import {
   canDeleteProposal,
   canRetractProposal
 } from './rules'
+import ProposalExtraTags from './ProposalExtraTags.vue'
 import ProposalText from './ProposalText.vue'
 import { type Proposal } from './types'
 import { proposalTypeRegistry } from './registry'
@@ -214,13 +212,6 @@ async function comment() {
   await nextTick()
   commentsComponent.value?.focus()
 }
-
-const extraTags = computed(() => {
-  const docTags = getHTMLTags(props.p.body)
-  return props.p.tags.filter(
-    (tag) => !docTags.has(tag) && tag !== props.p.prop_id
-  )
-})
 
 /**
  * Dynamic choice of component for editing proposal
