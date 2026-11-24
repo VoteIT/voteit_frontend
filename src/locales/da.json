@@ -1098,7 +1098,7 @@
     "userId": "Bruger-ID"
   },
   "proposal": {
-    "add": "Stil et forslag",
+    "add": "Offentliggør forslag",
     "agendaItemHasUnresolved": "Dette dagsordenspunkt har ubehandlede forslag.\nDet er en god idé at behandle alle forslag, før du afslutter dagsordenspunktet. Vil du stadig afslutte det?",
     "approved": "Vedtaget",
     "change": "Foreslå ændring",
@@ -1137,7 +1137,10 @@
       "voting": "Låst til afstemning | Låst til afstemning"
     },
     "cantChange": "Du har ikke ret til at ændre dette forslag",
-    "cantRetract": "Du har ikke ret til at trække dette forslag tilbage"
+    "cantRetract": "Du har ikke ret til at trække dette forslag tilbage",
+    "approveDenyConfirm": "Det ser ud til, at du vil godkende eller afvise et andet forslag. Det behøver du ikke et forslag til, fordi du kan gøre det, når du stemmer. Offentliggør alligevel?",
+    "publishCount": "Offentliggør | Offentliggør ét forslag | Offentliggør {count} forslag",
+    "splitParagraphs": "Opret hvert afsnit som et separat forslag"
   },
   "reaction": {
     "active": "Aktiv (brugere kan reagere)",

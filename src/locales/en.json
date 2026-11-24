@@ -1098,7 +1098,7 @@
     "userId": "User ID"
   },
   "proposal": {
-    "add": "Add proposal",
+    "add": "Publish proposal",
     "agendaItemHasUnresolved": "This agenda item has unresolved proposals.\nIt's a good idea to resolve all proposals before closing the agenda item. Do you still want to close it?",
     "approved": "Approved",
     "change": "Propose change",
@@ -1137,7 +1137,10 @@
       "voting": "Locked for vote"
     },
     "cantChange": "You don't have permission to change this proposal",
-    "cantRetract": "You don't have permission to retract this proposal"
+    "cantRetract": "You don't have permission to retract this proposal",
+    "approveDenyConfirm": "It looks like you're approving or rejecting another proposal. You don't need a proposal for that, because you can do it when voting. Publish anyway?",
+    "publishCount": "Publish | Publish one proposal | Publish {count} proposals",
+    "splitParagraphs": "Post each paragraph as a separate proposal"
   },
   "reaction": {
     "active": "Active (users can react)",

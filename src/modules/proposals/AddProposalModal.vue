@@ -20,6 +20,14 @@
               />
             </slot>
             <TagEdit v-model="extraTags" />
+            <v-expand-transition>
+              <v-checkbox
+                v-if="isMultiParagraph"
+                v-model="splitParagraphs"
+                hide-details
+                :label="$t('proposal.splitParagraphs')"
+              />
+            </v-expand-transition>
             <div class="d-flex flex-column flex-md-row">
               <PostAs v-if="canPostAs" v-model="author" />
               <v-spacer />
@@ -28,7 +36,7 @@
           </form>
         </v-expand-transition>
         <v-expand-transition>
-          <div v-if="!proposalPreview">
+          <div v-if="!proposalPreviews.length">
             <p v-if="errorText" class="my-6 text-center text-error">
               {{ errorText }}
             </p>
@@ -38,11 +46,16 @@
           </div>
         </v-expand-transition>
         <v-expand-transition>
-          <div v-if="proposalPreview" id="proposal-preview">
+          <div
+            v-if="proposalPreviews.length"
+            class="d-flex flex-column ga-3 my-6"
+            id="proposal-preview"
+          >
             <ProposalCard
+              v-for="(p, index) in proposalPreviews"
+              :key="index"
               readOnly
-              :p="proposalPreview"
-              class="my-6"
+              :p="p"
               :class="{ previewing }"
             />
           </div>
@@ -61,9 +74,15 @@
           <v-btn :text="$t('cancel')" variant="text" @click="close" />
           <v-btn
             color="primary"
-            :disabled="!proposalPreview || previewing || saving"
+            :disabled="!proposalPreviews.length || previewing || saving"
             prepend-icon="mdi-text-box-plus-outline"
-            :text="proposal ? $t('update') : $t('publish')"
+            :text="
+              proposal
+                ? $t('update')
+                : isSplit
+                  ? $t('proposal.publishCount', paragraphs.length)
+                  : $t('publish')
+            "
             @click="saveProposal"
           />
         </div>
@@ -73,9 +92,11 @@
 </template>
 
 <script lang="ts" setup generic="T extends Proposal">
-import { computed, ref, watch } from 'vue'
+import { computed, shallowRef, watch } from 'vue'
+import { useI18n } from 'vue-i18n'
 
-import { stripHTML } from '@/utils'
+import { dialogQuery, stripHTML } from '@/utils'
+import { ThemeColor } from '@/utils/types'
 import { parseRestError } from '@/utils/restApi'
 import useErrorHandler from '@/composables/useErrorHandler'
 import DefaultDialog from '@/components/DefaultDialog.vue'
@@ -92,6 +113,7 @@ import type { Author } from '../meetings/types'
 import { proposalType } from './contentTypes'
 import type { PreviewProposal, Proposal } from './types'
 import ProposalCard from './ProposalCard.vue'
+import { getParagraphs, isApproveDenyProposal } from './utils'
 import { RestError } from '@/utils/types'
 
 const previewDelay = 500 // Wait 1 s before preview
@@ -115,11 +137,12 @@ const emit = defineEmits<{
   (e: 'reset'): void
 }>()
 
+const { t } = useI18n()
 const { agendaId } = useAgendaItem()
 const { canPostAs } = useMeetingGroups(useMeetingId())
 const { handled } = useErrorHandler({ target: 'dialog' })
 
-const body = ref(props.proposal ? props.proposal.body : props.modelValue)
+const body = shallowRef(props.proposal ? props.proposal.body : props.modelValue)
 function getExtraTags(proposal?: Proposal) {
   if (!proposal) return []
   const docTags = getHTMLTags(proposal.body)
@@ -127,9 +150,9 @@ function getExtraTags(proposal?: Proposal) {
     (tag) => !docTags.has(tag) && tag !== proposal.prop_id
   )
 }
-const extraTags = ref(getExtraTags(props.proposal))
+const extraTags = shallowRef(getExtraTags(props.proposal))
 
-const author = ref<Author | undefined>(
+const author = shallowRef<Author | undefined>(
   props.proposal &&
     ({
       as_group: props.proposal.as_group,
@@ -146,17 +169,37 @@ function getPatchData(): Partial<Proposal> {
   }
 }
 
-function getCreateData() {
-  return {
+function getCreateData(paragraph?: string) {
+  const data = {
     shortname: props.shortname,
     agenda_item: agendaId.value,
     ...props.extra,
     ...getPatchData()
   } as Partial<Proposal>
+  if (paragraph !== undefined) data.body = paragraph
+  return data
 }
 
-const proposalPreview = ref<Proposal>()
-const errors = ref<RestError<Proposal>>({})
+/**
+ * Multiple paragraphs in a new plain proposal may be several proposals,
+ * which the user can choose to post separately.
+ */
+const isNewPlainProposal = computed(
+  () => !props.proposal && props.shortname === 'proposal'
+)
+const paragraphs = computed(() => getParagraphs(body.value))
+const isMultiParagraph = computed(
+  () => isNewPlainProposal.value && paragraphs.value.length > 1
+)
+const splitParagraphs = shallowRef(false)
+const isSplit = computed(() => isMultiParagraph.value && splitParagraphs.value)
+/** Bodies to post: one per paragraph when splitting */
+function getBodies() {
+  return isSplit.value ? paragraphs.value : [body.value]
+}
+
+const proposalPreviews = shallowRef<Proposal[]>([])
+const errors = shallowRef<RestError<Proposal>>({})
 const errorText = computed(() => {
   const errs = errors.value.body ?? errors.value.non_field_errors
   if (!errs) return
@@ -166,42 +209,74 @@ async function preview() {
   errors.value = {}
   if (!body.value) return
   try {
-    const data = await proposalType.api.listAction<PreviewProposal>(
-      'preview',
-      getCreateData()
+    const previews = await Promise.all(
+      getBodies().map((paragraph) =>
+        proposalType.api.listAction<PreviewProposal>(
+          'preview',
+          getCreateData(paragraph)
+        )
+      )
     )
-    proposalPreview.value = {
-      ...data,
-      created: new Date().toISOString(),
-      pk: 0,
-      shortname: props.shortname
-    } as Proposal
+    proposalPreviews.value = previews.map(
+      (data) =>
+        ({
+          ...data,
+          created: new Date().toISOString(),
+          pk: 0,
+          shortname: props.shortname
+        }) as Proposal
+    )
   } catch (e) {
-    proposalPreview.value = undefined
+    proposalPreviews.value = []
     errors.value = parseRestError(e)
   }
   previewing.value = false
 }
 
-const saving = ref(false)
-const done = ref(false)
+const saving = shallowRef(false)
+const done = shallowRef(false)
 async function saveProposal() {
   saving.value = true
+  if (props.proposal) {
+    await handled(async () => {
+      await proposalType.api.patch(props.proposal!.pk, getPatchData())
+      done.value = true
+    })
+    saving.value = false
+    return
+  }
+  const pending = getBodies()
+  if (
+    isNewPlainProposal.value &&
+    pending.some(isApproveDenyProposal) &&
+    !(await dialogQuery({
+      title: t('proposal.approveDenyConfirm'),
+      theme: ThemeColor.Warning
+    }))
+  ) {
+    saving.value = false
+    return
+  }
+  const split = isSplit.value
   await handled(async () => {
-    if (props.proposal)
-      await proposalType.api.patch(props.proposal.pk, getPatchData())
-    else await proposalType.api.add(getCreateData())
+    // Post one at a time, to keep the order
+    while (pending.length) {
+      await proposalType.api.add(getCreateData(pending[0]))
+      pending.shift()
+    }
     done.value = true
   })
+  // On failure, keep only what wasn't posted, so that a retry doesn't create duplicates
+  if (split && pending.length) body.value = pending.join('')
   saving.value = false
 }
 
-const previewing = ref(false)
+const previewing = shallowRef(false)
 function setPreviewTimeout() {
   clearTimeout(previewTimeout)
   if (!stripHTML(body.value)) {
     previewing.value = false
-    proposalPreview.value = undefined
+    proposalPreviews.value = []
     return
   }
   previewing.value = true
@@ -211,6 +286,7 @@ function setPreviewTimeout() {
 watch(author, preview)
 watch(body, setPreviewTimeout)
 watch(extraTags, preview)
+watch(isSplit, preview)
 watch(
   () => props.modelValue,
   (value) => {
@@ -223,14 +299,15 @@ watch(
  * Control modal closing
  */
 const closable = computed(
-  () => done.value || (!proposalPreview.value && !previewing.value)
+  () => done.value || (!proposalPreviews.value.length && !previewing.value)
 )
 
 function resetContent() {
   done.value = false
   extraTags.value = getExtraTags(props.proposal)
   body.value = props.proposal?.body ?? ''
-  proposalPreview.value = undefined
+  splitParagraphs.value = false
+  proposalPreviews.value = []
   emit('reset')
 }
 </script>
