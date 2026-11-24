@@ -13,6 +13,7 @@ meetingBubblePlugins.register({
   id: 'unvotedPolls',
   order: 0,
   requireAttention: true,
+  openOnAppear: true,
   checkActive(meeting) {
     return !!usePollStore().getNextUnvotedPoll(meeting.pk)
   }

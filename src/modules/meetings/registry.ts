@@ -13,6 +13,7 @@ interface MeetingBubblePlugin extends MeetingPlugin {
   icon: string
   order: number
   requireAttention: boolean | ((meeting?: Meeting) => boolean)
+  openOnAppear?: boolean
 }
 
 interface SettingsTab {

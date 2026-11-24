@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { orderBy } from '@/utils'
-import { computed, ref } from 'vue'
+import { computed, ref, watch } from 'vue'
 
 import { meetingBubblePlugins } from './registry'
 
@@ -30,6 +30,18 @@ const openBubble = ref<string | null>(null)
 function setOpen(id: string, value: boolean) {
   openBubble.value = value ? id : null
 }
+
+// Open bubbles flagged openOnAppear when they become active
+watch(
+  () => activePlugins.value.map((plugin) => plugin.id),
+  (ids, oldIds = []) => {
+    const appeared = activePlugins.value.find(
+      (plugin) => plugin.openOnAppear && !oldIds.includes(plugin.id)
+    )
+    if (appeared) openBubble.value = appeared.id
+  },
+  { immediate: true }
+)
 </script>
 
 <template>
