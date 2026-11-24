@@ -17,6 +17,7 @@ Version format is `major`.`minor`.`patch`. Until major version 1 is realeased, A
 - Agenda items: Moderators can allow or block new proposals with a switch next to the add proposal button, as in the plenary view. [#216](https://github.com/VoteIT/voteit_frontend/issues/216)
 - Agenda editing: When some of the selected agenda items have ongoing polls, a warning says they can't be moved out of ongoing, and only states the other items can change to can be picked. [#374](https://github.com/VoteIT/voteit_frontend/issues/374)
 - Voting: The "Time to vote" bubble opens by itself when there's a poll you haven't voted in, so it's clear where to vote. All bubbles share the same header style and width. [#280](https://github.com/VoteIT/voteit_frontend/issues/280)
+- Tags: While typing a tag, a hint says to press Enter to add it. A tag still typed when you leave the field (for example by clicking post or save) is added instead of lost. Fixes [#146](https://github.com/VoteIT/voteit_frontend/issues/146)
 - Bugfix: Members of a meeting group can retract proposals posted as that group, like the author can. Retracting requires the proposer role, as on the server. Fixes [#254](https://github.com/VoteIT/voteit_frontend/issues/254)
 - Bugfix: Flag buttons that can't be toggled keep their color instead of looking disabled. Fixes [#415](https://github.com/VoteIT/voteit_frontend/issues/415)
 

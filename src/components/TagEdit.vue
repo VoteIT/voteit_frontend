@@ -67,6 +67,7 @@ const tagUid = `tagdata-${uid.toString()}`
   <v-input
     :class="{ 'mb-4': !!label }"
     :error-messages="errorMessages"
+    :messages="newTag.trim() ? $t('addTagHint') : undefined"
     :rules="rules"
     :model-value="tags"
   >
@@ -86,6 +87,7 @@ const tagUid = `tagdata-${uid.toString()}`
         :placeholder="$t('addTag')"
         v-model="newTag"
         @keydown.enter.prevent="addTag()"
+        @blur="addTag()"
         @input="detectTagClick"
       />
       <datalist :id="tagUid">
