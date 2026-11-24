@@ -273,6 +273,7 @@
     "settings": "Indstillinger for stemmeberettigede",
     "triggerWhenever": "Kan opdateres frit",
     "upToDate": "De stemmeberettigede behøver ikke at blive opdateret",
+    "usedInPolls": "Brugt i afstemninger",
     "voterCount": "Ingen stemmeberettigede | Én stemmeberettiget | {count} stemmeberettigede",
     "weight": "Vægt",
     "weightedVoterCount": "Ingen stemmeberettigede | Én stemmeberettiget ({total} stemmer) | {count} stemmeberettigede ({total} stemmer)",

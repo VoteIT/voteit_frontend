@@ -273,6 +273,7 @@
     "settings": "Settings for Electoral Registers",
     "triggerWhenever": "Can be triggered at will",
     "upToDate": "No need to update Electoral Register",
+    "usedInPolls": "Used in polls",
     "voterCount": "No voters | 1 voter | {count} voters",
     "weight": "Weight",
     "weightedVoterCount": "No voters | One voter ({total} votes) | {count} voters ({total} votes)",

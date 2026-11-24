@@ -1,16 +1,18 @@
 <script lang="ts" setup>
-import { imap, partition, sum } from 'itertools'
+import { imap, partition, sorted, sum } from 'itertools'
 import { DATETIME_SHORT, formatDate } from '@/utils/dates'
 import { computed, reactive, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 
+import { slugify } from '@/utils'
 import { cols } from '@/utils/defaults'
 import { getApiLink } from '@/utils/restApi'
 import DefaultDialog from '@/components/DefaultDialog.vue'
 import UserList from '@/components/UserList.vue'
 import useErrorHandler from '@/composables/useErrorHandler'
 import usePollStore from '@/modules/polls/usePollStore'
-import { PollState } from '@/modules/polls/types'
+import { pollPlugins } from '@/modules/polls/registry'
+import { Poll, PollState } from '@/modules/polls/types'
 
 import useMeeting from '../useMeeting'
 import useMeetingTitle from '../useMeetingTitle'
@@ -32,9 +34,25 @@ const {
   erMethodAllowsManual
 } = useElectoralRegisters(meetingId)
 const { getErMethod } = useERStore()
-const { anyPoll } = usePollStore()
+const { anyPoll, filterPolls } = usePollStore()
 
 useMeetingTitle(t('electoralRegister.plural'))
+
+/**
+ * Polls by the register they used, oldest first. Only polls visible to the user are in the store.
+ */
+const registerPolls = computed(() => {
+  const result = new Map<number, Poll[]>()
+  const polls = sorted(
+    filterPolls((poll) => !!poll.electoral_register),
+    (poll) => poll.pk
+  )
+  for (const poll of polls) {
+    const register = poll.electoral_register!
+    result.set(register, [...(result.get(register) ?? []), poll])
+  }
+  return result
+})
 
 function getDownloadUrl(register: number, type: 'csv' | 'json') {
   return getApiLink(`export-electoral-register/${register}/${type}/`)
@@ -392,8 +410,29 @@ const currentERText = computed(() => {
                 {{ formatDate(created, DATETIME_SHORT) }}
               </small>
             </v-expansion-panel-title>
-            <v-expansion-panel-text v-if="weights.length">
-              <div v-if="isModerator" class="text-right">
+            <v-expansion-panel-text>
+              <div v-if="registerPolls.has(pk)" class="mb-2">
+                <v-list density="compact">
+                  <v-list-subheader
+                    :title="$t('electoralRegister.usedInPolls')"
+                  />
+                  <v-list-item
+                    v-for="poll in registerPolls.get(pk)"
+                    :key="poll.pk"
+                    prepend-icon="mdi-vote"
+                    :subtitle="pollPlugins.getName(poll.method_name, t)"
+                    :title="poll.title"
+                    :to="{
+                      name: 'poll',
+                      params: { pid: poll.pk, pslug: slugify(poll.title) }
+                    }"
+                  />
+                </v-list>
+              </div>
+              <p v-if="!weights.length" class="pt-2 text-center">
+                <em> - {{ $t('electoralRegister.empty') }} - </em>
+              </p>
+              <div v-if="weights.length && isModerator" class="text-right">
                 <v-menu>
                   <template #activator="{ props }">
                     <v-btn
@@ -422,7 +461,10 @@ const currentERText = computed(() => {
                   </v-list>
                 </v-menu>
               </div>
-              <UserList :userIds="weights.map((v) => v.user)">
+              <UserList
+                v-if="weights.length"
+                :userIds="weights.map((v) => v.user)"
+              >
                 <template #appendItem="{ user }" v-if="hasWeightedVotes">
                   <v-chip>
                     {{ $t('electoralRegister.weight') }}:
@@ -430,9 +472,6 @@ const currentERText = computed(() => {
                   </v-chip>
                 </template>
               </UserList>
-            </v-expansion-panel-text>
-            <v-expansion-panel-text v-else class="pt-2 text-center">
-              <em> - {{ $t('electoralRegister.empty') }} - </em>
             </v-expansion-panel-text>
           </v-expansion-panel>
         </v-expansion-panels>

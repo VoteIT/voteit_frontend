@@ -273,6 +273,7 @@
     "settings": "Inställning för röstlängder",
     "triggerWhenever": "Kan uppdateras fritt",
     "upToDate": "Röstlängden behöver ej uppdateras",
+    "usedInPolls": "Använd i omröstningar",
     "voterCount": "Inga röstberättigade | En röstberättigad | {count} röstberättigade",
     "weightedVoterCount": "Inga röstberättigade | En röstberättigad ({total} röster) | {count} röstberättigade ({total} röster)",
     "weight": "Vikt",
