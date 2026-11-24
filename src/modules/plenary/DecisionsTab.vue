@@ -24,6 +24,7 @@ import { proposalType } from '../proposals/contentTypes'
 import useProposalStore from '../proposals/useProposalStore'
 import useTextDocuments from '../proposals/useTextDocuments'
 import ButtonPlugins from '../proposals/ButtonPlugins.vue'
+import ProposalExtraTags from '../proposals/ProposalExtraTags.vue'
 import ProposalSheet from '../proposals/ProposalSheet.vue'
 import { roomType } from '../rooms/contentTypes'
 import useRoom from '../rooms/useRoom'
@@ -348,6 +349,7 @@ watchEffect(() => {
             </div>
           </template>
           <template #append>
+            <ProposalExtraTags :proposal="p" class="mt-3" />
             <div class="d-flex flex-wrap ga-1 mt-2">
               <ButtonPlugins mode="presentation:personal" :proposal="p" />
             </div>
@@ -399,7 +401,11 @@ watchEffect(() => {
             variant="text"
             @click="select(p)"
           />
-          <ProposalSheet :proposal="p" class="flex-grow-1" />
+          <ProposalSheet :proposal="p" class="flex-grow-1">
+            <template #append>
+              <ProposalExtraTags :proposal="p" class="mt-3" />
+            </template>
+          </ProposalSheet>
         </div>
       </div>
     </div>
