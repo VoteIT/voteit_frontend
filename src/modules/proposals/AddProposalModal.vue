@@ -1,96 +1,3 @@
-<template>
-  <DefaultDialog
-    color="background"
-    :persistent="!closable"
-    :title="proposal ? $t('proposal.edit') : $t('proposal.add')"
-    @close="resetContent"
-  >
-    <template #activator="attrs">
-      <slot name="activator" v-bind="attrs"></slot>
-    </template>
-    <template #default="{ close }">
-      <div class="d-flex flex-column">
-        <v-expand-transition>
-          <form @submit.prevent="preview" v-show="!done">
-            <slot name="editor">
-              <RichtextEditor
-                v-model="body"
-                class="proposal-editor"
-                :placeholder="$t('proposal.postPlaceholder')"
-              />
-            </slot>
-            <TagEdit v-model="extraTags" />
-            <v-expand-transition>
-              <v-checkbox
-                v-if="isMultiParagraph"
-                v-model="splitParagraphs"
-                hide-details
-                :label="$t('proposal.splitParagraphs')"
-              />
-            </v-expand-transition>
-            <div class="d-flex flex-column flex-md-row">
-              <PostAs v-if="canPostAs" v-model="author" />
-              <v-spacer />
-              <slot name="actions"></slot>
-            </div>
-          </form>
-        </v-expand-transition>
-        <v-expand-transition>
-          <div v-if="!proposalPreviews.length">
-            <p v-if="errorText" class="my-6 text-center text-error">
-              {{ errorText }}
-            </p>
-            <p class="text-center my-6" v-else-if="previewing">
-              <v-progress-circular color="primary" indeterminate />
-            </p>
-          </div>
-        </v-expand-transition>
-        <v-expand-transition>
-          <div
-            v-if="proposalPreviews.length"
-            class="d-flex flex-column ga-3 my-6"
-            id="proposal-preview"
-          >
-            <ProposalCard
-              v-for="(p, index) in proposalPreviews"
-              :key="index"
-              readOnly
-              :p="p"
-              :class="{ previewing }"
-            />
-          </div>
-        </v-expand-transition>
-        <v-spacer />
-        <v-alert
-          v-if="done"
-          type="success"
-          :text="$t('allDone')"
-          class="mt-8 flex-grow-0"
-        />
-        <div v-if="done" class="text-right mt-4">
-          <v-btn color="primary" :text="$t('close')" @click="close" />
-        </div>
-        <div v-else class="text-right mt-4">
-          <v-btn :text="$t('cancel')" variant="text" @click="close" />
-          <v-btn
-            color="primary"
-            :disabled="!proposalPreviews.length || previewing || saving"
-            prepend-icon="mdi-text-box-plus-outline"
-            :text="
-              proposal
-                ? $t('update')
-                : isSplit
-                  ? $t('proposal.publishCount', paragraphs.length)
-                  : $t('publish')
-            "
-            @click="saveProposal"
-          />
-        </div>
-      </div>
-    </template>
-  </DefaultDialog>
-</template>
-
 <script lang="ts" setup generic="T extends Proposal">
 import { computed, shallowRef, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
@@ -311,6 +218,99 @@ function resetContent() {
   emit('reset')
 }
 </script>
+
+<template>
+  <DefaultDialog
+    color="background"
+    :persistent="!closable"
+    :title="proposal ? $t('proposal.edit') : $t('proposal.add')"
+    @close="resetContent"
+  >
+    <template #activator="attrs">
+      <slot name="activator" v-bind="attrs"></slot>
+    </template>
+    <template #default="{ close }">
+      <div class="d-flex flex-column">
+        <v-expand-transition>
+          <form @submit.prevent="preview" v-show="!done">
+            <slot name="editor">
+              <RichtextEditor
+                v-model="body"
+                class="proposal-editor"
+                :placeholder="$t('proposal.postPlaceholder')"
+              />
+            </slot>
+            <TagEdit v-model="extraTags" />
+            <v-expand-transition>
+              <v-checkbox
+                v-if="isMultiParagraph"
+                v-model="splitParagraphs"
+                hide-details
+                :label="$t('proposal.splitParagraphs')"
+              />
+            </v-expand-transition>
+            <div class="d-flex flex-column flex-md-row">
+              <PostAs v-if="canPostAs" v-model="author" />
+              <v-spacer />
+              <slot name="actions"></slot>
+            </div>
+          </form>
+        </v-expand-transition>
+        <v-expand-transition>
+          <div v-if="!proposalPreviews.length">
+            <p v-if="errorText" class="my-6 text-center text-error">
+              {{ errorText }}
+            </p>
+            <p class="text-center my-6" v-else-if="previewing">
+              <v-progress-circular color="primary" indeterminate />
+            </p>
+          </div>
+        </v-expand-transition>
+        <v-expand-transition>
+          <div
+            v-if="proposalPreviews.length"
+            class="d-flex flex-column ga-3 my-6"
+            id="proposal-preview"
+          >
+            <ProposalCard
+              v-for="(p, index) in proposalPreviews"
+              :key="index"
+              readOnly
+              :p="p"
+              :class="{ previewing }"
+            />
+          </div>
+        </v-expand-transition>
+        <v-spacer />
+        <v-alert
+          v-if="done"
+          type="success"
+          :text="$t('allDone')"
+          class="mt-8 flex-grow-0"
+        />
+        <div v-if="done" class="text-right mt-4">
+          <v-btn color="primary" :text="$t('close')" @click="close" />
+        </div>
+        <div v-else class="text-right mt-4">
+          <v-btn :text="$t('cancel')" variant="text" @click="close" />
+          <v-btn
+            color="primary"
+            :disabled="!proposalPreviews.length || previewing || saving"
+            prepend-icon="mdi-text-box-plus-outline"
+            :text="
+              proposal
+                ? $t('update')
+                : isSplit
+                  ? $t('proposal.publishCount', paragraphs.length)
+                  : $t('publish')
+            "
+            @click="saveProposal"
+          />
+        </div>
+      </div>
+    </template>
+  </DefaultDialog>
+</template>
 
 <style lang="sass">
 .proposal-editor .ql-editor
