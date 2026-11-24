@@ -6,6 +6,9 @@ import { useI18n } from 'vue-i18n'
 import { dialogAlert, dialogQuery, minTime, slugify } from '@/utils'
 import { ThemeColor } from '@/utils/types'
 import { invitationScopes } from '../organisations/registry'
+import { DEFAULT_ROLE_ORDER } from '../meetings/constants'
+import { MeetingRole } from '../meetings/types'
+import { getMeetingRoleIcon, translateMeetingRole } from '../meetings/utils'
 
 import { matchedInviteType } from './contentTypes'
 import { MeetingInvite } from './types'
@@ -65,6 +68,17 @@ const invitedUserdata = computed(() => {
       }
     })
 })
+
+const roles = computed(() =>
+  DEFAULT_ROLE_ORDER.filter(
+    (role) =>
+      role !== MeetingRole.Participant && props.invite.roles.includes(role)
+  ).map((role) => ({
+    role,
+    icon: getMeetingRoleIcon(role),
+    title: translateMeetingRole(role, t)
+  }))
+)
 </script>
 
 <template>
@@ -82,6 +96,17 @@ const invitedUserdata = computed(() => {
         :subtitle="subtitle"
         :title="title"
       />
+      <template v-if="roles.length">
+        <v-list-subheader> {{ $t('roles') }}: </v-list-subheader>
+        <div class="px-4 d-flex ga-2">
+          <v-icon
+            v-for="{ role, icon, title } in roles"
+            :key="role"
+            v-tooltip:top="title"
+            :icon="icon"
+          />
+        </div>
+      </template>
     </v-list>
     <v-card-actions class="flex-wrap">
       <v-spacer />
@@ -97,7 +122,7 @@ const invitedUserdata = computed(() => {
         :loading="submitting === 'accept'"
         prepend-icon="mdi-door-open"
         :text="$t('join.acceptInvite')"
-        variant="elevated"
+        variant="flat"
         @click="acceptInvite(invite)"
       />
     </v-card-actions>
