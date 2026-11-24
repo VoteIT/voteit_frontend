@@ -2,11 +2,11 @@
 import { any } from 'itertools'
 import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
+import { useDisplay } from 'vuetify'
 
 import { getFullName } from '@/utils'
 import useAuthStore from '@/modules/auth/useAuthStore'
 import DefaultDialog from '@/components/DefaultDialog.vue'
-import QueryDialog from '@/components/QueryDialog.vue'
 import SearchableUserList from '@/components/SearchableUserList.vue'
 import User from '@/components/User.vue'
 import UserAvatar from '@/components/UserAvatar.vue'
@@ -38,6 +38,7 @@ const {
   hasVoteRole
 } = useVoteTransfers(props.group.meeting)
 const { handler } = useErrorHandler({ target: 'dialog' })
+const { smAndUp } = useDisplay()
 const { locale } = useI18n()
 
 /**
@@ -45,7 +46,8 @@ const { locale } = useI18n()
  */
 const transferActions = {
   add: handler(api.add),
-  update: handler(api.update)
+  update: handler(api.update),
+  delete: handler(api.delete)
 }
 
 function getName(pk: number) {
@@ -205,9 +207,9 @@ const canManageVotes = computed(
           <thead>
             <tr>
               <th>{{ $t('erMethods.mainSubstDelegate.from') }}</th>
-              <th class="pa-0"></th>
+              <th class="px-0"></th>
               <th>{{ $t('erMethods.mainSubstDelegate.to') }}</th>
-              <th v-if="canManageVotes"></th>
+              <th class="px-0" v-if="canManageVotes"></th>
             </tr>
           </thead>
           <tbody>
@@ -217,18 +219,25 @@ const canManageVotes = computed(
               :class="{ 'bg-surface-active': t.isMine }"
             >
               <td><User :pk="t.source" userid /></td>
-              <td class="pa-0"><v-icon icon="mdi-arrow-right" /></td>
+              <td class="px-0"><v-icon icon="mdi-arrow-right" /></td>
               <td><User :pk="t.target" userid /></td>
-              <td v-if="canManageVotes" class="text-right text-no-wrap">
+              <td v-if="canManageVotes" class="px-0">
                 <template v-if="t.canManage">
                   <v-menu max-height="400">
                     <template #activator="{ props }">
                       <v-btn
+                        v-if="smAndUp"
                         append-icon="mdi-chevron-down"
-                        class="mr-1"
                         color="primary"
                         size="small"
                         :text="$t('erMethods.mainSubstDelegate.change')"
+                        v-bind="props"
+                      />
+                      <v-btn
+                        v-else
+                        icon="mdi-dots-vertical"
+                        size="small"
+                        variant="tonal"
                         v-bind="props"
                       />
                     </template>
@@ -239,6 +248,13 @@ const canManageVotes = computed(
                         >
                           {{ $t('erMethods.mainSubstDelegate.transferInfo') }}
                         </p>
+                        <v-list-item
+                          base-color="warning"
+                          prepend-icon="mdi-undo"
+                          :title="$t('erMethods.mainSubstDelegate.return')"
+                          @click="transferActions.delete(t.pk)"
+                        />
+                        <v-divider class="mb-2" />
                       </template>
                       <template #item="{ item: { disabled, user } }">
                         <v-list-item
@@ -259,27 +275,6 @@ const canManageVotes = computed(
                       </template>
                     </SearchableUserList>
                   </v-menu>
-                  <QueryDialog
-                    color="warning"
-                    :confirm="() => api.delete(t.pk)"
-                    :confirm-text="$t('erMethods.mainSubstDelegate.return')"
-                    :text="
-                      $t('erMethods.mainSubstDelegate.confirmReturn', {
-                        source: getName(t.source),
-                        target: getName(t.target)
-                      })
-                    "
-                  >
-                    <template #activator="{ props }">
-                      <v-btn
-                        color="warning"
-                        prepend-icon="mdi-undo"
-                        size="small"
-                        :text="$t('erMethods.mainSubstDelegate.return')"
-                        v-bind="props"
-                      />
-                    </template>
-                  </QueryDialog>
                 </template>
               </td>
             </tr>
@@ -299,11 +294,20 @@ const canManageVotes = computed(
               <v-menu v-if="canManageVotes && m.canTransfer" max-height="400">
                 <template #activator="{ props }">
                   <v-btn
+                    v-if="smAndUp"
                     append-icon="mdi-chevron-down"
-                    class="mr-2"
+                    class="mr-1"
                     color="primary"
                     size="small"
                     :text="$t('erMethods.mainSubstDelegate.transfer')"
+                    v-bind="props"
+                  />
+                  <v-btn
+                    v-else
+                    class="mr-1"
+                    icon="mdi-dots-vertical"
+                    size="small"
+                    variant="tonal"
                     v-bind="props"
                   />
                 </template>
@@ -332,12 +336,21 @@ const canManageVotes = computed(
                   </template>
                 </SearchableUserList>
               </v-menu>
-              <v-chip
-                v-if="m.hasVoteInGroup"
-                append-icon="mdi-check-circle"
-                color="success"
-                :text="$t('erMethods.mainSubstDelegate.hasVote')"
-              />
+              <template v-if="m.hasVoteInGroup">
+                <v-chip
+                  v-if="smAndUp"
+                  append-icon="mdi-check-circle"
+                  color="success"
+                  :text="$t('erMethods.mainSubstDelegate.hasVote')"
+                />
+                <v-icon
+                  v-else
+                  color="success"
+                  icon="mdi-check-circle"
+                  :aria-label="$t('erMethods.mainSubstDelegate.hasVote')"
+                  :title="$t('erMethods.mainSubstDelegate.hasVote')"
+                />
+              </template>
             </template>
           </v-list-item>
         </template>
