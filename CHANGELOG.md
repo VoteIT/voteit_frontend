@@ -13,6 +13,7 @@ Version format is `major`.`minor`.`patch`. Until major version 1 is realeased, A
 - Adding proposals: When a proposal has more than one paragraph, a checkbox lets the user post each paragraph as a separate proposal, with a preview of each. Publishing a proposal that starts with approve or reject (e.g. "Bifall", "Avslag") asks for confirmation, since that's done when voting. The dialog is titled "Publish proposal". [#423](https://github.com/VoteIT/voteit_frontend/issues/423)
 - Plenary view: Proposals show their other tags (tags not in the text). Clicking one, for example another proposal's id, selects all proposals with that tag. Fixes [#369](https://github.com/VoteIT/voteit_frontend/issues/369)
 - Electoral registers: Each register links to the polls that used it. Registers with more than 20 voters hide the voter list until you click "Show voters". [#258](https://github.com/VoteIT/voteit_frontend/issues/258)
+- Invitations: Each invitation card shows the roles the invitation gives (other than participant), as icons with the role name on hover. [#282](https://github.com/VoteIT/voteit_frontend/issues/282)
 - Bugfix: Flag buttons that can't be toggled keep their color instead of looking disabled. Fixes [#415](https://github.com/VoteIT/voteit_frontend/issues/415)
 
 ## 1.7.5 (2026-11-23)
