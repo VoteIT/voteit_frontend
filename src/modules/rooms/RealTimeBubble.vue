@@ -4,6 +4,7 @@ import { useI18n } from 'vue-i18n'
 
 import { autoEllipsis, orderBy, titleSorter } from '@/utils'
 
+import BubbleHeader from '../meetings/BubbleHeader.vue'
 import useMeetingId from '../meetings/useMeetingId'
 import useRooms from '../rooms/useRooms'
 
@@ -49,21 +50,11 @@ const broadcasting = computed(() =>
 </script>
 
 <template>
-  <div class="d-flex pa-1 mb-2 real-time-bubble">
-    <v-icon
-      icon="mdi-television-play"
-      size="xx-large"
-      color="secondary"
-      class="mr-4 mt-1"
-    />
-    <div class="flex-grow-1">
-      <h2>{{ $t('room.realTime') }}</h2>
-      <p class="text-secondary">
-        {{ $t('room.realTimeDescription') }}
-      </p>
-    </div>
-  </div>
-  <v-divider class="mx-n4" />
+  <BubbleHeader
+    icon="mdi-television-play"
+    :title="$t('room.realTime')"
+    :subtitle="$t('room.realTimeDescription')"
+  />
   <v-list class="mx-n2 mb-n3">
     <v-list-item
       v-for="{ active, subtitle, pk, ...props } in broadcasting"
@@ -86,8 +77,3 @@ const broadcasting = computed(() =>
     </v-list-item>
   </v-list>
 </template>
-
-<style scoped lang="sass">
-.real-time-bubble
-  min-width: 300px
-</style>

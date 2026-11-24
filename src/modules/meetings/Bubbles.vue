@@ -56,7 +56,13 @@ function setOpen(id: string, value: boolean) {
           :class="{ open: isActive, attention: requireAttention }"
         />
       </template>
-      <v-sheet rounded class="pa-4 mb-3" elevation="8">
+      <v-sheet
+        rounded
+        class="pa-4 mb-3"
+        elevation="8"
+        min-width="300"
+        max-width="400"
+      >
         <component
           :is="component"
           :modelValue="id === openBubble"

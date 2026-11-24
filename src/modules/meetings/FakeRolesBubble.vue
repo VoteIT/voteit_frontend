@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import BubbleHeader from './BubbleHeader.vue'
 import useMeetingId from './useMeetingId'
 import { setFakeRoles } from './rules'
 
@@ -9,23 +10,16 @@ const meetingId = useMeetingId()
 </script>
 
 <template>
-  <div class="container">
-    <h2>
-      {{ $t('admin.testMode') }}
-    </h2>
-    <p class="mb-3">
-      {{ $t('admin.testModeActive') }}
-    </p>
-    <v-btn
-      block
-      color="primary"
-      :text="$t('reset')"
-      @click="setFakeRoles(meetingId)"
-    />
-  </div>
+  <BubbleHeader
+    icon="mdi-account-hard-hat"
+    :title="$t('admin.testMode')"
+    :subtitle="$t('admin.testModeActive')"
+  />
+  <v-btn
+    block
+    color="primary"
+    class="mt-4"
+    :text="$t('reset')"
+    @click="setFakeRoles(meetingId)"
+  />
 </template>
-
-<style lang="sass" scoped>
-.container
-  max-width: 360px
-</style>

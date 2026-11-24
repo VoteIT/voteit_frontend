@@ -1,26 +1,20 @@
 <template>
-  <div>
-    <h2>
-      {{ $t('poll.timeToVote') }}
-    </h2>
-    <p class="mb-2">
-      {{ $t('poll.timeToVoteDescription', unvoted.length) }}
-    </p>
-    <v-list>
-      <v-list-item
-        active
-        color="primary"
-        class="mt-1"
-        v-for="{ pk, title, subtitle, to } in unvoted"
-        :key="pk"
-        append-icon="mdi-chevron-right"
-        :title="title"
-        :subtitle="subtitle"
-        :to="to"
-        @click="$emit('update:modelValue', false)"
-      />
-    </v-list>
-  </div>
+  <BubbleHeader
+    icon="mdi-vote"
+    :title="$t('poll.timeToVote')"
+    :subtitle="$t('poll.timeToVoteDescription', unvoted.length)"
+  />
+  <v-list class="mx-n2 mb-n3">
+    <v-list-item
+      v-for="{ pk, title, subtitle, to } in unvoted"
+      :key="pk"
+      append-icon="mdi-chevron-right"
+      :title="title"
+      :subtitle="subtitle"
+      :to="to"
+      @click="emit('update:modelValue', false)"
+    />
+  </v-list>
 </template>
 
 <script setup lang="ts">
@@ -28,12 +22,13 @@ import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { slugify } from '@/utils'
 
+import BubbleHeader from '../meetings/BubbleHeader.vue'
 import useMeeting from '../meetings/useMeeting'
 import usePollStore from './usePollStore'
 import { pollPlugins } from './registry'
 
 defineProps<{ modelValue?: boolean }>()
-defineEmits(['update:modelValue'])
+const emit = defineEmits(['update:modelValue'])
 
 const { t } = useI18n()
 const { meeting, meetingId } = useMeeting()
