@@ -1,15 +1,14 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { onKeyStroke } from '@vueuse/core'
 
-import { minTime } from '@/utils'
 import { toggleNavDrawerEvent } from '@/utils/events'
 import { navigationEventAllowed } from '@/utils/keyNavigation'
 import WorkflowState from '@/components/WorkflowState.vue'
-import useErrorHandler from '@/composables/useErrorHandler'
 
 import { agendaItemType } from '../agendas/contentTypes'
+import AllowProposalsSwitch from '../agendas/AllowProposalsSwitch.vue'
 import useAgendaItem from '../agendas/useAgendaItem'
 import useMeeting from '../meetings/useMeeting'
 import useRoom from '../rooms/useRoom'
@@ -26,7 +25,6 @@ const {
   agendaItemRoute
 } = useAgendaItem()
 const { meetingRoom } = useRoom()
-const { handled } = useErrorHandler({ target: 'dialog' })
 
 const { getPlenaryRoute } = usePlenary(agendaId)
 
@@ -50,19 +48,6 @@ const breadcrumbs = computed(() => [
   { title: agendaItem.value?.title ?? '-', to: agendaItemRoute.value },
   { title: meetingRoom.value?.title ?? '-' }
 ])
-
-const settingAllowedProps = ref(false)
-async function setProposalsAllowed(value: boolean | null) {
-  settingAllowedProps.value = true
-  await handled(
-    () =>
-      minTime(
-        agendaItemType.api.patch(agendaId.value, { block_proposals: !value })
-      ),
-    'block_proposals'
-  )
-  settingAllowedProps.value = false
-}
 </script>
 
 <template>
@@ -85,15 +70,7 @@ async function setProposalsAllowed(value: boolean | null) {
         :content-type="agendaItemType"
         :object="agendaItem"
       />
-      <v-switch
-        v-if="canChangeAgendaItem"
-        color="white"
-        :disabled="settingAllowedProps"
-        :label="$t('agenda.allowProposals')"
-        :model-value="!agendaItem?.block_proposals"
-        hide-details
-        @update:model-value="setProposalsAllowed($event)"
-      />
+      <AllowProposalsSwitch color="white" />
       <div class="pa-3"></div>
       <template v-if="agendaItem">
         <v-btn

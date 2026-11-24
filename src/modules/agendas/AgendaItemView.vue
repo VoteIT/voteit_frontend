@@ -36,6 +36,7 @@ import EditTextDocumentModalVue from '../proposals/EditProposalTextModal.vue'
 import { agendaItemChannel } from './contentTypes'
 import useAgenda from './useAgenda'
 import AgendaFilters from './AgendaFilters.vue'
+import AllowProposalsSwitch from './AllowProposalsSwitch.vue'
 import useAgendaFilter from './useAgendaFilter'
 import useAgendaItem from './useAgendaItem'
 import { agendaMenuPlugins } from './registry'
@@ -265,7 +266,7 @@ provide(TagClickHandlerKey, async (tagName) => {
     </v-row>
     <v-divider class="my-4" />
     <v-row :key="`agenda-filters-${agendaId}`">
-      <v-col class="d-flex">
+      <v-col class="d-flex align-center">
         <AddProposalModal v-if="canAddProposal">
           <template #activator="{ props }">
             <slot name="activator" :props="props">
@@ -293,6 +294,7 @@ provide(TagClickHandlerKey, async (tagName) => {
             />
           </template>
         </v-tooltip>
+        <AllowProposalsSwitch class="ml-4 flex-grow-0" color="primary" />
         <v-spacer />
         <AgendaFilters ref="filterComponent" />
       </v-col>
