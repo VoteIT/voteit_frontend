@@ -54,6 +54,13 @@ const registerPolls = computed(() => {
   return result
 })
 
+// Long voter lists are collapsed until asked for
+const VOTER_LIST_LIMIT = 20
+const expandedVoterLists = reactive(new Set<number>())
+function isVoterListCollapsed(register: number, voterCount: number) {
+  return voterCount > VOTER_LIST_LIMIT && !expandedVoterLists.has(register)
+}
+
 function getDownloadUrl(register: number, type: 'csv' | 'json') {
   return getApiLink(`export-electoral-register/${register}/${type}/`)
 }
@@ -432,8 +439,35 @@ const currentERText = computed(() => {
               <p v-if="!weights.length" class="pt-2 text-center">
                 <em> - {{ $t('electoralRegister.empty') }} - </em>
               </p>
-              <div v-if="weights.length && isModerator" class="text-right">
-                <v-menu>
+              <div
+                v-if="
+                  weights.length &&
+                  (isModerator || weights.length > VOTER_LIST_LIMIT)
+                "
+                class="d-flex flex-wrap ga-2"
+              >
+                <template v-if="weights.length > VOTER_LIST_LIMIT">
+                  <v-btn
+                    v-if="isVoterListCollapsed(pk, weights.length)"
+                    prepend-icon="mdi-account-multiple"
+                    :text="
+                      $t('electoralRegister.showVoters', {
+                        count: weights.length
+                      })
+                    "
+                    variant="tonal"
+                    @click="expandedVoterLists.add(pk)"
+                  />
+                  <v-btn
+                    v-else
+                    prepend-icon="mdi-account-multiple-remove"
+                    :text="$t('electoralRegister.hideVoters')"
+                    variant="tonal"
+                    @click="expandedVoterLists.delete(pk)"
+                  />
+                </template>
+                <v-spacer />
+                <v-menu v-if="isModerator">
                   <template #activator="{ props }">
                     <v-btn
                       color="primary"
@@ -461,17 +495,21 @@ const currentERText = computed(() => {
                   </v-list>
                 </v-menu>
               </div>
-              <UserList
-                v-if="weights.length"
-                :userIds="weights.map((v) => v.user)"
-              >
-                <template #appendItem="{ user }" v-if="hasWeightedVotes">
-                  <v-chip>
-                    {{ $t('electoralRegister.weight') }}:
-                    {{ weights.find((w) => w.user === user)?.weight }}
-                  </v-chip>
-                </template>
-              </UserList>
+              <v-expand-transition>
+                <UserList
+                  v-if="
+                    weights.length && !isVoterListCollapsed(pk, weights.length)
+                  "
+                  :userIds="weights.map((v) => v.user)"
+                >
+                  <template #appendItem="{ user }" v-if="hasWeightedVotes">
+                    <v-chip>
+                      {{ $t('electoralRegister.weight') }}:
+                      {{ weights.find((w) => w.user === user)?.weight }}
+                    </v-chip>
+                  </template>
+                </UserList>
+              </v-expand-transition>
             </v-expansion-panel-text>
           </v-expansion-panel>
         </v-expansion-panels>
