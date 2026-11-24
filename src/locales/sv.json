@@ -1098,7 +1098,7 @@
     "userId": "Användar-ID"
   },
   "proposal": {
-    "add": "Publicera förslag",
+    "add": "Lägg förslag",
     "agendaItemHasUnresolved": "Dagordningspunkten har obehandlade förslag.\nDet är en bra idé att behandla färdigt alla förslag innan du stänger en dagordningspunkt. Vill du ändå stänga den?",
     "approved": "Bifallet",
     "change": "Föreslå ändring",
@@ -1140,7 +1140,8 @@
     "cantRetract": "Du har inte rätt att dra tillbaka det här förslaget",
     "approveDenyConfirm": "Det ser ut som att du vill bifalla eller avslå ett annat förslag. Det behövs inget förslag för det, eftersom du gör det när du röstar. Publicera ändå?",
     "publishCount": "Publicera | Publicera ett förslag | Publicera {count} förslag",
-    "splitParagraphs": "Lägg varje stycke som ett eget förslag"
+    "splitParagraphs": "Lägg varje stycke som ett eget förslag",
+    "publish": "Publicera förslag"
   },
   "reaction": {
     "active": "Aktiv (användare kan reagera)",

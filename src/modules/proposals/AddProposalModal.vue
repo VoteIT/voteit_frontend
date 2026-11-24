@@ -223,7 +223,7 @@ function resetContent() {
   <DefaultDialog
     color="background"
     :persistent="!closable"
-    :title="proposal ? $t('proposal.edit') : $t('proposal.add')"
+    :title="proposal ? $t('proposal.edit') : $t('proposal.publish')"
     @close="resetContent"
   >
     <template #activator="attrs">
