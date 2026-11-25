@@ -101,6 +101,31 @@ onBeforeMount(fetchOptions)
               type="warning"
             />
             <p class="mb-6">{{ $t('auth.chooseAccount.description') }}</p>
+            <template v-if="options.accounts.length > 1">
+              <h2 class="text-h6 mb-2">
+                {{ $t('auth.chooseAccount.mergeTitle') }}
+              </h2>
+              <template v-if="options.can_merge">
+                <p class="mb-3">{{ $t('auth.chooseAccount.mergeHelp') }}</p>
+                <v-btn
+                  color="primary"
+                  :disabled="answering"
+                  prepend-icon="mdi-merge"
+                  :text="$t('auth.chooseAccount.merge')"
+                  @click="merge"
+                />
+              </template>
+              <template v-else>
+                <p class="mb-2">{{ $t('auth.chooseAccount.mergeBlocked') }}</p>
+                <p
+                  v-if="options.merge_blocked_reason"
+                  class="text-medium-emphasis"
+                >
+                  {{ options.merge_blocked_reason }}
+                </p>
+              </template>
+              <v-divider class="my-6" />
+            </template>
             <v-sheet
               v-for="account in options.accounts"
               :key="account.pk"
@@ -141,32 +166,6 @@ onBeforeMount(fetchOptions)
                 @click="answer({ account: account.pk })"
               />
             </v-sheet>
-            <template v-if="options.accounts.length > 1">
-              <v-divider class="my-6" />
-              <h2 class="text-h6 mb-2">
-                {{ $t('auth.chooseAccount.mergeTitle') }}
-              </h2>
-              <template v-if="options.can_merge">
-                <p class="mb-3">{{ $t('auth.chooseAccount.mergeHelp') }}</p>
-                <v-btn
-                  color="primary"
-                  :disabled="answering"
-                  prepend-icon="mdi-merge"
-                  :text="$t('auth.chooseAccount.merge')"
-                  variant="tonal"
-                  @click="merge"
-                />
-              </template>
-              <template v-else>
-                <p class="mb-2">{{ $t('auth.chooseAccount.mergeBlocked') }}</p>
-                <p
-                  v-if="options.merge_blocked_reason"
-                  class="text-medium-emphasis"
-                >
-                  {{ options.merge_blocked_reason }}
-                </p>
-              </template>
-            </template>
             <v-divider class="my-6" />
             <v-btn
               :disabled="answering"
