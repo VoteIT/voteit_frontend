@@ -2,7 +2,7 @@
 import { computed, shallowRef, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 
-import { dialogQuery, stripHTML } from '@/utils'
+import { dialogAlert, dialogQuery, stripHTML } from '@/utils'
 import { isApiError, parseRestError } from '@/utils/restApi'
 import useErrorHandler from '@/composables/useErrorHandler'
 import DefaultDialog from '@/components/DefaultDialog.vue'
@@ -49,7 +49,7 @@ const emit = defineEmits<{
 const { t } = useI18n()
 const { agendaId } = useAgendaItem()
 const { canPostAs } = useMeetingGroups(useMeetingId())
-const { handled } = useErrorHandler({ target: 'dialog' })
+const { handled, handleRestError } = useErrorHandler({ target: 'dialog' })
 
 const body = shallowRef(props.proposal ? props.proposal.body : props.modelValue)
 function getExtraTags(proposal?: Proposal) {
@@ -200,17 +200,18 @@ async function saveProposal() {
     saving.value = false
     return
   }
-  const split = isSplit.value
-  await handled(async () => {
-    // Post one at a time, to keep the order
-    while (pending.length) {
-      await proposalType.api.add(getCreateData(pending[0]))
-      pending.shift()
-    }
+  try {
+    // All or nothing, in order
+    await proposalType.api.listAction<Proposal[]>(
+      'bulk-create',
+      pending.map(getCreateData)
+    )
     done.value = true
-  })
-  // On failure, keep only what wasn't posted, so that a retry doesn't create duplicates
-  if (split && pending.length) body.value = pending.join('')
+  } catch (e) {
+    const messages = getBulkErrorMessages(e)
+    if (messages) dialogAlert(messages.join('\n'))
+    else handleRestError(e)
+  }
   saving.value = false
 }
 
