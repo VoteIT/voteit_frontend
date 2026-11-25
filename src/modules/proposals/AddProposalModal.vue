@@ -3,7 +3,6 @@ import { computed, shallowRef, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 import { dialogQuery, stripHTML } from '@/utils'
-import { ThemeColor } from '@/utils/types'
 import { parseRestError } from '@/utils/restApi'
 import useErrorHandler from '@/composables/useErrorHandler'
 import DefaultDialog from '@/components/DefaultDialog.vue'
