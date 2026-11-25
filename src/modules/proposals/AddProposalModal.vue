@@ -10,7 +10,6 @@ import RichtextEditor from '@/components/RichtextEditor.vue'
 import TagEdit from '@/components/TagEdit.vue'
 
 import useAgendaItem from '../agendas/useAgendaItem'
-import { getHTMLTags } from '../meetings/useTags'
 import useMeetingId from '../meetings/useMeetingId'
 import PostAs from '../meetings/PostAs.vue'
 import useMeetingGroups from '../meetings/useMeetingGroups'
@@ -20,7 +19,7 @@ import { MAX_BULK_PROPOSALS } from './constants'
 import { proposalType } from './contentTypes'
 import type { PreviewProposal, Proposal } from './types'
 import ProposalCard from './ProposalCard.vue'
-import { getParagraphs, isApproveDenyProposal } from './utils'
+import { getExtraTags, getParagraphs, isApproveDenyProposal } from './utils'
 import { RestError } from '@/utils/types'
 
 const previewDelay = 500 // Wait 1 s before preview
@@ -52,14 +51,10 @@ const { canPostAs } = useMeetingGroups(useMeetingId())
 const { handled, handleRestError } = useErrorHandler({ target: 'dialog' })
 
 const body = shallowRef(props.proposal ? props.proposal.body : props.modelValue)
-function getExtraTags(proposal?: Proposal) {
-  if (!proposal) return []
-  const docTags = getHTMLTags(proposal.body)
-  return proposal.tags.filter(
-    (tag) => !docTags.has(tag) && tag !== proposal.prop_id
-  )
+function getInitialExtraTags() {
+  return props.proposal ? getExtraTags(props.proposal) : []
 }
-const extraTags = shallowRef(getExtraTags(props.proposal))
+const extraTags = shallowRef(getInitialExtraTags())
 
 const author = shallowRef<Author | undefined>(
   props.proposal &&
@@ -251,7 +246,7 @@ function resetContent() {
   previewSeq++
   previewing.value = false
   done.value = false
-  extraTags.value = getExtraTags(props.proposal)
+  extraTags.value = getInitialExtraTags()
   body.value = props.proposal?.body ?? ''
   splitParagraphs.value = false
   proposalPreviews.value = []
