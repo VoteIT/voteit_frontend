@@ -1,23 +1,6 @@
-<template>
-  <div>
-    <slot :empty="tabStates.length === 0"></slot>
-    <Dropdown
-      v-for="{ state, polls, title } in tabStates"
-      :key="state"
-      :title="title"
-      v-model="dropdowns[state]"
-      :class="groupClass"
-    >
-      <div class="d-flex flex-column ga-1">
-        <PollCard :poll="p" v-for="p in polls" :key="p.pk" :class="pollClass" />
-      </div>
-    </Dropdown>
-  </div>
-</template>
-
 <script lang="ts" setup>
 import { orderBy } from '@/utils'
-import { computed, reactive, watch } from 'vue'
+import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 import Dropdown from '@/components/Dropdown.vue'
@@ -36,36 +19,26 @@ const STATE_ORDERS: Partial<Record<PollState, [keyof Poll, 'asc' | 'desc']>> = {
 const props = withDefaults(
   defineProps<{
     agendaItem?: number
-    groupClass?: string | object
-    modelValue?: PollState[]
-    pollClass?: string | object
+    pollGap?: number
   }>(),
   {
-    modelValue() {
-      return [PollState.Ongoing]
-    },
-    pollClass: 'my-1'
+    pollGap: 2
   }
 )
 
-const emit = defineEmits(['update:modelValue'])
+const openStates = defineModel<PollState[]>({
+  default: () => [PollState.Ongoing]
+})
 
 const { t } = useI18n()
 const meetingId = useMeetingId()
 const { getMeetingPolls, getAiPolls } = usePollStore()
 
-const dropdowns = reactive(
-  Object.fromEntries(
-    Object.values(PollState).map((s) => [s, props.modelValue.includes(s)])
-  ) as Record<PollState, boolean>
-)
-
-watch(dropdowns, (value) =>
-  emit(
-    'update:modelValue',
-    (Object.keys(value) as PollState[]).filter((k) => value[k])
-  )
-)
+function setOpen(state: PollState, open: boolean) {
+  openStates.value = open
+    ? [...openStates.value, state]
+    : openStates.value.filter((s) => s !== state)
+}
 
 const tabStates = computed(() => {
   return pollType.sm
@@ -84,3 +57,20 @@ const tabStates = computed(() => {
     .filter((s) => s.polls.length)
 })
 </script>
+
+<template>
+  <div class="d-flex flex-column">
+    <slot v-if="tabStates.length === 0" name="empty"></slot>
+    <Dropdown
+      v-for="{ state, polls, title } in tabStates"
+      :key="state"
+      :title="title"
+      :model-value="openStates.includes(state)"
+      @update:model-value="setOpen(state, $event)"
+    >
+      <div class="d-flex flex-column my-1" :class="`ga-${pollGap}`">
+        <PollCard :poll="p" v-for="p in polls" :key="p.pk" />
+      </div>
+    </Dropdown>
+  </div>
+</template>

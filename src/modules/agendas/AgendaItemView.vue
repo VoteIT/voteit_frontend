@@ -259,7 +259,7 @@ provide(TagClickHandlerKey, async (tagName) => {
               variant="text"
             />
           </template>
-          <PollList :agendaItem="agendaId" class="ml-4" />
+          <PollList :agendaItem="agendaId" class="ml-4 ga-1" />
         </Dropdown>
         <AISpeakerLists :agendaId="agendaId" />
       </v-col>
