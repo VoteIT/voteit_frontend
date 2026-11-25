@@ -21,7 +21,7 @@ export const DATETIME_LONG: Intl.DateTimeFormatOptions = {
   timeStyle: 'long'
 }
 
-const SECOND = 1_000
+export const SECOND = 1_000
 const MINUTE = 60 * SECOND
 const HOUR = 60 * MINUTE
 export const DAY = 24 * HOUR

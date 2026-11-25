@@ -14,12 +14,20 @@
 <script setup lang="ts">
 import { computed, ref, watchEffect } from 'vue'
 import { useIntervalFn } from '@vueuse/shared'
+import { useI18n } from 'vue-i18n'
 
 import { durationToString } from '@/utils'
-import { DAY, DATETIME_LONG, formatDate, formatRelative } from '@/utils/dates'
+import {
+  DAY,
+  DATETIME_LONG,
+  SECOND,
+  formatDate,
+  formatRelative
+} from '@/utils/dates'
 import useServerDateTime from '@/composables/useServerDateTime'
 
 const ABSOLUTE_BREAKPOINT = 6 * DAY // After 6 days, display absolute time
+const JUST_NOW_THRESHOLD = 30 * SECOND // Within this, display "Just now"
 
 const props = defineProps<{
   date: string
@@ -34,6 +42,8 @@ const props = defineProps<{
   future?: boolean
 }>()
 
+const { t } = useI18n()
+
 const { dateTime, serverNow } = useServerDateTime(
   computed(() => props.date),
   !props.future
@@ -47,11 +57,12 @@ function updateFromNow() {
   const serverDiff = serverNow() - dateTime.value
   if (props.inSeconds) {
     fromNow.value = durationToString(serverDiff)
+  } else if (Math.abs(serverDiff) <= JUST_NOW_THRESHOLD) {
+    fromNow.value = t('justNow')
+  } else if (serverDiff > ABSOLUTE_BREAKPOINT) {
+    fromNow.value = formatDate(dateTime.value)
   } else {
-    fromNow.value =
-      serverDiff > ABSOLUTE_BREAKPOINT
-        ? formatDate(dateTime.value)
-        : formatRelative(-serverDiff)
+    fromNow.value = formatRelative(-serverDiff)
   }
 }
 
