@@ -7,7 +7,7 @@ import ERQuick from './electoralRegisters/QuickPanel.vue'
 import DialectQuick from './dialects/QuickPanel.vue'
 import DialectControlPanel from './dialects/ControlPanel.vue'
 import {
-  loadAccessPolicies,
+  loadAccessPoliciesQuietly,
   useAccessPolicyState
 } from './accessPolicies/useAccessPolicies'
 import { meetingSettingsPlugins } from './registry'
@@ -36,14 +36,19 @@ meetingSettingsPlugins.register({
   },
   useRequiresAttention() {
     const { canChange, meeting, meetingId } = useMeeting()
-    const { hasActivePolicy } = useAccessPolicyState(meetingId)
-    // Only those who can change the meeting may read its access policies
+    const { hasActivePolicy, isLoaded } = useAccessPolicyState(meetingId)
+    // Only those who can change the meeting may read its access policies.
+    // Load quietly: this runs from the meeting menu, outside the control panel.
     watchEffect(() => {
       if (canChange.value && meetingId.value)
-        loadAccessPolicies(meetingId.value)
+        loadAccessPoliciesQuietly(meetingId.value)
     })
+    // Don't warn until we know which policies the meeting has
     return computed(
-      () => !!meeting.value?.visible_in_lists && !hasActivePolicy.value
+      () =>
+        isLoaded.value &&
+        !!meeting.value?.visible_in_lists &&
+        !hasActivePolicy.value
     )
   }
 })
