@@ -1,7 +1,7 @@
 import type { LocationQuery } from 'vue-router'
 
 /** Only resume logins on our own pipeline, since the path comes from the address bar. */
-const RESUME_PATH = /^\/complete\/[\w-]+\/$/
+export const RESUME_PATH = /^\/complete\/[\w-]+\/$/
 
 /** Field the login pipeline reads the accepted version from. */
 export const ACCEPT_TOS_FIELD = 'accept_tos'

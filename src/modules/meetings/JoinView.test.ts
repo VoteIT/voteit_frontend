@@ -8,22 +8,28 @@ import { ApiError } from '@/utils/restApi'
 import JoinView from './JoinView.vue'
 import { canBecomeModerator } from './rules'
 
-const { mockPush, mockAddRoles, mockRetrieve, inviteState } = vi.hoisted(() => ({
-  mockPush: vi.fn(),
-  mockAddRoles: vi.fn(),
-  mockRetrieve: vi.fn(),
-  inviteState: {} as {
-    loaded: import('vue').Ref<boolean>
-    invites: import('vue').ShallowRef<{ pk: number; meeting: number }[]>
-  }
-}))
-
-vi.mock('../meetingInvites/usePolledInvites', () => ({
-  default: () => ({
-    invitesLoaded: inviteState.loaded,
-    matchedInvites: inviteState.invites
+const { mockPush, mockAddRoles, mockRetrieve, inviteState } = vi.hoisted(
+  () => ({
+    mockPush: vi.fn(),
+    mockAddRoles: vi.fn(),
+    mockRetrieve: vi.fn(),
+    inviteState: {} as {
+      loaded: import('vue').Ref<boolean>
+      invites: import('vue').ShallowRef<{ pk: number; meeting: number }[]>
+    }
   })
-}))
+)
+
+vi.mock('../meetingInvites/usePolledInvites', async () => {
+  const { shallowRef } = await import('vue')
+  return {
+    default: () => ({
+      invitesLoaded: inviteState.loaded,
+      matchedInvites: inviteState.invites,
+      usedInvites: shallowRef([])
+    })
+  }
+})
 
 vi.mock('vue-router', async (importOriginal) => {
   const actual = await importOriginal<typeof import('vue-router')>()

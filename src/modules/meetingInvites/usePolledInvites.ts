@@ -38,7 +38,7 @@ export default function usePolledInvites() {
     { immediateCallback: true }
   )
 
-  const { matchedInvites } = storeToRefs(inviteStore)
+  const { matchedInvites, usedInvites } = storeToRefs(inviteStore)
 
-  return { invitesLoaded, matchedInvites }
+  return { invitesLoaded, matchedInvites, usedInvites }
 }

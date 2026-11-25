@@ -207,6 +207,20 @@
       "thisIsMine": "Det är jag",
       "title": "Är det här ditt konto?"
     },
+    "chooseAccount": {
+      "description": "Du har mer än ett konto här med samma VoteIT ID. Välj vilket du vill använda, eller slå ihop dem till ett så att det här inte händer igen.",
+      "meetings": "Kommande och pågående möten:",
+      "moreMeetings": "och {n} till",
+      "merge": "Slå ihop till ett konto",
+      "mergeBlocked": "Kontona kan inte slås ihop här. Välj ett att använda, eller kontakta VoteIT för att få dem ihopslagna.",
+      "mergeConfirm": "Slå ihop kontona till ett? Det går inte att ångra.",
+      "mergeHelp": "Allt på de andra kontona flyttas till ett av dem, och framöver har du bara det kontot.",
+      "mergeRefused": "Kontona kunde inte slås ihop. Välj ett att använda tills vidare.",
+      "mergeTitle": "Slå ihop kontona",
+      "noMeetings": "Inga kommande eller pågående möten",
+      "title": "Vilket konto vill du använda?",
+      "useThis": "Använd det här kontot"
+    },
     "loginMethods": {
       "title": "Sätt att logga in",
       "description": "De tjänster du kan använda för att logga in på det här kontot.",
@@ -435,6 +449,12 @@
       "label": "Klistra in personnummer",
       "hint": "Ett personnummer per rad",
       "typeLabel": "Personnummer"
+    },
+    "usedElsewhere": {
+      "cantSwitch": "Om det var du, logga in på samma sätt som då för att använda det kontot.",
+"otherDescription": "En inbjudan riktad till dig har accepterats av ett annat konto. Det beror troligen på att du skapat mer än ett konto. | Det finns ett annat konto som accepterat inbjudningar riktade till dig. Det beror troligen på att du skapat mer än ett konto.",
+      "switch": "Byt till det kontot",
+      "switchDescription": "Det finns ytterligare ett konto knutet till din inloggning. Det kontot har accepterat en inbjudan. | Det finns ytterligare ett konto knutet till din inloggning. Det kontot har accepterat {n} inbjudningar."
     },
     "workflow": {
       "accepted": "Accepterad | Accepterade",

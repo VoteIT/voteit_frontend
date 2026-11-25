@@ -207,6 +207,20 @@
       "thisIsMine": "Det er mig",
       "title": "Er dette din konto?"
     },
+    "chooseAccount": {
+      "description": "Du har mere end én konto her med samme VoteIT ID. Vælg hvilken du vil bruge, eller læg dem sammen til én, så det ikke sker igen.",
+      "meetings": "Kommende og igangværende møder:",
+      "moreMeetings": "og {n} mere",
+      "merge": "Læg sammen til én konto",
+      "mergeBlocked": "Kontiene kan ikke lægges sammen her. Vælg én at bruge, eller kontakt VoteIT for at få dem lagt sammen.",
+      "mergeConfirm": "Læg kontiene sammen til én? Det kan ikke fortrydes.",
+      "mergeHelp": "Alt på de andre konti flyttes til én af dem, og fremover har du kun den konto.",
+      "mergeRefused": "Kontiene kunne ikke lægges sammen. Vælg én at bruge indtil videre.",
+      "mergeTitle": "Læg kontiene sammen",
+      "noMeetings": "Ingen kommende eller igangværende møder",
+      "title": "Hvilken konto vil du bruge?",
+      "useThis": "Brug denne konto"
+    },
     "loginMethods": {
       "title": "Måder at logge ind på",
       "description": "De tjenester, du kan bruge til at logge ind på denne konto.",
@@ -435,6 +449,12 @@
       "label": "Indsæt svenske personnumre",
       "hint": "Ét svensk personnummer pr. linje",
       "typeLabel": "Svensk personnummer"
+    },
+    "usedElsewhere": {
+      "cantSwitch": "Hvis det var dig, så log ind på samme måde som dengang for at bruge den konto.",
+"otherDescription": "En invitation til dig er blevet accepteret af en anden konto. Det skyldes sandsynligvis, at du har oprettet mere end én konto. | Der er en anden konto, som har accepteret invitationer til dig. Det skyldes sandsynligvis, at du har oprettet mere end én konto.",
+      "switch": "Skift til den konto",
+      "switchDescription": "Der er endnu en konto knyttet til dit login. Den konto har accepteret en invitation. | Der er endnu en konto knyttet til dit login. Den konto har accepteret {n} invitationer."
     },
     "workflow": {
       "accepted": "Accepteret | Accepterede",

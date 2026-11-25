@@ -13,6 +13,9 @@ import { AccessPolicy } from '@/contentTypes/types'
 import LoginButton from '../auth/LoginButton.vue'
 import useAuthStore from '../auth/useAuthStore'
 import InviteCard from '../meetingInvites/InviteCard.vue'
+import OtherAccountCard from '../meetingInvites/OtherAccountCard.vue'
+import SwitchAccountCard from '../meetingInvites/SwitchAccountCard.vue'
+import { groupUsedInvites } from '../meetingInvites/utils'
 import usePolledInvites from '../meetingInvites/usePolledInvites'
 
 import accessPolicies from './accessPolicies'
@@ -34,11 +37,15 @@ const policies = shallowRef<AccessPolicy[]>([])
 const policiesState = shallowRef<
   'loading' | 'loaded' | 'notFound' | 'failed'
 >('loading')
-const { invitesLoaded, matchedInvites } = usePolledInvites()
+const { invitesLoaded, matchedInvites, usedInvites } = usePolledInvites()
 
 const invites = computed(() =>
   matchedInvites.value.filter((inv) => inv.meeting === meetingId.value)
 )
+const meetingUsedInvites = computed(() =>
+  usedInvites.value.filter((inv) => inv.meeting === meetingId.value)
+)
+const usedGroups = computed(() => groupUsedInvites(meetingUsedInvites.value))
 
 const canJoin = computed(() =>
   canJoinMeeting(meetingId.value, {
@@ -67,7 +74,10 @@ const policyComponents = computed(() => {
 
 const meeting = computed(() => getMeeting(meetingId.value))
 const meetingTitle = computed(
-  () => meeting.value?.title ?? invites.value[0]?.meeting_title
+  () =>
+    meeting.value?.title ??
+    invites.value[0]?.meeting_title ??
+    meetingUsedInvites.value[0]?.meeting_title
 )
 
 async function joinAsModerator() {
@@ -130,6 +140,16 @@ const noAccess = computed(
           <v-progress-linear v-if="loading" indeterminate />
           <div v-else class="d-flex flex-column ga-4">
             <InviteCard v-for="inv in invites" :key="inv.pk" :invite="inv" />
+            <SwitchAccountCard
+              v-for="group in usedGroups.switchable"
+              :key="group.account.pk"
+              v-bind="group"
+            />
+            <OtherAccountCard
+              v-for="group in usedGroups.others"
+              :key="group.account.pk"
+              v-bind="group"
+            />
             <v-alert
               v-if="canBecomeModerator()"
               color="warning"

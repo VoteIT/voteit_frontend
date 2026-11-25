@@ -5,14 +5,13 @@ import { useI18n } from 'vue-i18n'
 
 import { dialogAlert, dialogQuery, minTime, slugify } from '@/utils'
 import { ThemeColor } from '@/utils/types'
-import { invitationScopes } from '../organisations/registry'
 import { DEFAULT_ROLE_ORDER } from '../meetings/constants'
 import { MeetingRole } from '../meetings/types'
 import { getMeetingRoleIcon, translateMeetingRole } from '../meetings/utils'
 
 import { matchedInviteType } from './contentTypes'
+import InvitedAsList from './InvitedAsList.vue'
 import { MeetingInvite } from './types'
-import { translateInviteType } from './utils'
 import useInviteStore from './useInviteStore'
 
 const { fetchMatchedInvites } = useInviteStore()
@@ -55,20 +54,6 @@ async function rejectInvite(inv: MeetingInvite) {
   submitting.value = undefined
 }
 
-const invitedUserdata = computed(() => {
-  return invitationScopes
-    .getPlugins((scope) => scope.id in props.invite.user_data)
-    .map((scope) => {
-      const value = props.invite.user_data[scope.id]!
-      return {
-        icon: scope.icon,
-        scope: scope.id,
-        subtitle: translateInviteType(scope.id, t).typeLabel,
-        title: scope.transformData?.(value) || value
-      }
-    })
-})
-
 const roles = computed(() =>
   DEFAULT_ROLE_ORDER.filter(
     (role) =>
@@ -87,15 +72,7 @@ const roles = computed(() =>
     elevation="4"
     class="rounded-te-xl rounded-bs-xl"
   >
-    <v-list density="compact">
-      <v-list-subheader> {{ $t('invites.invitedAs') }}: </v-list-subheader>
-      <v-list-item
-        v-for="{ icon, scope, subtitle, title } in invitedUserdata"
-        :key="scope"
-        :prepend-icon="icon"
-        :subtitle="subtitle"
-        :title="title"
-      />
+    <InvitedAsList :invites="[invite]">
       <template v-if="roles.length">
         <v-list-subheader> {{ $t('roles') }}: </v-list-subheader>
         <div class="px-4 d-flex ga-2">
@@ -107,7 +84,7 @@ const roles = computed(() =>
           />
         </div>
       </template>
-    </v-list>
+    </InvitedAsList>
     <v-card-actions class="flex-wrap">
       <v-spacer />
       <v-btn
