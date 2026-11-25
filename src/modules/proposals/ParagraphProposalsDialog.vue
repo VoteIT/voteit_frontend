@@ -14,7 +14,11 @@ import {
   type ProposalText,
   type TextParagraph
 } from './contentTypes'
-import { isVisibleParagraphProposal, paragraphProposalStates } from './types'
+import {
+  isVisibleParagraphProposal,
+  paragraphProposalStates,
+  ProposalState
+} from './types'
 
 const props = defineProps<{
   document: ProposalText
@@ -117,7 +121,7 @@ keyNav('ArrowRight', () => next.value)
           :key="prop.pk"
           :proposal="prop"
         >
-          <template #actions>
+          <template #actions v-if="prop.state !== ProposalState.Published">
             <WorkflowState :contentType="proposalType" :object="prop" />
           </template>
         </ProposalSheet>
