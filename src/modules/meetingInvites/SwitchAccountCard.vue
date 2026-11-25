@@ -37,8 +37,6 @@ async function switchAccount() {
     :title="accountName"
     :subtitle="account.userid || undefined"
     prepend-icon="mdi-account-switch"
-    elevation="4"
-    class="rounded-te-xl rounded-bs-xl"
   >
     <v-card-text>
       <p>

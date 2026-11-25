@@ -20,12 +20,7 @@ const meetings = computed(() =>
 </script>
 
 <template>
-  <v-card
-    :title="accountName"
-    prepend-icon="mdi-account-question"
-    elevation="4"
-    class="rounded-te-xl rounded-bs-xl"
-  >
+  <v-card :title="accountName" prepend-icon="mdi-account-question">
     <v-card-text>
       <p>
         {{ $t('invites.usedElsewhere.otherDescription', invites.length) }}
