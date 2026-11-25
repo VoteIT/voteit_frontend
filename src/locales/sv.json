@@ -1167,6 +1167,8 @@
     "approveDenyConfirm": "Det ser ut som att du vill bifalla eller avslå något. Vanligtvis behöver du inte lägga bifall eller avslag som ett eget förslag i VoteIT, men det finns undantag. Vill du fortsätta?",
     "publishCount": "Publicera | Publicera ett förslag | Publicera {count} förslag",
     "splitParagraphs": "Lägg varje stycke som ett eget förslag",
+    "tooManyProposals": "Du kan publicera högst {max} förslag åt gången",
+    "paragraphError": "Stycke {n}: {error}",
     "publish": "Publicera förslag"
   },
   "reaction": {

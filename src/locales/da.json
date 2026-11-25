@@ -1167,6 +1167,8 @@
     "approveDenyConfirm": "Det ser ud til, at du vil godkende eller afvise noget. Normalt behøver du ikke at stille godkendelse eller afvisning som et selvstændigt forslag i VoteIT, men der er undtagelser. Vil du fortsætte?",
     "publishCount": "Offentliggør | Offentliggør ét forslag | Offentliggør {count} forslag",
     "splitParagraphs": "Opret hvert afsnit som et separat forslag",
+    "tooManyProposals": "Du kan højst offentliggøre {max} forslag ad gangen",
+    "paragraphError": "Afsnit {n}: {error}",
     "publish": "Offentliggør forslag"
   },
   "reaction": {

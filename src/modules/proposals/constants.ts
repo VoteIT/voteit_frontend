@@ -13,3 +13,6 @@ export const PROPOSAL_STATE_ORDER = [
   ProposalState.Unhandled,
   ProposalState.Retracted
 ] as const
+
+/** Max proposals per preview or bulk-create request. Same limit as the server. */
+export const MAX_BULK_PROPOSALS = 20

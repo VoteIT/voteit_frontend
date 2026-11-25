@@ -3,7 +3,7 @@ import { computed, shallowRef, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 import { dialogQuery, stripHTML } from '@/utils'
-import { parseRestError } from '@/utils/restApi'
+import { isApiError, parseRestError } from '@/utils/restApi'
 import useErrorHandler from '@/composables/useErrorHandler'
 import DefaultDialog from '@/components/DefaultDialog.vue'
 import RichtextEditor from '@/components/RichtextEditor.vue'
@@ -16,6 +16,7 @@ import PostAs from '../meetings/PostAs.vue'
 import useMeetingGroups from '../meetings/useMeetingGroups'
 import type { Author } from '../meetings/types'
 
+import { MAX_BULK_PROPOSALS } from './constants'
 import { proposalType } from './contentTypes'
 import type { PreviewProposal, Proposal } from './types'
 import ProposalCard from './ProposalCard.vue'
@@ -24,6 +25,8 @@ import { RestError } from '@/utils/types'
 
 const previewDelay = 500 // Wait 1 s before preview
 let previewTimeout: ReturnType<typeof setTimeout>
+/** Only the latest preview request may update previews */
+let previewSeq = 0
 
 interface Props {
   extra?: Partial<T>
@@ -104,25 +107,61 @@ function getBodies() {
   return isSplit.value ? paragraphs.value : [body.value]
 }
 
+/** Bulk endpoints accept a limited number of proposals */
+const tooMany = computed(() => getBodies().length > MAX_BULK_PROPOSALS)
+
+/**
+ * Bulk endpoints respond with one error object per proposal, in order.
+ * Flatten them to messages, numbered by paragraph when there are several.
+ */
+function getBulkErrorMessages(e: unknown): string[] | undefined {
+  if (!isApiError(e) || !Array.isArray(e.data)) return
+  const items = e.data as unknown[]
+  if (!items.every((item) => item && typeof item === 'object')) return
+  return items.flatMap((item, index) =>
+    Object.values(item as Record<string, unknown>)
+      .flat()
+      .map((msg) => (typeof msg === 'string' ? msg : JSON.stringify(msg)))
+      .map((error) =>
+        items.length > 1
+          ? t('proposal.paragraphError', { n: index + 1, error })
+          : error
+      )
+  )
+}
+
+function parseBulkError(e: unknown): RestError<Proposal> {
+  const messages = getBulkErrorMessages(e)
+  if (messages) return { non_field_errors: messages }
+  return parseRestError(e)
+}
+
+const previewing = shallowRef(false)
 const proposalPreviews = shallowRef<Proposal[]>([])
 const errors = shallowRef<RestError<Proposal>>({})
 const errorText = computed(() => {
+  if (tooMany.value)
+    return t('proposal.tooManyProposals', { max: MAX_BULK_PROPOSALS })
   const errs = errors.value.body ?? errors.value.non_field_errors
   if (!errs) return
   return errs.join(', ')
 })
 async function preview() {
+  const seq = ++previewSeq
+  clearTimeout(previewTimeout)
   errors.value = {}
-  if (!body.value) return
+  if (!stripHTML(body.value) || tooMany.value) {
+    proposalPreviews.value = []
+    previewing.value = false
+    return
+  }
+  previewing.value = true
   try {
-    const previews = await Promise.all(
-      getBodies().map((paragraph) =>
-        proposalType.api.listAction<PreviewProposal>(
-          'preview',
-          getCreateData(paragraph)
-        )
-      )
+    const previews = await proposalType.api.listAction<PreviewProposal[]>(
+      'preview',
+      getBodies().map(getCreateData)
     )
+    if (seq !== previewSeq) return
     proposalPreviews.value = previews.map(
       (data) =>
         ({
@@ -133,8 +172,9 @@ async function preview() {
         }) as Proposal
     )
   } catch (e) {
+    if (seq !== previewSeq) return
     proposalPreviews.value = []
-    errors.value = parseRestError(e)
+    errors.value = parseBulkError(e)
   }
   previewing.value = false
 }
@@ -174,12 +214,12 @@ async function saveProposal() {
   saving.value = false
 }
 
-const previewing = shallowRef(false)
 function setPreviewTimeout() {
   clearTimeout(previewTimeout)
-  if (!stripHTML(body.value)) {
-    previewing.value = false
-    proposalPreviews.value = []
+  // Invalidate any preview in flight, and block publishing until the next one
+  previewSeq++
+  if (!stripHTML(body.value) || tooMany.value) {
+    preview()
     return
   }
   previewing.value = true
@@ -206,6 +246,9 @@ const closable = computed(
 )
 
 function resetContent() {
+  clearTimeout(previewTimeout)
+  previewSeq++
+  previewing.value = false
   done.value = false
   extraTags.value = getExtraTags(props.proposal)
   body.value = props.proposal?.body ?? ''
@@ -291,7 +334,9 @@ function resetContent() {
           <v-btn :text="$t('cancel')" variant="text" @click="close" />
           <v-btn
             color="primary"
-            :disabled="!proposalPreviews.length || previewing || saving"
+            :disabled="
+              !proposalPreviews.length || previewing || saving || tooMany
+            "
             prepend-icon="mdi-text-box-plus-outline"
             :text="
               proposal

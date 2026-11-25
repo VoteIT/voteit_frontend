@@ -1167,6 +1167,8 @@
     "approveDenyConfirm": "It looks like you want to approve or reject something. Usually you don't need to add approval or rejection as a separate proposal in VoteIT, but there are exceptions. Do you want to continue?",
     "publishCount": "Publish | Publish one proposal | Publish {count} proposals",
     "splitParagraphs": "Post each paragraph as a separate proposal",
+    "tooManyProposals": "You can publish at most {max} proposals at a time",
+    "paragraphError": "Paragraph {n}: {error}",
     "publish": "Publish proposal"
   },
   "reaction": {
