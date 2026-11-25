@@ -351,6 +351,13 @@
     "noMeetingStates": "Du måste välja åtminstone en status för att hitta möten.",
     "noMatchingMeetings": "Hittar inga möten som matchar dina filter.",
     "yourMeetings": "Ditt möte | Dina möten",
+    "linkedAccounts": {
+      "description": "Det finns ytterligare ett konto kopplat till din inloggning. | Det finns ytterligare konton kopplade till din inloggning.",
+      "title": "Länkat konto | Länkade konton"
+    },
+    "otherAccounts": {
+      "title": "Annat konto | Andra konton"
+    },
     "contactInfo": {
       "dataProtectionContact": "Personuppgiftsansvarig (PUA)",
       "dataProtectionContactHint": "Hanterar frågor om personuppgifter, till exempel när användare ber om att bli borttagna. Måste vara administratör. Väljer ni ingen får alla administratörer de här mailen.",

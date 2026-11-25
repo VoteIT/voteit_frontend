@@ -351,6 +351,13 @@
     "noMeetingStates": "You must pick at least one state to find any meetings.",
     "noMatchingMeetings": "Found no meetings that match your filter.",
     "yourMeetings": "Your meeting | Your meetings",
+    "linkedAccounts": {
+      "description": "There is another account linked to your login. | There are other accounts linked to your login.",
+      "title": "Linked account | Linked accounts"
+    },
+    "otherAccounts": {
+      "title": "Other account | Other accounts"
+    },
     "contactInfo": {
       "dataProtectionContact": "Data protection contact",
       "dataProtectionContactHint": "Handles personal data requests, such as users asking to be removed. Must be an organisation manager. If none is chosen, all organisation managers get these emails.",

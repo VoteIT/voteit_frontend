@@ -351,6 +351,13 @@
     "noMeetingStates": "Du skal vælge mindst én status for at finde møder.",
     "noMatchingMeetings": "Fandt ingen møder, der matcher dit filter.",
     "yourMeetings": "Dit møde | Dine møder",
+    "linkedAccounts": {
+      "description": "Der er en anden konto knyttet til dit login. | Der er andre konti knyttet til dit login.",
+      "title": "Tilknyttet konto | Tilknyttede konti"
+    },
+    "otherAccounts": {
+      "title": "Anden konto | Andre konti"
+    },
     "contactInfo": {
       "dataProtectionContact": "Kontaktperson for databeskyttelse",
       "dataProtectionContactHint": "Håndterer henvendelser om personoplysninger, f.eks. når brugere beder om at blive slettet. Skal være administrator. Vælger I ingen, får alle administratorer disse e-mails.",

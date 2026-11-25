@@ -161,28 +161,46 @@ const meetingCount = computed(() =>
         </v-col>
         <v-divider vertical />
         <v-col v-if="isAuthenticated" v-bind="cols.wideLeft.right">
-          <div v-if="matchedInvites.length || usedInvites.length" class="mb-4">
-            <h2 class="mb-2">
+          <div v-if="usedGroups.switchable.length" class="mb-4">
+            <h2 class="mb-1">
               {{
-                $t('join.invites', matchedInvites.length + usedInvites.length)
+                $t('home.linkedAccounts.title', usedGroups.switchable.length)
               }}
             </h2>
-            <InviteCard
-              v-for="inv in matchedInvites"
-              :key="inv.pk"
-              :invite="inv"
-              class="mb-4"
-            />
+            <p class="mb-3 text-medium-emphasis">
+              {{
+                $t(
+                  'home.linkedAccounts.description',
+                  usedGroups.switchable.length
+                )
+              }}
+            </p>
             <SwitchAccountCard
               v-for="group in usedGroups.switchable"
               :key="group.account.pk"
               v-bind="group"
               class="mb-4"
             />
+          </div>
+          <div v-if="usedGroups.others.length" class="mb-4">
+            <h2 class="mb-2">
+              {{ $t('home.otherAccounts.title', usedGroups.others.length) }}
+            </h2>
             <OtherAccountCard
               v-for="group in usedGroups.others"
               :key="group.account.pk"
               v-bind="group"
+              class="mb-4"
+            />
+          </div>
+          <div v-if="matchedInvites.length" class="mb-4">
+            <h2 class="mb-2">
+              {{ $t('join.invites', matchedInvites.length) }}
+            </h2>
+            <InviteCard
+              v-for="inv in matchedInvites"
+              :key="inv.pk"
+              :invite="inv"
               class="mb-4"
             />
           </div>
