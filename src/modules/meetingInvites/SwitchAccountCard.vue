@@ -39,14 +39,12 @@ async function switchAccount() {
     prepend-icon="mdi-account-switch"
   >
     <v-card-text>
-      <p>
-        {{ $t('invites.usedElsewhere.switchDescription', invites.length) }}
-      </p>
-      <p v-if="account.last_login" class="mt-2 text-medium-emphasis">
+      <slot />
+      <p v-if="account.last_login" class="text-medium-emphasis">
         {{ $t('auth.linkAccount.lastLogin') }}
         <Moment :date="account.last_login" ordinary />
       </p>
-      <p v-else class="mt-2 text-medium-emphasis">
+      <p v-else class="text-medium-emphasis">
         {{ $t('auth.linkAccount.neverUsed') }}
       </p>
       <AccountMeetingList :meetings="meetings" :total="account.meeting_count" />

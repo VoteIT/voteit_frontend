@@ -144,7 +144,11 @@ const noAccess = computed(
               v-for="group in usedGroups.switchable"
               :key="group.account.pk"
               v-bind="group"
-            />
+            >
+              <p class="mb-2">
+                {{ $t('invites.usedElsewhere.switchDescription') }}
+              </p>
+            </SwitchAccountCard>
             <OtherAccountCard
               v-for="group in usedGroups.others"
               :key="group.account.pk"

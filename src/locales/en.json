@@ -455,7 +455,7 @@
       "cantSwitch": "If that was you, sign in the way you did then to use that account.",
 "otherDescription": "An invitation meant for you has been accepted by another account. This is probably because you've created more than one account. | There's another account that has accepted invitations meant for you. This is probably because you've created more than one account.",
       "switch": "Switch to that account",
-      "switchDescription": "There's another account tied to your login. That account has accepted an invitation. | There's another account tied to your login. That account has accepted {n} invitations."
+      "switchDescription": "There's another account tied to your login. That account has already accepted an invitation to this meeting."
     },
     "workflow": {
       "accepted": "Accepted",

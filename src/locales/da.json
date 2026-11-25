@@ -455,7 +455,7 @@
       "cantSwitch": "Hvis det var dig, så log ind på samme måde som dengang for at bruge den konto.",
 "otherDescription": "En invitation til dig er blevet accepteret af en anden konto. Det skyldes sandsynligvis, at du har oprettet mere end én konto. | Der er en anden konto, som har accepteret invitationer til dig. Det skyldes sandsynligvis, at du har oprettet mere end én konto.",
       "switch": "Skift til den konto",
-      "switchDescription": "Der er endnu en konto knyttet til dit login. Den konto har accepteret en invitation. | Der er endnu en konto knyttet til dit login. Den konto har accepteret {n} invitationer."
+      "switchDescription": "Der er endnu en konto knyttet til dit login. Den konto har allerede accepteret en invitation til dette møde."
     },
     "workflow": {
       "accepted": "Accepteret | Accepterede",
