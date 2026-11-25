@@ -22,7 +22,7 @@ exports[`ApprovalResult component 1`] = `
         </div>
         <!--v-if-->
       </div>
-      <div data-v-776ee898="" class="author text-secondary d-flex flex-wrap align-end"><span data-v-776ee898="">by <!--v-if--><span aria-describedby="v-tooltip-v-2" class="ml-6 time"> 0 seconds ago</span>
+      <div data-v-776ee898="" class="author text-secondary d-flex flex-wrap align-end"><span data-v-776ee898="">by <!--v-if--><span aria-describedby="v-tooltip-v-2" class="ml-6 time"> justNow</span>
         <!--teleport start-->
         <!--teleport end-->
         <!--v-if--></span>
@@ -58,7 +58,7 @@ exports[`ApprovalResult component 1`] = `
         </div>
         <!--v-if-->
       </div>
-      <div data-v-776ee898="" class="author text-secondary d-flex flex-wrap align-end"><span data-v-776ee898="">by <!--v-if--><span aria-describedby="v-tooltip-v-6" class="ml-6 time"> 0 seconds ago</span>
+      <div data-v-776ee898="" class="author text-secondary d-flex flex-wrap align-end"><span data-v-776ee898="">by <!--v-if--><span aria-describedby="v-tooltip-v-6" class="ml-6 time"> justNow</span>
         <!--teleport start-->
         <!--teleport end-->
         <!--v-if--></span>
@@ -94,7 +94,7 @@ exports[`ApprovalResult component 1`] = `
         </div>
         <!--v-if-->
       </div>
-      <div data-v-776ee898="" class="author text-secondary d-flex flex-wrap align-end"><span data-v-776ee898="">by <!--v-if--><span aria-describedby="v-tooltip-v-10" class="ml-6 time"> 0 seconds ago</span>
+      <div data-v-776ee898="" class="author text-secondary d-flex flex-wrap align-end"><span data-v-776ee898="">by <!--v-if--><span aria-describedby="v-tooltip-v-10" class="ml-6 time"> justNow</span>
         <!--teleport start-->
         <!--teleport end-->
         <!--v-if--></span>
@@ -147,7 +147,7 @@ exports[`MajorityResult component 1`] = `
         </div>
         <!--v-if-->
       </div>
-      <div data-v-776ee898="" class="author text-secondary d-flex flex-wrap align-end"><span data-v-776ee898="">by <!--v-if--><span aria-describedby="v-tooltip-v-2" class="ml-6 time"> 0 seconds ago</span>
+      <div data-v-776ee898="" class="author text-secondary d-flex flex-wrap align-end"><span data-v-776ee898="">by <!--v-if--><span aria-describedby="v-tooltip-v-2" class="ml-6 time"> justNow</span>
         <!--teleport start-->
         <!--teleport end-->
         <!--v-if--></span>
@@ -183,7 +183,7 @@ exports[`MajorityResult component 1`] = `
         </div>
         <!--v-if-->
       </div>
-      <div data-v-776ee898="" class="author text-secondary d-flex flex-wrap align-end"><span data-v-776ee898="">by <!--v-if--><span aria-describedby="v-tooltip-v-6" class="ml-6 time"> 0 seconds ago</span>
+      <div data-v-776ee898="" class="author text-secondary d-flex flex-wrap align-end"><span data-v-776ee898="">by <!--v-if--><span aria-describedby="v-tooltip-v-6" class="ml-6 time"> justNow</span>
         <!--teleport start-->
         <!--teleport end-->
         <!--v-if--></span>
@@ -806,7 +806,7 @@ exports[`SimpleResult component 1`] = `
         </div>
         <!--v-if-->
       </div>
-      <div data-v-776ee898="" class="author text-secondary d-flex flex-wrap align-end"><span data-v-776ee898="">by <!--v-if--><span aria-describedby="v-tooltip-v-2" class="ml-6 time"> 0 seconds ago</span>
+      <div data-v-776ee898="" class="author text-secondary d-flex flex-wrap align-end"><span data-v-776ee898="">by <!--v-if--><span aria-describedby="v-tooltip-v-2" class="ml-6 time"> justNow</span>
         <!--teleport start-->
         <!--teleport end-->
         <!--v-if--></span>
@@ -848,7 +848,7 @@ exports[`SimpleResult component 1`] = `
         </div>
         <!--v-if-->
       </div>
-      <div data-v-776ee898="" class="author text-secondary d-flex flex-wrap align-end"><span data-v-776ee898="">by <!--v-if--><span aria-describedby="v-tooltip-v-8" class="ml-6 time"> 0 seconds ago</span>
+      <div data-v-776ee898="" class="author text-secondary d-flex flex-wrap align-end"><span data-v-776ee898="">by <!--v-if--><span aria-describedby="v-tooltip-v-8" class="ml-6 time"> justNow</span>
         <!--teleport start-->
         <!--teleport end-->
         <!--v-if--></span>
@@ -890,7 +890,7 @@ exports[`SimpleResult component 1`] = `
         </div>
         <!--v-if-->
       </div>
-      <div data-v-776ee898="" class="author text-secondary d-flex flex-wrap align-end"><span data-v-776ee898="">by <!--v-if--><span aria-describedby="v-tooltip-v-14" class="ml-6 time"> 0 seconds ago</span>
+      <div data-v-776ee898="" class="author text-secondary d-flex flex-wrap align-end"><span data-v-776ee898="">by <!--v-if--><span aria-describedby="v-tooltip-v-14" class="ml-6 time"> justNow</span>
         <!--teleport start-->
         <!--teleport end-->
         <!--v-if--></span>
