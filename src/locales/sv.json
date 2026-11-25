@@ -453,7 +453,7 @@
     },
     "usedElsewhere": {
       "cantSwitch": "Om det var du, logga in på samma sätt som då för att använda det kontot.",
-"otherDescription": "En inbjudan riktad till dig har accepterats av ett annat konto. Det beror troligen på att du skapat mer än ett konto. | Det finns ett annat konto som accepterat inbjudningar riktade till dig. Det beror troligen på att du skapat mer än ett konto.",
+      "otherDescription": "En inbjudan som matchar dina uppgifter har accepterats av ett annat konto. Det beror troligen på att du skapat mer än ett konto. | Det finns ett annat konto som accepterat inbjudningar som matchar dina uppgifter. Det beror troligen på att du skapat mer än ett konto.",
       "switch": "Byt till det kontot",
       "switchDescription": "Det finns ytterligare ett konto knutet till din inloggning. Det kontot har accepterat en inbjudan. | Det finns ytterligare ett konto knutet till din inloggning. Det kontot har accepterat {n} inbjudningar."
     },
