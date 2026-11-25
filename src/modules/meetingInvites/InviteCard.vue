@@ -1,15 +1,14 @@
 <script lang="ts" setup>
-import { computed, ref } from 'vue'
+import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 
 import { dialogAlert, dialogQuery, minTime, slugify } from '@/utils'
 import { ThemeColor } from '@/utils/types'
-import { invitationScopes } from '../organisations/registry'
 
 import { matchedInviteType } from './contentTypes'
+import InvitedAsList from './InvitedAsList.vue'
 import { MeetingInvite } from './types'
-import { translateInviteType } from './utils'
 import useInviteStore from './useInviteStore'
 
 const { fetchMatchedInvites } = useInviteStore()
@@ -51,20 +50,6 @@ async function rejectInvite(inv: MeetingInvite) {
   }
   submitting.value = undefined
 }
-
-const invitedUserdata = computed(() => {
-  return invitationScopes
-    .getPlugins((scope) => scope.id in props.invite.user_data)
-    .map((scope) => {
-      const value = props.invite.user_data[scope.id]!
-      return {
-        icon: scope.icon,
-        scope: scope.id,
-        subtitle: translateInviteType(scope.id, t).typeLabel,
-        title: scope.transformData?.(value) || value
-      }
-    })
-})
 </script>
 
 <template>
@@ -73,16 +58,7 @@ const invitedUserdata = computed(() => {
     elevation="4"
     class="rounded-te-xl rounded-bs-xl"
   >
-    <v-list density="compact">
-      <v-list-subheader> {{ $t('invites.invitedAs') }}: </v-list-subheader>
-      <v-list-item
-        v-for="{ icon, scope, subtitle, title } in invitedUserdata"
-        :key="scope"
-        :prepend-icon="icon"
-        :subtitle="subtitle"
-        :title="title"
-      />
-    </v-list>
+    <InvitedAsList :invites="[invite]" />
     <v-card-actions class="flex-wrap">
       <v-spacer />
       <v-btn

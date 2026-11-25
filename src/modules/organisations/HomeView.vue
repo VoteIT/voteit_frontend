@@ -19,6 +19,9 @@ import useDefaults from '@/composables/useDefaults'
 import LoginButton from '../auth/LoginButton.vue'
 import useAuthStore from '../auth/useAuthStore'
 import InviteCard from '../meetingInvites/InviteCard.vue'
+import OtherAccountCard from '../meetingInvites/OtherAccountCard.vue'
+import SwitchAccountCard from '../meetingInvites/SwitchAccountCard.vue'
+import { groupUsedInvites } from '../meetingInvites/utils'
 import usePolledInvites from '../meetingInvites/usePolledInvites'
 import AddMeeting from '../meetings/AddMeetingModal.vue'
 import useMeetings from '../meetings/useMeetings'
@@ -47,7 +50,8 @@ useTitle(
   )
 )
 
-const { matchedInvites } = usePolledInvites()
+const { matchedInvites, usedInvites } = usePolledInvites()
+const usedGroups = computed(() => groupUsedInvites(usedInvites.value))
 
 const editing = ref(false)
 const { collapsedBodyHeightMobile } = useDefaults()
@@ -157,14 +161,28 @@ const meetingCount = computed(() =>
         </v-col>
         <v-divider vertical />
         <v-col v-if="isAuthenticated" v-bind="cols.wideLeft.right">
-          <div v-if="matchedInvites.length" class="mb-4">
+          <div v-if="matchedInvites.length || usedInvites.length" class="mb-4">
             <h2 class="mb-2">
-              {{ $t('join.invites', matchedInvites.length) }}
+              {{
+                $t('join.invites', matchedInvites.length + usedInvites.length)
+              }}
             </h2>
             <InviteCard
               v-for="inv in matchedInvites"
               :key="inv.pk"
               :invite="inv"
+              class="mb-4"
+            />
+            <SwitchAccountCard
+              v-for="group in usedGroups.switchable"
+              :key="group.account.pk"
+              v-bind="group"
+              class="mb-4"
+            />
+            <OtherAccountCard
+              v-for="group in usedGroups.others"
+              :key="group.account.pk"
+              v-bind="group"
               class="mb-4"
             />
           </div>

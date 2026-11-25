@@ -9,10 +9,10 @@ import restApi, { isApiError } from '@/utils/restApi'
 import { ThemeColor } from '@/utils/types'
 import AppBar from '@/components/AppBar.vue'
 import Moment from '@/components/Moment.vue'
-import { meetingType } from '@/modules/meetings/contentTypes'
 
 import { ChooseAccountAnswer, getChooseAccountResume } from './chooseAccount'
-import { IdentityAccountMeeting, IdentityAccountOptions } from './types'
+import AccountMeetingList from './AccountMeetingList.vue'
+import { IdentityAccountOptions } from './types'
 
 const { t } = useI18n()
 const route = useRoute()
@@ -51,11 +51,6 @@ async function fetchOptions() {
   } catch (e) {
     error.value = isApiError(e) && e.status === 404 ? 'expired' : 'failed'
   }
-}
-
-function getMeetingState(meeting: IdentityAccountMeeting) {
-  const state = meetingType.sm.getState(meeting.state)
-  return { icon: state.icon, title: state.translate?.(t) ?? meeting.state }
 }
 
 /**
@@ -131,23 +126,10 @@ onBeforeMount(fetchOptions)
                 <p v-else class="text-medium-emphasis">
                   {{ $t('auth.linkAccount.neverUsed') }}
                 </p>
-                <template v-if="account.meetings.length">
-                  <p class="mt-2 text-medium-emphasis">
-                    {{ $t('auth.chooseAccount.meetings') }}
-                  </p>
-                  <ul class="ml-4">
-                    <li v-for="meeting in account.meetings" :key="meeting.pk">
-                      {{ meeting.title }}
-                      <span class="text-medium-emphasis">
-                        <v-icon
-                          :icon="getMeetingState(meeting).icon"
-                          size="small"
-                        />
-                        {{ getMeetingState(meeting).title }}
-                      </span>
-                    </li>
-                  </ul>
-                </template>
+                <AccountMeetingList
+                  v-if="account.meetings.length"
+                  :meetings="account.meetings"
+                />
                 <p v-else class="mt-2 text-medium-emphasis">
                   {{ $t('auth.chooseAccount.noMeetings') }}
                 </p>

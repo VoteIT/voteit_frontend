@@ -7,6 +7,7 @@ Version format is `major`.`minor`.`patch`. Until major version 1 is realeased, A
 ## Unreleased
 
 - New partial to pick login account among duplicates, or merge
+- Home and join pages show invitations that were accepted by another account. Accounts tied to the same login can be switched to from there, other accounts are listed with a hint
 
 ## 1.7.5 (2026-11-23)
 

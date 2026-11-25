@@ -37,6 +37,14 @@ export interface IdentityAccountMeeting {
   readonly state: MeetingState
 }
 
+/** A meeting in an account's meeting list. */
+export interface AccountMeeting {
+  readonly pk: number
+  readonly title?: string
+  /** Unknown for an invited meeting the server didn't list */
+  readonly state?: MeetingState
+}
+
 /** One of several accounts a single id proxy identity reaches. */
 export interface IdentityAccount {
   readonly pk: number
