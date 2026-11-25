@@ -30,19 +30,14 @@
 </template>
 
 <script lang="ts" setup>
-import { ref } from 'vue'
-
-const props = defineProps<{
+defineProps<{
   eager?: boolean
-  modelValue?: boolean
   title?: string
 }>()
-const emit = defineEmits(['update:modelValue'])
 
-const isOpen = ref(props.modelValue)
+const isOpen = defineModel<boolean>({ default: false })
 function toggle() {
   isOpen.value = !isOpen.value
-  emit('update:modelValue', isOpen.value)
 }
 </script>
 
