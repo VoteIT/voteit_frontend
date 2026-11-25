@@ -197,11 +197,16 @@ const erPreliminary = computed(() => poll.value?.state === PollState.Upcoming)
                         ? $t('electoralRegister.preliminary')
                         : $t('electoralRegister.electoralRegister')
                     }}:
-                    <span class="text-secondary">
+                    <router-link
+                      :to="{
+                        name: 'electoralRegisters',
+                        query: { er: electoralRegister.pk }
+                      }"
+                    >
                       {{
                         formatDate(electoralRegister.created, DATETIME_SHORT)
                       }}
-                    </span>
+                    </router-link>
                   </span>
                 </template>
                 <span>

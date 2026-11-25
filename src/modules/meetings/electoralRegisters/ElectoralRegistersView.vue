@@ -1,8 +1,9 @@
 <script lang="ts" setup>
 import { imap, partition, sorted, sum } from 'itertools'
 import { DATETIME_SHORT, formatDate } from '@/utils/dates'
-import { computed, reactive, ref, watch } from 'vue'
+import { computed, nextTick, reactive, ref, shallowRef, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
+import { useRoute } from 'vue-router'
 
 import { slugify } from '@/utils'
 import { cols } from '@/utils/defaults'
@@ -37,6 +38,39 @@ const { getErMethod } = useERStore()
 const { anyPoll, filterPolls } = usePollStore()
 
 useMeetingTitle(t('electoralRegister.plural'))
+
+/**
+ * The open register panel, initially from ?er=<pk> (e.g. linked from a poll).
+ * Shared by all groups, so only one register is open at a time.
+ */
+const route = useRoute()
+const openRegister = shallowRef<number>()
+let scrollPending = false
+watch(
+  () => route.query.er,
+  (er) => {
+    const pk = Number(er)
+    if (!pk) return
+    openRegister.value = pk
+    scrollPending = true
+  },
+  { immediate: true }
+)
+// Registers may arrive after mount, so scroll once the requested one is shown
+watch(
+  [openRegister, sortedRegisters],
+  async () => {
+    if (!scrollPending) return
+    const pk = openRegister.value
+    if (!sortedRegisters.value.some((er) => er.pk === pk)) return
+    scrollPending = false
+    await nextTick()
+    document
+      .getElementById(`er-${pk}`)
+      ?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+  },
+  { immediate: true, flush: 'post' }
+)
 
 /**
  * Polls by the register they used, oldest first. Only polls visible to the user are in the store.
@@ -395,7 +429,7 @@ const currentERText = computed(() => {
             {{ $t('electoralRegister.none') }}
           </em>
         </p>
-        <v-expansion-panels class="mt-3">
+        <v-expansion-panels v-model="openRegister" class="mt-3">
           <v-expansion-panel
             v-for="{
               pk,
@@ -404,7 +438,9 @@ const currentERText = computed(() => {
               weights,
               source
             } in registers"
+            :id="`er-${pk}`"
             :key="pk"
+            :value="pk"
           >
             <v-expansion-panel-title class="d-flex">
               <span class="text-left mr-2" style="min-width: 92px">
