@@ -27,6 +27,16 @@ const props = withDefaults(
   }
 )
 
+/**
+ * Emitted when an event is sent, with a promise of the new state (undefined if
+ * cancelled or failed). It's emitted up front rather than on completion, because
+ * the state change often arrives over the socket first and unmounts this
+ * component (e.g. moves it to another list), and Vue drops emits after unmount.
+ */
+const emit = defineEmits<{
+  transition: [newState: Promise<T['state'] | undefined>]
+}>()
+
 const { t } = useI18n()
 const { handled } = useErrorHandler({ target: 'dialog' })
 const eventsAvailable = computed(() =>
@@ -47,10 +57,17 @@ const working = shallowRef(false)
 
 async function sendEvent(event: Event) {
   working.value = true
-  await handled(
+  // Resolves to the event endpoint's response on success; undefined if
+  // cancelled or failed
+  const result = handled(
     () => props.contentType.sm.sendEvent(props.object, event, t),
     'transition'
   )
+  emit(
+    'transition',
+    result.then((r) => r?.state)
+  )
+  await result
   working.value = false
 }
 </script>

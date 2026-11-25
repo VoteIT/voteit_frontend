@@ -14,9 +14,12 @@ import ProposalSheet from '../proposals/ProposalSheet.vue'
 
 import { pollType } from './contentTypes'
 import usePoll from './usePoll'
-import { Poll } from './types'
+import { Poll, PollState } from './types'
 
 const props = defineProps<{ poll: Poll }>()
+const emit = defineEmits<{
+  transition: [newState: Promise<PollState | undefined>]
+}>()
 
 const { t } = useI18n()
 
@@ -81,7 +84,13 @@ const resultDialogs = computed(() => [...resultDialogGen()])
       />
     </template>
     <template #append v-if="isModerator">
-      <WorkflowState admin :object="poll" :contentType="pollType" right />
+      <WorkflowState
+        admin
+        :object="poll"
+        :contentType="pollType"
+        right
+        @transition="emit('transition', $event)"
+      />
     </template>
     <template #text>
       <ProgressBar

@@ -40,6 +40,13 @@ function setOpen(state: PollState, open: boolean) {
     : openStates.value.filter((s) => s !== state)
 }
 
+// When the user moves a poll to another state, open that group so it stays
+// visible. Awaited here, since the card is likely gone by the time it resolves.
+async function openOnTransition(newState: Promise<PollState | undefined>) {
+  const state = await newState
+  if (state && !openStates.value.includes(state)) setOpen(state, true)
+}
+
 const tabStates = computed(() => {
   return pollType.sm
     .getPriorityStates()
@@ -69,7 +76,12 @@ const tabStates = computed(() => {
       @update:model-value="setOpen(state, $event)"
     >
       <div class="d-flex flex-column my-1" :class="`ga-${pollGap}`">
-        <PollCard :poll="p" v-for="p in polls" :key="p.pk" />
+        <PollCard
+          :poll="p"
+          v-for="p in polls"
+          :key="p.pk"
+          @transition="openOnTransition"
+        />
       </div>
     </Dropdown>
   </div>
