@@ -689,7 +689,7 @@
     "removalRequests": {
       "title": "Removal requests",
       "description": "Users who have asked to have their accounts removed",
-      "intro": "These users have asked to have their accounts and personal data removed. They can change their minds for a few hours after asking. After that you can remove them. A user who isn't connected to anything is deleted. Anyone else is anonymised, so meetings keep their content but no longer show who wrote or did it.",
+      "intro": "These users have asked to have their accounts and personal data removed. They can change their minds for a few hours after asking. After that you can remove them. A user who isn't connected to anything, and has left nothing in the log, is deleted. Anyone else is anonymised, so meetings keep their content but no longer show who wrote or did it.",
       "empty": "No one has asked to be removed.",
       "fetchFailed": "Could not fetch removal requests",
       "refresh": "Refresh",
@@ -700,6 +700,7 @@
       "confirmText": "{name} will be removed. This can't be undone.",
       "gone": "This request is no longer pending. The user may have changed their mind, or someone else has handled it.",
       "orgRoles": "Organisation roles",
+      "logEntries": "No log entries | 1 log entry | {count} log entries",
       "groups": "Groups",
       "usedInvite": "Joined by invitation",
       "result": {
@@ -708,6 +709,7 @@
       },
       "classification": {
         "no_activity": "Not connected to anything. The user will be deleted.",
+        "log_trail": "Only left in the log, for instance from meetings that have since been deleted. The user will be anonymised.",
         "inactive_meetings": "Only connected to meetings that are closed or archived.",
         "active_meeting": "Connected to a meeting that is upcoming or ongoing. Check with its moderators first.",
         "ongoing_poll": "Can vote in an ongoing poll. Removing the user now affects the poll.",

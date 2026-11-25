@@ -36,6 +36,11 @@ const classificationMeta: Record<
     translate: () =>
       t('organization.removalRequests.classification.no_activity')
   },
+  [RemovalClassification.LogTrail]: {
+    color: ThemeColor.Success,
+    icon: 'mdi-history',
+    translate: () => t('organization.removalRequests.classification.log_trail')
+  },
   [RemovalClassification.InactiveMeetings]: {
     color: ThemeColor.Info,
     icon: 'mdi-archive-outline',
@@ -296,6 +301,14 @@ async function remove(request: RemovalRequest) {
         <p v-if="request.organisation_roles.length" class="mt-3">
           <strong>{{ $t('organization.removalRequests.orgRoles') }}:</strong>
           {{ getOrgRoles(request) }}
+        </p>
+        <p v-if="request.log_entries" class="mt-3">
+          {{
+            $t(
+              'organization.removalRequests.logEntries',
+              request.log_entries
+            )
+          }}
         </p>
         <v-list v-if="request.meetings.length" density="compact" class="mt-2">
           <v-list-item

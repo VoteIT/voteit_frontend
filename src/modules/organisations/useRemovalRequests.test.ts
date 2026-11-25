@@ -61,6 +61,7 @@ function makeRequest(pk: number, can_remove = true): RemovalRequest {
     organisation_roles: [],
     classification: RemovalClassification.NoActivity,
     meetings: [],
+    log_entries: 0,
     postponed: null
   }
 }

@@ -123,6 +123,8 @@ export interface CurrentTermsOfService {
 /** What removing a user would affect, least to most in need of care. */
 export enum RemovalClassification {
   NoActivity = 'no_activity',
+  /** Nothing left in any meeting, but log entries they made. Anonymised without waiting for a manager. */
+  LogTrail = 'log_trail',
   InactiveMeetings = 'inactive_meetings',
   ActiveMeeting = 'active_meeting',
   OngoingPoll = 'ongoing_poll',
@@ -173,5 +175,7 @@ export interface RemovalRequest {
   readonly organisation_roles: OrganisationRole[]
   readonly classification: RemovalClassification
   readonly meetings: MeetingInvolvement[]
+  /** Log entries the user made. They outlive deleted meetings, so they can be all that is left. */
+  readonly log_entries: number
   readonly postponed: PostponedRemoval | null
 }

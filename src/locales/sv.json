@@ -689,7 +689,7 @@
     "removalRequests": {
       "title": "Begäran om borttagning",
       "description": "Användare som har bett om att få sina konton borttagna",
-      "intro": "De här användarna har bett om att få sina konton och personuppgifter borttagna. De kan ångra sig i några timmar efter att de frågat. Därefter kan ni ta bort dem. En användare som inte är kopplad till något raderas. Övriga anonymiseras, så att mötena behåller sitt innehåll men inte längre visar vem som skrev eller gjorde det.",
+      "intro": "De här användarna har bett om att få sina konton och personuppgifter borttagna. De kan ångra sig i några timmar efter att de frågat. Därefter kan ni ta bort dem. En användare som inte är kopplad till något, och inte har lämnat något i loggen, raderas. Övriga anonymiseras, så att mötena behåller sitt innehåll men inte längre visar vem som skrev eller gjorde det.",
       "empty": "Ingen har bett om att bli borttagen.",
       "fetchFailed": "Kunde inte hämta begäranden om borttagning",
       "refresh": "Uppdatera",
@@ -700,6 +700,7 @@
       "confirmText": "{name} kommer att tas bort. Det går inte att ångra.",
       "gone": "Den här begäran väntar inte längre. Användaren kan ha ångrat sig, eller så har någon annan hanterat den.",
       "orgRoles": "Roller i organisationen",
+      "logEntries": "Inga loggposter | 1 loggpost | {count} loggposter",
       "groups": "Grupper",
       "usedInvite": "Gick med via inbjudan",
       "result": {
@@ -708,6 +709,7 @@
       },
       "classification": {
         "no_activity": "Inte kopplad till något. Användaren kommer att raderas.",
+        "log_trail": "Finns bara kvar i loggen, till exempel från möten som sedan raderats. Användaren kommer att anonymiseras.",
         "inactive_meetings": "Bara kopplad till möten som är stängda eller arkiverade.",
         "active_meeting": "Kopplad till ett möte som är kommande eller pågår. Stäm av med mötets moderatorer först.",
         "ongoing_poll": "Kan rösta i en pågående omröstning. Tar ni bort användaren nu påverkas omröstningen.",

@@ -6,6 +6,7 @@ Version format is `major`.`minor`.`patch`. Until major version 1 is realeased, A
 
 ## 1.8.0 (Unreleased)
 
+- Removal requests: Users whose only trace is in the log, for instance from meetings that have since been deleted, are shown as such and will be anonymised rather than deleted. Requests show how many log entries the user has made
 - Tags are shown as chips, and `#tags` in rich text and in the editor look the same. Tags typed in the editor get their color right away, and the pointer only shows where clicking a tag does something. Disabled tags can no longer be clicked
 - Speaker handling shows group memberships (and gender, when used) for the current speaker, like the queue does. Speaker statistics show them under each name. [#364](https://github.com/VoteIT/voteit_frontend/issues/364)
 - Meeting control panel warnings show in the meeting menu, on the panel cards and on the advanced settings menu: when the meeting is listed but has no active access policy, or when the dialect requires a component that's turned off. [#366](https://github.com/VoteIT/voteit_frontend/issues/366)
