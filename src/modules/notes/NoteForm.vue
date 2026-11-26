@@ -1,32 +1,34 @@
 <script setup lang="ts">
-import { shallowReactive, watch } from 'vue'
+import { computed, watch } from 'vue'
 
 import { stripHTML } from '@/utils'
 import RichtextEditor from '@/components/RichtextEditor.vue'
 
 import { IProposalNote, ProposalIntent } from './types'
 
-const props = defineProps<{
-  modelValue: Pick<IProposalNote, 'body' | 'intent'>
-}>()
+type NoteData = Pick<IProposalNote, 'body' | 'intent'>
 
-// The note object itself is edited in place, so it can't be a defineModel (same object never emits)
-const emit = defineEmits<{
-  (e: 'update:modelValue', value: Pick<IProposalNote, 'body' | 'intent'>): void
-}>()
+const model = defineModel<NoteData>({ required: true })
 const modified = defineModel<boolean>('modified')
 const valid = defineModel<boolean>('valid')
 
-const form = shallowReactive(props.modelValue)
+const initial = { ...model.value }
+
+// Each field write sends the parent a new object
+const intent = computed({
+  get: () => model.value.intent,
+  set: (intent) => (model.value = { ...model.value, intent })
+})
+const body = computed({
+  get: () => model.value.body,
+  set: (body) => (model.value = { ...model.value, body })
+})
 
 watch(
-  form,
-  (value) => {
-    emit('update:modelValue', value)
-    modified.value =
-      value.body !== props.modelValue.body ||
-      value.intent !== props.modelValue.intent
-    valid.value = !!value.intent || !!stripHTML(value.body)
+  model,
+  ({ body, intent }) => {
+    modified.value = body !== initial.body || intent !== initial.intent
+    valid.value = !!intent || !!stripHTML(body)
   },
   { immediate: true }
 )
@@ -38,7 +40,7 @@ watch(
       class="mb-1"
       density="comfortable"
       mandatory
-      v-model="form.intent"
+      v-model="intent"
     >
       <v-btn color="secondary" icon="mdi-text" :value="ProposalIntent.BLANK" />
       <v-btn
@@ -54,7 +56,7 @@ watch(
     </v-btn-toggle>
     <RichtextEditor
       :placeholder="$t('notes.bodyPlaceholder')"
-      v-model="form.body"
+      v-model="body"
     />
   </div>
 </template>

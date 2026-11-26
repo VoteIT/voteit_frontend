@@ -69,7 +69,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed, shallowRef } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 import useProposalStore from '@/modules/proposals/useProposalStore'
@@ -93,7 +93,7 @@ const { getProposals } = useProposalStore()
 
 const pollMethod = computed(() => pollPlugins.getPlugin(props.poll.method_name))
 
-const ranking = ref<number[]>(model.value?.ranking ?? [])
+const ranking = shallowRef<number[]>([...(model.value?.ranking ?? [])])
 
 function setOrder(order?: number[]) {
   if (order) ranking.value = order
@@ -128,7 +128,7 @@ function toggleSelected(proposal: Proposal) {
   if (ranking.value.includes(proposal.pk)) {
     ranking.value = ranking.value.filter((p) => p !== proposal.pk)
   } else {
-    ranking.value.push(proposal.pk)
+    ranking.value = [...ranking.value, proposal.pk]
   }
   if (isValid.value) setOrder()
   else model.value = undefined

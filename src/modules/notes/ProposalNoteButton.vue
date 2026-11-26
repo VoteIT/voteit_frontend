@@ -33,10 +33,11 @@ const form = shallowReactive({
 watch(
   proposalNote,
   (n) => {
-    Object.assign(form.data, {
+    // New object, so NoteForm and computeds see the change
+    form.data = {
       body: n?.body ?? '',
       intent: n?.intent ?? ProposalIntent.BLANK
-    })
+    }
   },
   { immediate: true }
 )
@@ -91,9 +92,11 @@ async function saveNote() {
 
 function cancelEdit() {
   Object.assign(form, {
-    body: proposalNote.value?.body ?? '',
-    editing: false,
-    intent: proposalNote.value?.intent ?? ProposalIntent.BLANK
+    data: {
+      body: proposalNote.value?.body ?? '',
+      intent: proposalNote.value?.intent ?? ProposalIntent.BLANK
+    },
+    editing: false
   })
   menuOpen.value = false
 }
