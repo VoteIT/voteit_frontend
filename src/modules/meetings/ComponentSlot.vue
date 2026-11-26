@@ -1,12 +1,3 @@
-<template>
-  <component
-    v-for="{ component, id } in components"
-    :key="id"
-    :is="component"
-  />
-  <slot v-if="!components.length"></slot>
-</template>
-
 <script lang="ts" setup>
 import { filter } from 'itertools'
 import { computed } from 'vue'
@@ -25,3 +16,12 @@ const components = computed(() => {
   )
 })
 </script>
+
+<template>
+  <component
+    v-for="{ component, id } in components"
+    :key="id"
+    :is="component"
+  />
+  <slot v-if="!components.length"></slot>
+</template>

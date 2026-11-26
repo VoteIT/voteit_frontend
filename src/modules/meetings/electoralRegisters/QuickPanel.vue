@@ -1,15 +1,3 @@
-<template>
-  <v-card-text>
-    {{ $t('electoralRegister.activeMethod', { method: policyName }) }}
-  </v-card-text>
-  <v-card-text v-if="erMethodLocked">
-    <v-chip>
-      <v-icon icon="mdi-lock" color="secondary" class="mr-1" />
-      {{ $t('electoralRegister.locked') }}
-    </v-chip>
-  </v-card-text>
-</template>
-
 <script lang="ts" setup>
 import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
@@ -42,3 +30,15 @@ const policyName = computed(() => {
   return erMethod.value.title || translatePolicyName(erMethod.value.name)
 })
 </script>
+
+<template>
+  <v-card-text>
+    {{ $t('electoralRegister.activeMethod', { method: policyName }) }}
+  </v-card-text>
+  <v-card-text v-if="erMethodLocked">
+    <v-chip>
+      <v-icon icon="mdi-lock" color="secondary" class="mr-1" />
+      {{ $t('electoralRegister.locked') }}
+    </v-chip>
+  </v-card-text>
+</template>

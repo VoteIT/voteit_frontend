@@ -1,45 +1,3 @@
-<template>
-  <span v-if="!canChange && delegatedTo">
-    <v-icon icon="mdi-arrow-right" />
-    {{ delegatedTo.title }}
-  </span>
-  <span v-else-if="delegatedFrom.length">
-    <DefaultDialog
-      :title="$t('meeting.groups.delegatedFrom', delegatedFrom.length)"
-    >
-      <template #activator="{ props }">
-        <v-chip
-          v-bind="props"
-          :text="$t('meeting.groups.delegatedFrom', delegatedFrom.length)"
-        />
-      </template>
-      <template #default="{ close }">
-        <v-list>
-          <v-list-item
-            v-for="{ title, pk, votes } in delegatedFrom"
-            :key="pk"
-            prepend-icon="mdi-account-group"
-            :title="title"
-            :subtitle="$t('poll.result.voteCount', votes || 0)"
-          />
-        </v-list>
-        <div class="text-right">
-          <v-btn :text="$t('close')" variant="text" @click="close" />
-        </div>
-      </template>
-    </DefaultDialog>
-  </span>
-  <v-select
-    v-else-if="canChange && delegateOptions.length"
-    v-model="modelValue"
-    clearable
-    hide-details
-    density="compact"
-    :items="delegateOptions"
-    :label="$t('meeting.groups.delegateTo')"
-  />
-</template>
-
 <script setup lang="ts">
 import { computed } from 'vue'
 
@@ -97,3 +55,45 @@ const modelValue = computed({
   }
 })
 </script>
+
+<template>
+  <span v-if="!canChange && delegatedTo">
+    <v-icon icon="mdi-arrow-right" />
+    {{ delegatedTo.title }}
+  </span>
+  <span v-else-if="delegatedFrom.length">
+    <DefaultDialog
+      :title="$t('meeting.groups.delegatedFrom', delegatedFrom.length)"
+    >
+      <template #activator="{ props }">
+        <v-chip
+          v-bind="props"
+          :text="$t('meeting.groups.delegatedFrom', delegatedFrom.length)"
+        />
+      </template>
+      <template #default="{ close }">
+        <v-list>
+          <v-list-item
+            v-for="{ title, pk, votes } in delegatedFrom"
+            :key="pk"
+            prepend-icon="mdi-account-group"
+            :title="title"
+            :subtitle="$t('poll.result.voteCount', votes || 0)"
+          />
+        </v-list>
+        <div class="text-right">
+          <v-btn :text="$t('close')" variant="text" @click="close" />
+        </div>
+      </template>
+    </DefaultDialog>
+  </span>
+  <v-select
+    v-else-if="canChange && delegateOptions.length"
+    v-model="modelValue"
+    clearable
+    hide-details
+    density="compact"
+    :items="delegateOptions"
+    :label="$t('meeting.groups.delegateTo')"
+  />
+</template>

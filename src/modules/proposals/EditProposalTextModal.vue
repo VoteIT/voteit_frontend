@@ -1,36 +1,3 @@
-<template>
-  <main>
-    <v-form @submit.prevent="save()" v-slot="{ isValid }">
-      <v-text-field
-        v-model="formData.title"
-        :rules="[rules.required]"
-        :label="$t('title')"
-      />
-      <v-text-field
-        v-model="formData.base_tag"
-        :rules="[rules.required]"
-        :label="$t('proposal.textBaseTag')"
-        @change="cleanBaseTag()"
-      />
-      <v-textarea
-        v-model="formData.body"
-        :rules="[rules.required]"
-        :label="$t('textBody')"
-      />
-      <div class="btn-group text-right">
-        <v-btn
-          color="primary"
-          :disabled="!isValid.value"
-          :loading="saving"
-          prepend-icon="mdi-check-all"
-          :text="$t('save')"
-          type="submit"
-        />
-      </div>
-    </v-form>
-  </main>
-</template>
-
 <script setup lang="ts">
 import { reactive, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
@@ -76,6 +43,39 @@ async function save() {
   saving.value = false
 }
 </script>
+
+<template>
+  <main>
+    <v-form @submit.prevent="save()" v-slot="{ isValid }">
+      <v-text-field
+        v-model="formData.title"
+        :rules="[rules.required]"
+        :label="$t('title')"
+      />
+      <v-text-field
+        v-model="formData.base_tag"
+        :rules="[rules.required]"
+        :label="$t('proposal.textBaseTag')"
+        @change="cleanBaseTag()"
+      />
+      <v-textarea
+        v-model="formData.body"
+        :rules="[rules.required]"
+        :label="$t('textBody')"
+      />
+      <div class="btn-group text-right">
+        <v-btn
+          color="primary"
+          :disabled="!isValid.value"
+          :loading="saving"
+          prepend-icon="mdi-check-all"
+          :text="$t('save')"
+          type="submit"
+        />
+      </div>
+    </v-form>
+  </main>
+</template>
 
 <style lang="sass">
 textarea.form-control

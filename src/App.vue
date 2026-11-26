@@ -1,17 +1,3 @@
-<template>
-  <v-app>
-    <router-view v-slot="{ Component, route }">
-      <LoginRequiredView v-if="needsLogin(route)" />
-      <component v-else :is="Component" />
-    </router-view>
-    <OnlineStatus class="d-print-none" />
-    <Modal />
-    <Dialogs />
-    <Loader />
-    <NavigationProgress />
-  </v-app>
-</template>
-
 <script setup lang="ts">
 import 'resize-observer-polyfill/dist/ResizeObserver.global'
 
@@ -55,6 +41,20 @@ watchEffect(() => {
   if (versions.value.frontend !== clientVersion) promptVersionReload()
 })
 </script>
+
+<template>
+  <v-app>
+    <router-view v-slot="{ Component, route }">
+      <LoginRequiredView v-if="needsLogin(route)" />
+      <component v-else :is="Component" />
+    </router-view>
+    <OnlineStatus class="d-print-none" />
+    <Modal />
+    <Dialogs />
+    <Loader />
+    <NavigationProgress />
+  </v-app>
+</template>
 
 <style lang="sass">
 @use './theme/fonts.sass'

@@ -1,9 +1,3 @@
-<template>
-  <v-btn v-if="!mode" size="small" color="primary" :to="to" @click="goTo">
-    <v-icon icon="mdi-printer" />
-  </v-btn>
-</template>
-
 <script lang="ts" setup>
 import { computed } from 'vue'
 
@@ -27,3 +21,9 @@ function goTo() {
   backOnPrinted.value = true
 }
 </script>
+
+<template>
+  <v-btn v-if="!mode" size="small" color="primary" :to="to" @click="goTo">
+    <v-icon icon="mdi-printer" />
+  </v-btn>
+</template>

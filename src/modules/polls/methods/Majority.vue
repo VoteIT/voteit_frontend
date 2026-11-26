@@ -1,22 +1,3 @@
-<template>
-  <form @submit.prevent class="my-4">
-    <VoteProposal v-for="p in proposals" :key="p.pk" :proposal="p" class="mb-4">
-      <template #vote>
-        <div class="text-center">
-          <v-btn
-            :color="option.color"
-            :disabled="disabled"
-            :prepend-icon="option.icon"
-            :text="option.getTitle($t)"
-            :variant="choice === p.pk ? 'elevated' : 'outlined'"
-            @click="select(p)"
-          />
-        </div>
-      </template>
-    </VoteProposal>
-  </form>
-</template>
-
 <script setup lang="ts">
 import { shallowRef } from 'vue'
 
@@ -44,3 +25,22 @@ function select(proposal: Proposal) {
   model.value = { choice: choice.value }
 }
 </script>
+
+<template>
+  <form @submit.prevent class="my-4">
+    <VoteProposal v-for="p in proposals" :key="p.pk" :proposal="p" class="mb-4">
+      <template #vote>
+        <div class="text-center">
+          <v-btn
+            :color="option.color"
+            :disabled="disabled"
+            :prepend-icon="option.icon"
+            :text="option.getTitle($t)"
+            :variant="choice === p.pk ? 'elevated' : 'outlined'"
+            @click="select(p)"
+          />
+        </div>
+      </template>
+    </VoteProposal>
+  </form>
+</template>

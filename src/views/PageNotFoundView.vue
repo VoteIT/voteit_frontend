@@ -1,3 +1,22 @@
+<script setup lang="ts">
+import { computed } from 'vue'
+import { useTitle } from '@vueuse/core'
+import { useI18n } from 'vue-i18n'
+
+import useOrgStore from '@/modules/organisations/useOrgStore'
+
+const { t } = useI18n()
+const orgStore = useOrgStore()
+
+useTitle(
+  computed(() => {
+    if (orgStore.organisation)
+      return `${t('pageNotFound')} | ${orgStore.organisation.title}`
+    return t('pageNotFound')
+  })
+)
+</script>
+
 <template>
   <v-row>
     <v-col class="text-center mt-16">
@@ -17,22 +36,3 @@
     </v-col>
   </v-row>
 </template>
-
-<script setup lang="ts">
-import { computed } from 'vue'
-import { useTitle } from '@vueuse/core'
-import { useI18n } from 'vue-i18n'
-
-import useOrgStore from '@/modules/organisations/useOrgStore'
-
-const { t } = useI18n()
-const orgStore = useOrgStore()
-
-useTitle(
-  computed(() => {
-    if (orgStore.organisation)
-      return `${t('pageNotFound')} | ${orgStore.organisation.title}`
-    return t('pageNotFound')
-  })
-)
-</script>

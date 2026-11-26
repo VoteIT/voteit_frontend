@@ -1,9 +1,3 @@
-<template>
-  <v-sheet elevation="2" class="widget" rounded :class="{ selected, dense }">
-    <slot />
-  </v-sheet>
-</template>
-
 <script lang="ts">
 import { defineComponent } from 'vue'
 export default defineComponent({
@@ -13,6 +7,12 @@ export default defineComponent({
   }
 })
 </script>
+
+<template>
+  <v-sheet elevation="2" class="widget" rounded :class="{ selected, dense }">
+    <slot />
+  </v-sheet>
+</template>
 
 <style lang="sass">
 .widget

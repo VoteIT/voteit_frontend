@@ -1,39 +1,3 @@
-<template>
-  <div>
-    <v-expansion-panels class="my-6">
-      <v-expansion-panel
-        v-for="{ proposalIds, status, title } in rounds"
-        :key="title"
-      >
-        <v-expansion-panel-title>
-          {{ title }}: {{ status }}
-          <Tag
-            disabled
-            :name="id"
-            v-for="id in proposalIds"
-            :key="id"
-            class="ml-2"
-          />
-        </v-expansion-panel-title>
-        <v-expansion-panel-text>
-          {{ $t('poll.IRV.repeatedRoundResult') }}
-        </v-expansion-panel-text>
-      </v-expansion-panel>
-    </v-expansion-panels>
-    <v-list density="comfortable" bg-color="background">
-      <v-list-item v-for="([key, value], i) in metadata" :key="i">
-        <v-list-item-subtitle>
-          {{ key }}
-        </v-list-item-subtitle>
-        <v-list-item-title>
-          {{ value }}
-        </v-list-item-title>
-      </v-list-item>
-    </v-list>
-    <slot></slot>
-  </div>
-</template>
-
 <script lang="ts" setup>
 import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
@@ -73,3 +37,39 @@ const rounds = computed(() => {
   })
 })
 </script>
+
+<template>
+  <div>
+    <v-expansion-panels class="my-6">
+      <v-expansion-panel
+        v-for="{ proposalIds, status, title } in rounds"
+        :key="title"
+      >
+        <v-expansion-panel-title>
+          {{ title }}: {{ status }}
+          <Tag
+            disabled
+            :name="id"
+            v-for="id in proposalIds"
+            :key="id"
+            class="ml-2"
+          />
+        </v-expansion-panel-title>
+        <v-expansion-panel-text>
+          {{ $t('poll.IRV.repeatedRoundResult') }}
+        </v-expansion-panel-text>
+      </v-expansion-panel>
+    </v-expansion-panels>
+    <v-list density="comfortable" bg-color="background">
+      <v-list-item v-for="([key, value], i) in metadata" :key="i">
+        <v-list-item-subtitle>
+          {{ key }}
+        </v-list-item-subtitle>
+        <v-list-item-title>
+          {{ value }}
+        </v-list-item-title>
+      </v-list-item>
+    </v-list>
+    <slot></slot>
+  </div>
+</template>

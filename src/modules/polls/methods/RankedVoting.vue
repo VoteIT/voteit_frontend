@@ -1,73 +1,3 @@
-<template>
-  <div v-if="disabled && rankedProposals.length" id="scottish-stv-voting">
-    <!-- If already voted -->
-    <VoteProposal
-      v-for="p in rankedProposals"
-      :key="p.pk"
-      :proposal="p"
-      class="mb-4"
-    >
-      <template #top>
-        <div class="float-right">
-          <span class="number">
-            {{ ranking.indexOf(p.pk) + 1 }}
-          </span>
-        </div>
-      </template>
-    </VoteProposal>
-  </div>
-  <div v-else id="scottish-stv-voting">
-    <VoteProposal v-for="p in proposals" :key="p.pk" :proposal="p" class="mb-4">
-      <template #vote>
-        <div
-          class="voting-controls d-flex align-center"
-          v-if="ranking.includes(p.pk)"
-        >
-          <div class="side text-left">
-            <span class="number">
-              {{ ranking.indexOf(p.pk) + 1 }}
-            </span>
-          </div>
-          <div class="flex-grow-1 text-center">
-            <v-btn
-              :disabled="disabled"
-              size="small"
-              :text="`${$t('poll.rankingSelectedAs')} ${
-                ranking.indexOf(p.pk) + 1 || ranking.length + 1
-              }`"
-              variant="text"
-              @click="toggleSelected(p)"
-            />
-          </div>
-          <div class="side text-right">
-            <v-btn
-              color="primary"
-              :disabled="disabled"
-              outlined
-              size="small"
-              :text="$t('clear')"
-              @click="toggleSelected(p)"
-            />
-          </div>
-        </div>
-        <div class="voting-controls" v-else>
-          <div class="text-center flex-grow-1">
-            <v-btn
-              color="primary"
-              :disabled="disabled"
-              :text="`${$t('poll.rankingSelectAs')} ${
-                ranking.indexOf(p.pk) + 1 || ranking.length + 1
-              }`"
-              @click="toggleSelected(p)"
-            />
-          </div>
-        </div>
-      </template>
-    </VoteProposal>
-    <v-alert v-if="!disabled && validHelpText" v-bind="validHelpText" />
-  </div>
-</template>
-
 <script setup lang="ts">
 import { computed, shallowRef } from 'vue'
 import { useI18n } from 'vue-i18n'
@@ -150,6 +80,76 @@ const validHelpText = computed(() => {
   return { text: t('poll.dutt.validVoteHelpText'), type: 'success' as const }
 })
 </script>
+
+<template>
+  <div v-if="disabled && rankedProposals.length" id="scottish-stv-voting">
+    <!-- If already voted -->
+    <VoteProposal
+      v-for="p in rankedProposals"
+      :key="p.pk"
+      :proposal="p"
+      class="mb-4"
+    >
+      <template #top>
+        <div class="float-right">
+          <span class="number">
+            {{ ranking.indexOf(p.pk) + 1 }}
+          </span>
+        </div>
+      </template>
+    </VoteProposal>
+  </div>
+  <div v-else id="scottish-stv-voting">
+    <VoteProposal v-for="p in proposals" :key="p.pk" :proposal="p" class="mb-4">
+      <template #vote>
+        <div
+          class="voting-controls d-flex align-center"
+          v-if="ranking.includes(p.pk)"
+        >
+          <div class="side text-left">
+            <span class="number">
+              {{ ranking.indexOf(p.pk) + 1 }}
+            </span>
+          </div>
+          <div class="flex-grow-1 text-center">
+            <v-btn
+              :disabled="disabled"
+              size="small"
+              :text="`${$t('poll.rankingSelectedAs')} ${
+                ranking.indexOf(p.pk) + 1 || ranking.length + 1
+              }`"
+              variant="text"
+              @click="toggleSelected(p)"
+            />
+          </div>
+          <div class="side text-right">
+            <v-btn
+              color="primary"
+              :disabled="disabled"
+              outlined
+              size="small"
+              :text="$t('clear')"
+              @click="toggleSelected(p)"
+            />
+          </div>
+        </div>
+        <div class="voting-controls" v-else>
+          <div class="text-center flex-grow-1">
+            <v-btn
+              color="primary"
+              :disabled="disabled"
+              :text="`${$t('poll.rankingSelectAs')} ${
+                ranking.indexOf(p.pk) + 1 || ranking.length + 1
+              }`"
+              @click="toggleSelected(p)"
+            />
+          </div>
+        </div>
+      </template>
+    </VoteProposal>
+    <v-alert v-if="!disabled && validHelpText" v-bind="validHelpText" />
+  </div>
+</template>
 
 <style lang="sass">
 @keyframes bounce-in

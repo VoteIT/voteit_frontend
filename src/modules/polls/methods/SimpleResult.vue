@@ -1,28 +1,3 @@
-<template>
-  <div>
-    <ProposalCard
-      v-for="{ choices, proposal } in results"
-      :key="proposal.pk"
-      :p="proposal"
-      readOnly
-      class="my-4"
-    >
-      <template #bottom-right>
-        <div class="mt-2 flex-grow-1 text-right">
-          <v-btn
-            v-for="{ btn, key, percentage, value } in choices"
-            :key="key"
-            v-bind="btn"
-          >
-            {{ value }}
-            <small v-if="percentage" class="ml-1"> ({{ percentage }} %) </small>
-          </v-btn>
-        </div>
-      </template>
-    </ProposalCard>
-  </div>
-</template>
-
 <script lang="ts" setup>
 import { computed } from 'vue'
 
@@ -97,3 +72,28 @@ const results = computed(() =>
   getProposals(props.proposals).map(transformResult)
 )
 </script>
+
+<template>
+  <div>
+    <ProposalCard
+      v-for="{ choices, proposal } in results"
+      :key="proposal.pk"
+      :p="proposal"
+      readOnly
+      class="my-4"
+    >
+      <template #bottom-right>
+        <div class="mt-2 flex-grow-1 text-right">
+          <v-btn
+            v-for="{ btn, key, percentage, value } in choices"
+            :key="key"
+            v-bind="btn"
+          >
+            {{ value }}
+            <small v-if="percentage" class="ml-1"> ({{ percentage }} %) </small>
+          </v-btn>
+        </div>
+      </template>
+    </ProposalCard>
+  </div>
+</template>

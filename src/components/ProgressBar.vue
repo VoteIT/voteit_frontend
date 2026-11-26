@@ -1,25 +1,3 @@
-<template>
-  <div class="progress-bar" :class="{ failed, done, disabled }">
-    <div class="d-flex">
-      <div v-if="$slots.default" class="meta flex-grow-1">
-        <slot></slot>
-      </div>
-      <div v-else-if="textDisplay" class="flex-grow-1">
-        <span>{{ textDisplay }}</span>
-      </div>
-      <slot name="right"></slot>
-    </div>
-    <div class="bar d-flex">
-      <div class="progress" :style="{ width: percentage + '%' }"></div>
-      <div
-        class="buffer"
-        v-if="buffer"
-        :style="{ width: bufferPercentage + '%' }"
-      ></div>
-    </div>
-  </div>
-</template>
-
 <script setup lang="ts">
 import { computed } from 'vue'
 
@@ -60,6 +38,28 @@ const textDisplay = computed(() => {
   return `${Math.floor(percentage.value)} %`
 })
 </script>
+
+<template>
+  <div class="progress-bar" :class="{ failed, done, disabled }">
+    <div class="d-flex">
+      <div v-if="$slots.default" class="meta flex-grow-1">
+        <slot></slot>
+      </div>
+      <div v-else-if="textDisplay" class="flex-grow-1">
+        <span>{{ textDisplay }}</span>
+      </div>
+      <slot name="right"></slot>
+    </div>
+    <div class="bar d-flex">
+      <div class="progress" :style="{ width: percentage + '%' }"></div>
+      <div
+        class="buffer"
+        v-if="buffer"
+        :style="{ width: bufferPercentage + '%' }"
+      ></div>
+    </div>
+  </div>
+</template>
 
 <style lang="sass">
 .progress-bar

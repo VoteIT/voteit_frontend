@@ -1,66 +1,3 @@
-<template>
-  <div v-if="groupVotes || assignedVotes">
-    <span :class="{ 'text-warning': !allAssigned }">
-      {{ assignedVotes }}/{{ groupVotes }}
-    </span>
-    <DefaultDialog v-if="canAssignVotes" v-model="editing">
-      <template #activator="{ props }">
-        <v-btn
-          class="ml-2"
-          color="accent"
-          size="small"
-          text="Fördela röster"
-          v-bind="props"
-        />
-      </template>
-      <UserList :user-ids="editUserIds">
-        <template #appendItem="{ user }">
-          <v-text-field
-            variant="outlined"
-            density="compact"
-            @keydown.stop
-            type="number"
-            :min="0"
-            :max="(editUserVotes.get(user) ?? 0) + editUnassignedVotes"
-            :model-value="editUserVotes.get(user)"
-            @update:model-value="editUserVotes.set(user, Number($event))"
-            :rules="[
-              rules.max((editUserVotes.get(user) ?? 0) + editUnassignedVotes)
-            ]"
-          />
-        </template>
-      </UserList>
-      <v-alert
-        class="mb-2"
-        :color="editUnassignedVotes ? 'secondary' : undefined"
-      >
-        {{ editUnassignedVotes }} röster kvar att fördela
-      </v-alert>
-      <v-alert
-        v-if="errorMessage"
-        :text="errorMessage"
-        type="error"
-        class="mb-2"
-      />
-      <div class="text-right">
-        <v-btn
-          :disabled="working"
-          :text="$t('cancel')"
-          variant="text"
-          @click="editing = false"
-        />
-        <v-btn
-          color="primary"
-          :disabled="!!editUnassignedVotes"
-          :loading="working"
-          :text="$t('save')"
-          @click="saveUserVotes"
-        />
-      </div>
-    </DefaultDialog>
-  </div>
-</template>
-
 <script lang="ts" setup>
 import { imap, sum } from 'itertools'
 import { computed, reactive, ref, watch } from 'vue'
@@ -168,3 +105,66 @@ async function saveUserVotes() {
   working.value = false
 }
 </script>
+
+<template>
+  <div v-if="groupVotes || assignedVotes">
+    <span :class="{ 'text-warning': !allAssigned }">
+      {{ assignedVotes }}/{{ groupVotes }}
+    </span>
+    <DefaultDialog v-if="canAssignVotes" v-model="editing">
+      <template #activator="{ props }">
+        <v-btn
+          class="ml-2"
+          color="accent"
+          size="small"
+          text="Fördela röster"
+          v-bind="props"
+        />
+      </template>
+      <UserList :user-ids="editUserIds">
+        <template #appendItem="{ user }">
+          <v-text-field
+            variant="outlined"
+            density="compact"
+            @keydown.stop
+            type="number"
+            :min="0"
+            :max="(editUserVotes.get(user) ?? 0) + editUnassignedVotes"
+            :model-value="editUserVotes.get(user)"
+            @update:model-value="editUserVotes.set(user, Number($event))"
+            :rules="[
+              rules.max((editUserVotes.get(user) ?? 0) + editUnassignedVotes)
+            ]"
+          />
+        </template>
+      </UserList>
+      <v-alert
+        class="mb-2"
+        :color="editUnassignedVotes ? 'secondary' : undefined"
+      >
+        {{ editUnassignedVotes }} röster kvar att fördela
+      </v-alert>
+      <v-alert
+        v-if="errorMessage"
+        :text="errorMessage"
+        type="error"
+        class="mb-2"
+      />
+      <div class="text-right">
+        <v-btn
+          :disabled="working"
+          :text="$t('cancel')"
+          variant="text"
+          @click="editing = false"
+        />
+        <v-btn
+          color="primary"
+          :disabled="!!editUnassignedVotes"
+          :loading="working"
+          :text="$t('save')"
+          @click="saveUserVotes"
+        />
+      </div>
+    </DefaultDialog>
+  </div>
+</template>

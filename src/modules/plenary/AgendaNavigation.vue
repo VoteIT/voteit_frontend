@@ -1,77 +1,3 @@
-<template>
-  <v-navigation-drawer v-model="isOpen" location="right" disable-resize-watcher>
-    <template v-if="agendaTags.length">
-      <div class="d-flex mb-1">
-        <v-btn
-          :append-icon="filterMenuOpen ? 'mdi-chevron-up' : 'mdi-chevron-down'"
-          class="flex-grow-1"
-          size="small"
-          :text="$t('filter')"
-          variant="text"
-          @click="filterMenuOpen = !filterMenuOpen"
-        />
-        <v-btn
-          :disabled="!selectedAgendaTag"
-          size="small"
-          variant="text"
-          @click="selectedAgendaTag = undefined"
-        >
-          <v-icon icon="mdi-undo" />
-        </v-btn>
-      </div>
-      <v-expand-transition>
-        <v-chip-group
-          column
-          class="ml-8"
-          v-model="selectedAgendaTag"
-          :items="agendaTags"
-          v-show="filterMenuOpen"
-        >
-          <v-chip
-            v-for="tag in agendaTags"
-            :key="tag"
-            :value="tag"
-            size="small"
-          >
-            {{ tag }}
-          </v-chip>
-        </v-chip-group>
-      </v-expand-transition>
-    </template>
-    <v-list nav>
-      <template
-        v-for="{ state, items } in annotatedAgendaStates"
-        :key="state.state"
-      >
-        <v-list-subheader v-if="items.length">
-          {{ state.translate(t, items.length) }}
-        </v-list-subheader>
-        <v-list-item
-          v-for="ai in items"
-          :key="ai.pk"
-          :to="getRoute(ai.pk)"
-          :title="ai.title"
-          :subtitle="
-            t('proposal.proposalCountOfTotal', ai.proposals, ai.proposals.total)
-          "
-        >
-          <template #append v-if="ai.symbols.length">
-            <v-tooltip
-              v-for="{ icon, text } in ai.symbols"
-              :key="icon"
-              :text="text"
-            >
-              <template #activator="{ props }">
-                <v-icon :icon="icon" v-bind="props" />
-              </template>
-            </v-tooltip>
-          </template>
-        </v-list-item>
-      </template>
-    </v-list>
-  </v-navigation-drawer>
-</template>
-
 <script setup lang="ts">
 import { sorted } from 'itertools'
 import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
@@ -169,3 +95,77 @@ onBeforeUnmount(() => {
   toggleNavDrawerEvent.off(toggle)
 })
 </script>
+
+<template>
+  <v-navigation-drawer v-model="isOpen" location="right" disable-resize-watcher>
+    <template v-if="agendaTags.length">
+      <div class="d-flex mb-1">
+        <v-btn
+          :append-icon="filterMenuOpen ? 'mdi-chevron-up' : 'mdi-chevron-down'"
+          class="flex-grow-1"
+          size="small"
+          :text="$t('filter')"
+          variant="text"
+          @click="filterMenuOpen = !filterMenuOpen"
+        />
+        <v-btn
+          :disabled="!selectedAgendaTag"
+          size="small"
+          variant="text"
+          @click="selectedAgendaTag = undefined"
+        >
+          <v-icon icon="mdi-undo" />
+        </v-btn>
+      </div>
+      <v-expand-transition>
+        <v-chip-group
+          column
+          class="ml-8"
+          v-model="selectedAgendaTag"
+          :items="agendaTags"
+          v-show="filterMenuOpen"
+        >
+          <v-chip
+            v-for="tag in agendaTags"
+            :key="tag"
+            :value="tag"
+            size="small"
+          >
+            {{ tag }}
+          </v-chip>
+        </v-chip-group>
+      </v-expand-transition>
+    </template>
+    <v-list nav>
+      <template
+        v-for="{ state, items } in annotatedAgendaStates"
+        :key="state.state"
+      >
+        <v-list-subheader v-if="items.length">
+          {{ state.translate(t, items.length) }}
+        </v-list-subheader>
+        <v-list-item
+          v-for="ai in items"
+          :key="ai.pk"
+          :to="getRoute(ai.pk)"
+          :title="ai.title"
+          :subtitle="
+            t('proposal.proposalCountOfTotal', ai.proposals, ai.proposals.total)
+          "
+        >
+          <template #append v-if="ai.symbols.length">
+            <v-tooltip
+              v-for="{ icon, text } in ai.symbols"
+              :key="icon"
+              :text="text"
+            >
+              <template #activator="{ props }">
+                <v-icon :icon="icon" v-bind="props" />
+              </template>
+            </v-tooltip>
+          </template>
+        </v-list-item>
+      </template>
+    </v-list>
+  </v-navigation-drawer>
+</template>

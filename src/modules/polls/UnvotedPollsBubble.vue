@@ -1,22 +1,3 @@
-<template>
-  <BubbleHeader
-    icon="mdi-vote"
-    :title="$t('poll.timeToVote')"
-    :subtitle="$t('poll.timeToVoteDescription', unvoted.length)"
-  />
-  <v-list class="mx-n2 mb-n3">
-    <v-list-item
-      v-for="{ pk, title, subtitle, to } in unvoted"
-      :key="pk"
-      append-icon="mdi-chevron-right"
-      :title="title"
-      :subtitle="subtitle"
-      :to="to"
-      @click="open = false"
-    />
-  </v-list>
-</template>
-
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
@@ -53,3 +34,22 @@ const unvoted = computed(() => {
   }))
 })
 </script>
+
+<template>
+  <BubbleHeader
+    icon="mdi-vote"
+    :title="$t('poll.timeToVote')"
+    :subtitle="$t('poll.timeToVoteDescription', unvoted.length)"
+  />
+  <v-list class="mx-n2 mb-n3">
+    <v-list-item
+      v-for="{ pk, title, subtitle, to } in unvoted"
+      :key="pk"
+      append-icon="mdi-chevron-right"
+      :title="title"
+      :subtitle="subtitle"
+      :to="to"
+      @click="open = false"
+    />
+  </v-list>
+</template>

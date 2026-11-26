@@ -1,30 +1,3 @@
-<template>
-  <FlagButton
-    v-if="isFlagButton(button)"
-    :button="button"
-    :readonly="readonly || !canReact"
-    :working="working"
-    v-model="reacted"
-  />
-  <RealReactionButton
-    v-else
-    :button="button"
-    :count="count"
-    :disabled="readonly || !canReact"
-    :list-disabled="!canListReactions"
-    :working="working"
-    v-model="reacted"
-    @list-open="fetchUsers"
-  >
-    <template #userList>
-      <UserList :userIds="reactionUsers" v-if="count" />
-      <em v-else>
-        {{ $t('reaction.none') }}
-      </em>
-    </template>
-  </RealReactionButton>
-</template>
-
 <script lang="ts" setup>
 import { computed, ref } from 'vue'
 
@@ -91,3 +64,30 @@ const canReact = computed(() =>
 )
 const canListReactions = computed(() => canList(props.button))
 </script>
+
+<template>
+  <FlagButton
+    v-if="isFlagButton(button)"
+    :button="button"
+    :readonly="readonly || !canReact"
+    :working="working"
+    v-model="reacted"
+  />
+  <RealReactionButton
+    v-else
+    :button="button"
+    :count="count"
+    :disabled="readonly || !canReact"
+    :list-disabled="!canListReactions"
+    :working="working"
+    v-model="reacted"
+    @list-open="fetchUsers"
+  >
+    <template #userList>
+      <UserList :userIds="reactionUsers" v-if="count" />
+      <em v-else>
+        {{ $t('reaction.none') }}
+      </em>
+    </template>
+  </RealReactionButton>
+</template>

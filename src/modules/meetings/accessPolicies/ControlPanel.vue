@@ -1,3 +1,100 @@
+<script lang="ts" setup>
+import { computed } from 'vue'
+import { useI18n } from 'vue-i18n'
+import { useClipboard } from '@vueuse/core'
+
+import QueryDialog from '@/components/QueryDialog.vue'
+import useErrorHandler from '@/composables/useErrorHandler'
+import { AccessPolicyType } from '@/contentTypes/types'
+
+import useMeeting from '../useMeeting'
+import { MeetingRole } from '../types'
+import { translateMeetingRole } from '../utils'
+
+import { meetingType } from '../contentTypes'
+import useAccessPolicies from './useAccessPolicies'
+
+const NON_MODIFIABLE_ROLES = Object.freeze([
+  MeetingRole.Participant,
+  MeetingRole.Moderator
+])
+
+const { t } = useI18n()
+const { meetingId, meeting, meetingDialect, meetingJoinUrl } = useMeeting()
+const { handled } = useErrorHandler({ target: 'dialog' })
+const {
+  accessPolicies,
+  hasActivePolicy,
+  addPolicy,
+  deletePolicy,
+  setActive,
+  setRoles
+} = useAccessPolicies(meetingId)
+
+function translateAP(ap: AccessPolicyType): {
+  description: string
+  title: string
+} {
+  switch (ap) {
+    case AccessPolicyType.Automatic:
+      return {
+        description: t('accessPolicies.automatic.description'),
+        title: t('accessPolicies.automatic.title')
+      }
+    case AccessPolicyType.ModeratorApproved:
+      // Not implemented
+      return {
+        description: 'accessPolicies.moderatorApproved.description',
+        title: 'accessPolicies.moderatorApproved.title'
+      }
+  }
+}
+
+const annotatedPolicies = computed(() => {
+  return accessPolicies.value.map((ap) => ({
+    ...ap,
+    ...translateAP(ap.name)
+  }))
+})
+
+async function addAutomaticAccess() {
+  await addPolicy({
+    meeting: meetingId.value,
+    name: AccessPolicyType.Automatic,
+    roles_given: [MeetingRole.Participant]
+  })
+}
+
+const meetingListed = computed<boolean>({
+  get() {
+    return !!meeting.value && meeting.value.visible_in_lists
+  },
+  // Must await: a bare call left the rejection unobservable, so a failed
+  // toggle was silent.
+  async set(value) {
+    await handled(
+      () =>
+        meetingType.api.patch(meetingId.value, {
+          visible_in_lists: value
+        }),
+      'visible_in_lists'
+    )
+  }
+})
+
+const roles = computed(() => {
+  return Object.values(MeetingRole)
+    .filter((r) => !meetingDialect.value?.block_roles?.includes(r))
+    .map((value) => ({
+      disabled: NON_MODIFIABLE_ROLES.includes(value),
+      text: translateMeetingRole(value, t),
+      value
+    }))
+})
+
+const { copy, copied } = useClipboard()
+</script>
+
 <template>
   <div>
     <h2 class="mb-2">
@@ -118,100 +215,3 @@
     </v-row>
   </div>
 </template>
-
-<script lang="ts" setup>
-import { computed } from 'vue'
-import { useI18n } from 'vue-i18n'
-import { useClipboard } from '@vueuse/core'
-
-import QueryDialog from '@/components/QueryDialog.vue'
-import useErrorHandler from '@/composables/useErrorHandler'
-import { AccessPolicyType } from '@/contentTypes/types'
-
-import useMeeting from '../useMeeting'
-import { MeetingRole } from '../types'
-import { translateMeetingRole } from '../utils'
-
-import { meetingType } from '../contentTypes'
-import useAccessPolicies from './useAccessPolicies'
-
-const NON_MODIFIABLE_ROLES = Object.freeze([
-  MeetingRole.Participant,
-  MeetingRole.Moderator
-])
-
-const { t } = useI18n()
-const { meetingId, meeting, meetingDialect, meetingJoinUrl } = useMeeting()
-const { handled } = useErrorHandler({ target: 'dialog' })
-const {
-  accessPolicies,
-  hasActivePolicy,
-  addPolicy,
-  deletePolicy,
-  setActive,
-  setRoles
-} = useAccessPolicies(meetingId)
-
-function translateAP(ap: AccessPolicyType): {
-  description: string
-  title: string
-} {
-  switch (ap) {
-    case AccessPolicyType.Automatic:
-      return {
-        description: t('accessPolicies.automatic.description'),
-        title: t('accessPolicies.automatic.title')
-      }
-    case AccessPolicyType.ModeratorApproved:
-      // Not implemented
-      return {
-        description: 'accessPolicies.moderatorApproved.description',
-        title: 'accessPolicies.moderatorApproved.title'
-      }
-  }
-}
-
-const annotatedPolicies = computed(() => {
-  return accessPolicies.value.map((ap) => ({
-    ...ap,
-    ...translateAP(ap.name)
-  }))
-})
-
-async function addAutomaticAccess() {
-  await addPolicy({
-    meeting: meetingId.value,
-    name: AccessPolicyType.Automatic,
-    roles_given: [MeetingRole.Participant]
-  })
-}
-
-const meetingListed = computed<boolean>({
-  get() {
-    return !!meeting.value && meeting.value.visible_in_lists
-  },
-  // Must await: a bare call left the rejection unobservable, so a failed
-  // toggle was silent.
-  async set(value) {
-    await handled(
-      () =>
-        meetingType.api.patch(meetingId.value, {
-          visible_in_lists: value
-        }),
-      'visible_in_lists'
-    )
-  }
-})
-
-const roles = computed(() => {
-  return Object.values(MeetingRole)
-    .filter((r) => !meetingDialect.value?.block_roles?.includes(r))
-    .map((value) => ({
-      disabled: NON_MODIFIABLE_ROLES.includes(value),
-      text: translateMeetingRole(value, t),
-      value
-    }))
-})
-
-const { copy, copied } = useClipboard()
-</script>

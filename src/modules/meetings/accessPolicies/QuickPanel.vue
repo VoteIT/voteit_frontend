@@ -1,3 +1,24 @@
+<script lang="ts" setup>
+import { computed } from 'vue'
+import { useClipboard } from '@vueuse/core'
+
+import { AccessPolicyType } from '@/contentTypes/types'
+
+import useMeeting from '../useMeeting'
+
+import useAccessPolicies from './useAccessPolicies'
+
+const { copy, copied } = useClipboard()
+const { meetingId, meetingJoinUrl } = useMeeting()
+const { accessPolicies } = useAccessPolicies(meetingId)
+
+const hasAutomatic = computed(() =>
+  accessPolicies.value.some(
+    (ap) => ap.active && ap.name === AccessPolicyType.Automatic
+  )
+)
+</script>
+
 <template>
   <template v-if="hasAutomatic">
     <v-card-text>
@@ -26,24 +47,3 @@
     {{ $t('accessPolicy.settings') }}
   </v-card-text>
 </template>
-
-<script lang="ts" setup>
-import { computed } from 'vue'
-import { useClipboard } from '@vueuse/core'
-
-import { AccessPolicyType } from '@/contentTypes/types'
-
-import useMeeting from '../useMeeting'
-
-import useAccessPolicies from './useAccessPolicies'
-
-const { copy, copied } = useClipboard()
-const { meetingId, meetingJoinUrl } = useMeeting()
-const { accessPolicies } = useAccessPolicies(meetingId)
-
-const hasAutomatic = computed(() =>
-  accessPolicies.value.some(
-    (ap) => ap.active && ap.name === AccessPolicyType.Automatic
-  )
-)
-</script>

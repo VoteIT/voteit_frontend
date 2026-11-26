@@ -1,3 +1,99 @@
+<script lang="ts" setup>
+import { ComponentPublicInstance, computed, nextTick, ref } from 'vue'
+import { useI18n } from 'vue-i18n'
+
+import { dialogQuery } from '@/utils'
+import { ThemeColor } from '@/utils/types'
+import Moment from '@/components/Moment.vue'
+import Tag from '@/components/Tag.vue'
+import WorkflowState from '@/components/WorkflowState.vue'
+import useUnread from '@/composables/useUnread'
+import useErrorHandler from '@/composables/useErrorHandler'
+
+import useAgendaItem from '../agendas/useAgendaItem'
+import useAgendaFilter from '../agendas/useAgendaFilter'
+import Comments from '../discussions/Comments.vue'
+import useDiscussionStore from '../discussions/useDiscussionStore'
+import useMeeting from '../meetings/useMeeting'
+import AuthorName from '../meetings/AuthorName.vue'
+
+import { proposalType } from './contentTypes'
+import {
+  canChangeProposal,
+  canDeleteProposal,
+  canRetractProposal
+} from './rules'
+import ProposalExtraTags from './ProposalExtraTags.vue'
+import ProposalText from './ProposalText.vue'
+import { type Proposal } from './types'
+import { proposalTypeRegistry } from './registry'
+
+const BTN_DEFAULTS = { VBtn: { size: 'small', variant: 'text' } }
+
+const props = defineProps<{
+  p: Proposal
+  readOnly?: boolean
+}>()
+
+const { t } = useI18n()
+const { handler } = useErrorHandler({ target: 'dialog' })
+const { isModerator } = useMeeting()
+const agendaId = computed(() => props.p.agenda_item)
+const { orderContent } = useAgendaFilter()
+const { canAddDiscussionPost } = useAgendaItem(agendaId)
+const showComments = ref(false)
+const { getProposalDiscussions } = useDiscussionStore()
+
+const { isUnread } = useUnread(new Date(props.p.created))
+
+const deleteProposal = handler(() => proposalType.api.delete(props.p.pk))
+
+const retract = handler(
+  () => proposalType.sm.sendEvent(props.p, 'retract', t),
+  'transition'
+)
+
+async function confirmRetract() {
+  if (
+    await dialogQuery({
+      title: t('proposal.retractPrompt'),
+      theme: ThemeColor.Warning
+    })
+  )
+    await retract()
+}
+
+async function confirmDelete() {
+  if (
+    await dialogQuery({
+      title: t('proposal.deletePrompt'),
+      theme: ThemeColor.Warning
+    })
+  )
+    await deleteProposal()
+}
+
+const discussionPosts = computed(() => {
+  if (props.readOnly) return []
+  return orderContent(getProposalDiscussions(props.p))
+})
+const commentsComponent = ref<null | ComponentPublicInstance<{
+  focus: () => void
+}>>(null)
+async function comment() {
+  showComments.value = true
+  await nextTick()
+  commentsComponent.value?.focus()
+}
+
+/**
+ * Dynamic choice of component for editing proposal
+ */
+const ProposalEditModal = computed(() =>
+  proposalTypeRegistry.getEditModal(props.p.shortname)
+)
+</script>
+
 <template>
   <div>
     <v-sheet
@@ -124,102 +220,6 @@
     />
   </div>
 </template>
-
-<script lang="ts" setup>
-import { ComponentPublicInstance, computed, nextTick, ref } from 'vue'
-import { useI18n } from 'vue-i18n'
-
-import { dialogQuery } from '@/utils'
-import { ThemeColor } from '@/utils/types'
-import Moment from '@/components/Moment.vue'
-import Tag from '@/components/Tag.vue'
-import WorkflowState from '@/components/WorkflowState.vue'
-import useUnread from '@/composables/useUnread'
-import useErrorHandler from '@/composables/useErrorHandler'
-
-import useAgendaItem from '../agendas/useAgendaItem'
-import useAgendaFilter from '../agendas/useAgendaFilter'
-import Comments from '../discussions/Comments.vue'
-import useDiscussionStore from '../discussions/useDiscussionStore'
-import useMeeting from '../meetings/useMeeting'
-import AuthorName from '../meetings/AuthorName.vue'
-
-import { proposalType } from './contentTypes'
-import {
-  canChangeProposal,
-  canDeleteProposal,
-  canRetractProposal
-} from './rules'
-import ProposalExtraTags from './ProposalExtraTags.vue'
-import ProposalText from './ProposalText.vue'
-import { type Proposal } from './types'
-import { proposalTypeRegistry } from './registry'
-
-const BTN_DEFAULTS = { VBtn: { size: 'small', variant: 'text' } }
-
-const props = defineProps<{
-  p: Proposal
-  readOnly?: boolean
-}>()
-
-const { t } = useI18n()
-const { handler } = useErrorHandler({ target: 'dialog' })
-const { isModerator } = useMeeting()
-const agendaId = computed(() => props.p.agenda_item)
-const { orderContent } = useAgendaFilter()
-const { canAddDiscussionPost } = useAgendaItem(agendaId)
-const showComments = ref(false)
-const { getProposalDiscussions } = useDiscussionStore()
-
-const { isUnread } = useUnread(new Date(props.p.created))
-
-const deleteProposal = handler(() => proposalType.api.delete(props.p.pk))
-
-const retract = handler(
-  () => proposalType.sm.sendEvent(props.p, 'retract', t),
-  'transition'
-)
-
-async function confirmRetract() {
-  if (
-    await dialogQuery({
-      title: t('proposal.retractPrompt'),
-      theme: ThemeColor.Warning
-    })
-  )
-    await retract()
-}
-
-async function confirmDelete() {
-  if (
-    await dialogQuery({
-      title: t('proposal.deletePrompt'),
-      theme: ThemeColor.Warning
-    })
-  )
-    await deleteProposal()
-}
-
-const discussionPosts = computed(() => {
-  if (props.readOnly) return []
-  return orderContent(getProposalDiscussions(props.p))
-})
-const commentsComponent = ref<null | ComponentPublicInstance<{
-  focus: () => void
-}>>(null)
-async function comment() {
-  showComments.value = true
-  await nextTick()
-  commentsComponent.value?.focus()
-}
-
-/**
- * Dynamic choice of component for editing proposal
- */
-const ProposalEditModal = computed(() =>
-  proposalTypeRegistry.getEditModal(props.p.shortname)
-)
-</script>
 
 <style lang="sass" scoped>
 .proposal

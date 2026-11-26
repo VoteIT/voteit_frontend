@@ -1,16 +1,3 @@
-<template>
-  <span v-if="inSeconds" :class="{ time: !ordinary }">
-    {{ prepend }} {{ fromNow }}
-  </span>
-  <v-tooltip v-else :text="exactDate">
-    <template #activator="{ props }">
-      <span v-bind="{ ...props, ...$attrs }" :class="{ time: !ordinary }">
-        {{ prepend }} {{ fromNow }}
-      </span>
-    </template>
-  </v-tooltip>
-</template>
-
 <script setup lang="ts">
 import { computed, ref, watchEffect } from 'vue'
 import { useIntervalFn } from '@vueuse/shared'
@@ -71,6 +58,19 @@ useIntervalFn(updateFromNow, props.inSeconds ? 1_000 : 60_000, {
 })
 watchEffect(updateFromNow)
 </script>
+
+<template>
+  <span v-if="inSeconds" :class="{ time: !ordinary }">
+    {{ prepend }} {{ fromNow }}
+  </span>
+  <v-tooltip v-else :text="exactDate">
+    <template #activator="{ props }">
+      <span v-bind="{ ...props, ...$attrs }" :class="{ time: !ordinary }">
+        {{ prepend }} {{ fromNow }}
+      </span>
+    </template>
+  </v-tooltip>
+</template>
 
 <style lang="sass">
 span.time

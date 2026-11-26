@@ -1,3 +1,23 @@
+<script lang="ts" setup>
+import { storeToRefs } from 'pinia'
+import { ref } from 'vue'
+
+import { getFullName } from '@/utils'
+import { toggleNavDrawerEvent } from '@/utils/events'
+import useAuthStore from '@/modules/auth/useAuthStore'
+import useOrgStore from '@/modules/organisations/useOrgStore'
+
+import { toggleUserMenu } from './events'
+import UserAvatar from './UserAvatar.vue'
+
+defineProps<{ hasNavDrawer?: boolean; title?: string }>()
+
+const { user } = storeToRefs(useAuthStore())
+const { organisation } = storeToRefs(useOrgStore())
+
+const userMenuOpen = ref(false)
+</script>
+
 <template>
   <v-app-bar
     flat
@@ -31,26 +51,6 @@
     </v-btn>
   </v-app-bar>
 </template>
-
-<script lang="ts" setup>
-import { storeToRefs } from 'pinia'
-import { ref } from 'vue'
-
-import { getFullName } from '@/utils'
-import { toggleNavDrawerEvent } from '@/utils/events'
-import useAuthStore from '@/modules/auth/useAuthStore'
-import useOrgStore from '@/modules/organisations/useOrgStore'
-
-import { toggleUserMenu } from './events'
-import UserAvatar from './UserAvatar.vue'
-
-defineProps<{ hasNavDrawer?: boolean; title?: string }>()
-
-const { user } = storeToRefs(useAuthStore())
-const { organisation } = storeToRefs(useOrgStore())
-
-const userMenuOpen = ref(false)
-</script>
 
 <style lang="sass">
 #navbar-logo

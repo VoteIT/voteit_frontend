@@ -1,13 +1,3 @@
-<template>
-  <v-tooltip :text="tooltip" location="bottom start">
-    <template #activator="{ props }">
-      <span :class="{ 'text-warning': !allAssigned }" v-bind="props">
-        {{ potentialVotes }}/{{ group.votes }}
-      </span>
-    </template>
-  </v-tooltip>
-</template>
-
 <script lang="ts" setup>
 import { computed } from 'vue'
 
@@ -40,3 +30,13 @@ const tooltip = computed(() => {
     : 'Denna grupp kan inte använda alla sina röster. Det kan bero på att det inte finns tillräckligt många medlemmar med rösträtt, eller att gruppens medlemmar inte är aktiva i mötet.'
 })
 </script>
+
+<template>
+  <v-tooltip :text="tooltip" location="bottom start">
+    <template #activator="{ props }">
+      <span :class="{ 'text-warning': !allAssigned }" v-bind="props">
+        {{ potentialVotes }}/{{ group.votes }}
+      </span>
+    </template>
+  </v-tooltip>
+</template>

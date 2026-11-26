@@ -1,3 +1,32 @@
+<script lang="ts" setup>
+import { ref } from 'vue'
+import { useRouter } from 'vue-router'
+
+import { dialogAlert } from '@/utils'
+import type { AccessPolicy } from '@/contentTypes/types'
+
+import useMeeting from '../useMeeting'
+import { automaticAccessType } from './contentTypes'
+import { meetingType } from '../contentTypes'
+
+const props = defineProps<{ policy: AccessPolicy }>()
+
+const router = useRouter()
+const { meetingRoute } = useMeeting()
+const submitting = ref(false)
+
+async function joinNow() {
+  submitting.value = true
+  try {
+    await automaticAccessType.api.action('join', props.policy.pk)
+    router.push(meetingRoute.value)
+  } catch {
+    dialogAlert("Couldn't join meeting")
+  }
+  submitting.value = false
+}
+</script>
+
 <template>
   <v-alert icon="mdi-door-open" :title="$t('accessPolicies.automatic.title')">
     <p class="mb-2">{{ $t('accessPolicies.automatic.joinDescription') }}</p>
@@ -27,32 +56,3 @@
     </template>
   </v-alert>
 </template>
-
-<script lang="ts" setup>
-import { ref } from 'vue'
-import { useRouter } from 'vue-router'
-
-import { dialogAlert } from '@/utils'
-import type { AccessPolicy } from '@/contentTypes/types'
-
-import useMeeting from '../useMeeting'
-import { automaticAccessType } from './contentTypes'
-import { meetingType } from '../contentTypes'
-
-const props = defineProps<{ policy: AccessPolicy }>()
-
-const router = useRouter()
-const { meetingRoute } = useMeeting()
-const submitting = ref(false)
-
-async function joinNow() {
-  submitting.value = true
-  try {
-    await automaticAccessType.api.action('join', props.policy.pk)
-    router.push(meetingRoute.value)
-  } catch {
-    dialogAlert("Couldn't join meeting")
-  }
-  submitting.value = false
-}
-</script>

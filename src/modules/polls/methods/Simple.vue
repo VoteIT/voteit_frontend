@@ -1,38 +1,3 @@
-<template>
-  <div>
-    <FlagVoteSelector
-      v-if="!disabled"
-      class="mb-4"
-      :proposals="proposals"
-      :warn="!!validVote"
-      @selected="selectIds"
-    />
-    <form @submit.prevent class="my-4">
-      <VoteProposal
-        v-for="p in proposals"
-        :key="p.pk"
-        :proposal="p"
-        class="mb-4"
-      >
-        <template #vote>
-          <div class="d-flex justify-center ga-2">
-            <v-btn
-              v-for="opt in options"
-              :key="opt.value"
-              :color="opt.color"
-              :disabled="disabled"
-              :prepend-icon="opt.icon"
-              :text="opt.getTitle($t)"
-              :variant="opt.value === votes.get(p.pk) ? 'elevated' : 'outlined'"
-              @click="change(p, opt)"
-            />
-          </div>
-        </template>
-      </VoteProposal>
-    </form>
-  </div>
-</template>
-
 <script setup lang="ts">
 import { computed, reactive, watch } from 'vue'
 
@@ -93,3 +58,38 @@ function selectIds(proposals: number[]) {
   }
 }
 </script>
+
+<template>
+  <div>
+    <FlagVoteSelector
+      v-if="!disabled"
+      class="mb-4"
+      :proposals="proposals"
+      :warn="!!validVote"
+      @selected="selectIds"
+    />
+    <form @submit.prevent class="my-4">
+      <VoteProposal
+        v-for="p in proposals"
+        :key="p.pk"
+        :proposal="p"
+        class="mb-4"
+      >
+        <template #vote>
+          <div class="d-flex justify-center ga-2">
+            <v-btn
+              v-for="opt in options"
+              :key="opt.value"
+              :color="opt.color"
+              :disabled="disabled"
+              :prepend-icon="opt.icon"
+              :text="opt.getTitle($t)"
+              :variant="opt.value === votes.get(p.pk) ? 'elevated' : 'outlined'"
+              @click="change(p, opt)"
+            />
+          </div>
+        </template>
+      </VoteProposal>
+    </form>
+  </div>
+</template>

@@ -1,3 +1,48 @@
+<script setup lang="ts">
+import { computed, reactive, watch } from 'vue'
+
+import Widget from '@/components/Widget.vue'
+import VoteProposal from '@/modules/proposals/VoteProposal.vue'
+import type { Proposal } from '@/modules/proposals/types'
+import FlagVoteSelector from '@/modules/reactions/FlagVoteSelector.vue'
+
+import type { SchulzePoll, SchulzeVote } from './types'
+
+const props = defineProps<{
+  disabled?: boolean
+  poll: SchulzePoll
+  proposals: Proposal[]
+}>()
+
+const model = defineModel<SchulzeVote>()
+
+function getGrades() {
+  if (model.value) return Object.fromEntries(model.value.ranking)
+  const deny = props.poll.settings.deny_proposal ? [0] : []
+  return Object.fromEntries(
+    [...props.poll.proposals, ...deny].map((id) => [id, 0])
+  )
+}
+
+const grades = reactive<Record<number, number>>(getGrades())
+const stars = computed(() => props.poll.settings?.stars ?? 5)
+/** Any grade set to non-zero?) */
+const isValid = computed(() => Object.values(grades).some((n) => n))
+
+watch(grades, () => {
+  // Clear vote on invalid
+  model.value = isValid.value
+    ? { ranking: Object.entries(grades).map(([k, v]) => [Number(k), v]) }
+    : undefined
+})
+
+function selectIds(proposals: number[]) {
+  for (const { pk } of props.proposals) {
+    grades[pk] = proposals.includes(pk) ? stars.value : 0
+  }
+}
+</script>
+
 <template>
   <div>
     <FlagVoteSelector
@@ -45,48 +90,3 @@
     </Widget>
   </div>
 </template>
-
-<script setup lang="ts">
-import { computed, reactive, watch } from 'vue'
-
-import Widget from '@/components/Widget.vue'
-import VoteProposal from '@/modules/proposals/VoteProposal.vue'
-import type { Proposal } from '@/modules/proposals/types'
-import FlagVoteSelector from '@/modules/reactions/FlagVoteSelector.vue'
-
-import type { SchulzePoll, SchulzeVote } from './types'
-
-const props = defineProps<{
-  disabled?: boolean
-  poll: SchulzePoll
-  proposals: Proposal[]
-}>()
-
-const model = defineModel<SchulzeVote>()
-
-function getGrades() {
-  if (model.value) return Object.fromEntries(model.value.ranking)
-  const deny = props.poll.settings.deny_proposal ? [0] : []
-  return Object.fromEntries(
-    [...props.poll.proposals, ...deny].map((id) => [id, 0])
-  )
-}
-
-const grades = reactive<Record<number, number>>(getGrades())
-const stars = computed(() => props.poll.settings?.stars ?? 5)
-/** Any grade set to non-zero?) */
-const isValid = computed(() => Object.values(grades).some((n) => n))
-
-watch(grades, () => {
-  // Clear vote on invalid
-  model.value = isValid.value
-    ? { ranking: Object.entries(grades).map(([k, v]) => [Number(k), v]) }
-    : undefined
-})
-
-function selectIds(proposals: number[]) {
-  for (const { pk } of props.proposals) {
-    grades[pk] = proposals.includes(pk) ? stars.value : 0
-  }
-}
-</script>

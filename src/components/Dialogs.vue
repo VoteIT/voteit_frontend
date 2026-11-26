@@ -1,55 +1,3 @@
-<template>
-  <v-dialog
-    v-model="isActive"
-    :persistent="!dismissible"
-    :width="`${dialogWidth}px`"
-  >
-    <v-sheet
-      id="dialog"
-      elevation="16"
-      ref="window"
-      v-if="active"
-      @keyup.esc="deny()"
-      class="pa-4"
-    >
-      <v-btn
-        v-if="dismissible"
-        class="closer"
-        icon="mdi-close"
-        size="small"
-        variant="text"
-        @click="deny()"
-      />
-      <div class="d-flex align-center ml-2 mr-10">
-        <v-icon
-          v-if="active.icon"
-          :color="active.theme"
-          :icon="active.icon"
-          class="mr-4 flex-shrink-0"
-          size="x-large"
-        />
-        <p>
-          {{ active.title }}
-        </p>
-      </div>
-      <div class="btn-controls justify-end">
-        <v-btn
-          v-if="active.no"
-          :text="active.no"
-          variant="text"
-          @click="deny(true)"
-        />
-        <v-btn
-          v-if="active.yes"
-          :color="active.theme ?? 'primary'"
-          :text="active.yes"
-          @click="accept"
-        />
-      </div>
-    </v-sheet>
-  </v-dialog>
-</template>
-
 <script lang="ts" setup>
 import {
   ComponentPublicInstance,
@@ -124,6 +72,58 @@ onBeforeMount(() => {
   })
 })
 </script>
+
+<template>
+  <v-dialog
+    v-model="isActive"
+    :persistent="!dismissible"
+    :width="`${dialogWidth}px`"
+  >
+    <v-sheet
+      id="dialog"
+      elevation="16"
+      ref="window"
+      v-if="active"
+      @keyup.esc="deny()"
+      class="pa-4"
+    >
+      <v-btn
+        v-if="dismissible"
+        class="closer"
+        icon="mdi-close"
+        size="small"
+        variant="text"
+        @click="deny()"
+      />
+      <div class="d-flex align-center ml-2 mr-10">
+        <v-icon
+          v-if="active.icon"
+          :color="active.theme"
+          :icon="active.icon"
+          class="mr-4 flex-shrink-0"
+          size="x-large"
+        />
+        <p>
+          {{ active.title }}
+        </p>
+      </div>
+      <div class="btn-controls justify-end">
+        <v-btn
+          v-if="active.no"
+          :text="active.no"
+          variant="text"
+          @click="deny(true)"
+        />
+        <v-btn
+          v-if="active.yes"
+          :color="active.theme ?? 'primary'"
+          :text="active.yes"
+          @click="accept"
+        />
+      </div>
+    </v-sheet>
+  </v-dialog>
+</template>
 
 <style lang="sass" scoped>
 #dialog

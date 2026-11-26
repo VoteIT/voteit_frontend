@@ -1,3 +1,15 @@
+<script lang="ts" setup>
+defineProps<{
+  eager?: boolean
+  title?: string
+}>()
+
+const isOpen = defineModel<boolean>({ default: false })
+function toggle() {
+  isOpen.value = !isOpen.value
+}
+</script>
+
 <template>
   <div class="page-dropdown">
     <div v-if="$slots.actions" class="d-flex">
@@ -28,18 +40,6 @@
     </v-expand-transition>
   </div>
 </template>
-
-<script lang="ts" setup>
-defineProps<{
-  eager?: boolean
-  title?: string
-}>()
-
-const isOpen = defineModel<boolean>({ default: false })
-function toggle() {
-  isOpen.value = !isOpen.value
-}
-</script>
 
 <style lang="sass">
 .page-dropdown

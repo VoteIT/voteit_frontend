@@ -1,3 +1,19 @@
+<script setup lang="ts">
+import { reactive, watch } from 'vue'
+
+defineProps<{ errorMessages?: string | string[] }>()
+const model = defineModel<number>({ default: 0 })
+
+const duration = reactive({
+  minutes: String(Math.floor(model.value / 60)),
+  seconds: String(model.value % 60)
+})
+
+watch(duration, ({ minutes, seconds }) => {
+  model.value = Number(minutes) * 60 + Number(seconds)
+})
+</script>
+
 <template>
   <v-input :error-messages="errorMessages">
     <div class="d-flex flex-grow-1">
@@ -22,19 +38,3 @@
     </div>
   </v-input>
 </template>
-
-<script setup lang="ts">
-import { reactive, watch } from 'vue'
-
-defineProps<{ errorMessages?: string | string[] }>()
-const model = defineModel<number>({ default: 0 })
-
-const duration = reactive({
-  minutes: String(Math.floor(model.value / 60)),
-  seconds: String(model.value % 60)
-})
-
-watch(duration, ({ minutes, seconds }) => {
-  model.value = Number(minutes) * 60 + Number(seconds)
-})
-</script>

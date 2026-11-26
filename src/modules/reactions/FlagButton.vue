@@ -1,3 +1,23 @@
+<script lang="ts" setup>
+import { computed } from 'vue'
+
+import { IFlagButton } from './types'
+
+defineProps<{
+  button: IFlagButton
+  readonly?: boolean
+  working?: boolean
+}>()
+
+defineEmits(['listOpen'])
+
+const model = defineModel<boolean>()
+
+const variant = computed(() => {
+  return model.value ? 'flat' : 'tonal'
+})
+</script>
+
 <template>
   <v-tooltip
     :disabled="!button.description"
@@ -22,23 +42,3 @@
     </template>
   </v-tooltip>
 </template>
-
-<script lang="ts" setup>
-import { computed } from 'vue'
-
-import { IFlagButton } from './types'
-
-defineProps<{
-  button: IFlagButton
-  readonly?: boolean
-  working?: boolean
-}>()
-
-defineEmits(['listOpen'])
-
-const model = defineModel<boolean>()
-
-const variant = computed(() => {
-  return model.value ? 'flat' : 'tonal'
-})
-</script>

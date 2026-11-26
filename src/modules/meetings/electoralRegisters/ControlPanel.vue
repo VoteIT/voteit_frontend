@@ -1,3 +1,58 @@
+<script lang="ts" setup>
+import { computed } from 'vue'
+import { useI18n } from 'vue-i18n'
+
+import { dialogAlert } from '@/utils'
+import { NetworkError, parseRestError } from '@/utils/restApi'
+import QueryDialog from '@/components/QueryDialog.vue'
+import { meetingType } from '../contentTypes'
+import useMeeting from '../useMeeting'
+
+import useElectoralRegisters from './useElectoralRegisters'
+import { iterErAttributes } from './utils'
+
+const { t } = useI18n()
+const { meeting, meetingId } = useMeeting()
+const { availableErMethods, erMethodLocked } = useElectoralRegisters(meetingId)
+
+const currentName = computed({
+  get() {
+    return meeting.value?.er_policy_name
+  },
+  async set(name) {
+    if (name === meeting.value?.er_policy_name) return
+    try {
+      await meetingType.api.patch(meetingId.value, { er_policy_name: name })
+    } catch (e) {
+      if (e instanceof NetworkError)
+        return dialogAlert('Could not reach server')
+      const errors = parseRestError<{ er_policy_name: string }>(e)
+      if (errors.er_policy_name)
+        return dialogAlert(errors.er_policy_name.join('\n'))
+      dialogAlert('Unknown error')
+    }
+  }
+})
+
+const methods = computed(() =>
+  availableErMethods.value?.map((method) => {
+    const isCurrent = method.name === currentName.value
+    return {
+      ...method,
+      attributes: [...iterErAttributes(method, t)],
+      isCurrent,
+      props: {
+        elevation: isCurrent ? 6 : 0,
+        color: isCurrent ? 'info' : undefined,
+        class: {
+          'pa-4': isCurrent
+        }
+      }
+    }
+  })
+)
+</script>
+
 <template>
   <div>
     <h2>{{ $t('electoralRegister.settings') }}</h2>
@@ -62,58 +117,3 @@
     </template>
   </div>
 </template>
-
-<script lang="ts" setup>
-import { computed } from 'vue'
-import { useI18n } from 'vue-i18n'
-
-import { dialogAlert } from '@/utils'
-import { NetworkError, parseRestError } from '@/utils/restApi'
-import QueryDialog from '@/components/QueryDialog.vue'
-import { meetingType } from '../contentTypes'
-import useMeeting from '../useMeeting'
-
-import useElectoralRegisters from './useElectoralRegisters'
-import { iterErAttributes } from './utils'
-
-const { t } = useI18n()
-const { meeting, meetingId } = useMeeting()
-const { availableErMethods, erMethodLocked } = useElectoralRegisters(meetingId)
-
-const currentName = computed({
-  get() {
-    return meeting.value?.er_policy_name
-  },
-  async set(name) {
-    if (name === meeting.value?.er_policy_name) return
-    try {
-      await meetingType.api.patch(meetingId.value, { er_policy_name: name })
-    } catch (e) {
-      if (e instanceof NetworkError)
-        return dialogAlert('Could not reach server')
-      const errors = parseRestError<{ er_policy_name: string }>(e)
-      if (errors.er_policy_name)
-        return dialogAlert(errors.er_policy_name.join('\n'))
-      dialogAlert('Unknown error')
-    }
-  }
-})
-
-const methods = computed(() =>
-  availableErMethods.value?.map((method) => {
-    const isCurrent = method.name === currentName.value
-    return {
-      ...method,
-      attributes: [...iterErAttributes(method, t)],
-      isCurrent,
-      props: {
-        elevation: isCurrent ? 6 : 0,
-        color: isCurrent ? 'info' : undefined,
-        class: {
-          'pa-4': isCurrent
-        }
-      }
-    }
-  })
-)
-</script>

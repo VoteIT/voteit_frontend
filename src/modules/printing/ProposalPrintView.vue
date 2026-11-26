@@ -1,69 +1,3 @@
-<template>
-  <v-row>
-    <v-col v-bind="cols.default">
-      <v-sheet class="d-print-none pa-4 mb-8" :border="true" rounded>
-        <div class="d-flex">
-          <h2>
-            {{ $t('printing.selectProposals') }}
-          </h2>
-          <v-fade-transition>
-            <v-btn
-              v-show="!allSelected"
-              class="mx-4"
-              color="primary"
-              prepend-icon="mdi-check-all"
-              size="small"
-              :text="$t('printing.selectAll')"
-              @click="allSelected = true"
-            />
-          </v-fade-transition>
-          <v-spacer />
-          <v-btn
-            color="primary"
-            icon="mdi-printer"
-            :disabled="!selectedProposals.length"
-            @click="print()"
-          />
-        </div>
-        <v-chip-group v-model="propIds" multiple column>
-          <v-chip
-            v-for="{ pk, prop_id } in proposals"
-            :key="pk"
-            :value="pk"
-            color="primary"
-          >
-            #{{ prop_id }}
-          </v-chip>
-        </v-chip-group>
-      </v-sheet>
-      <v-alert
-        type="info"
-        class="my-8 d-print-none"
-        :text="$t('printing.proposalHelpText')"
-      />
-      <div
-        v-for="p in selectedProposals"
-        :key="p.pk"
-        class="proposal-container mb-12"
-      >
-        <p class="mb-2 text-h4">#{{ p.prop_id }}</p>
-        <p class="text-secondary">
-          <span v-if="p.meetingGroup">
-            {{ p.meetingGroup.title }}
-          </span>
-          <User v-else-if="p.author" :pk="p.author" userid />
-          -
-          {{ formatDate(p.created, DATETIME_SHORT) }}
-        </p>
-        <div
-          v-html="isDiffProposal(p) ? p.body_diff_brief : p.body"
-          class="text-h4 proposal-text-paragraph my-2"
-        ></div>
-      </div>
-    </v-col>
-  </v-row>
-</template>
-
 <script lang="ts" setup>
 import { DATETIME_SHORT, formatDate } from '@/utils/dates'
 import {
@@ -136,6 +70,72 @@ onBeforeMount(() => window.addEventListener('afterprint', backAfterPrint))
 onBeforeUnmount(() => window.removeEventListener('afterprint', backAfterPrint))
 onMounted(print)
 </script>
+
+<template>
+  <v-row>
+    <v-col v-bind="cols.default">
+      <v-sheet class="d-print-none pa-4 mb-8" :border="true" rounded>
+        <div class="d-flex">
+          <h2>
+            {{ $t('printing.selectProposals') }}
+          </h2>
+          <v-fade-transition>
+            <v-btn
+              v-show="!allSelected"
+              class="mx-4"
+              color="primary"
+              prepend-icon="mdi-check-all"
+              size="small"
+              :text="$t('printing.selectAll')"
+              @click="allSelected = true"
+            />
+          </v-fade-transition>
+          <v-spacer />
+          <v-btn
+            color="primary"
+            icon="mdi-printer"
+            :disabled="!selectedProposals.length"
+            @click="print()"
+          />
+        </div>
+        <v-chip-group v-model="propIds" multiple column>
+          <v-chip
+            v-for="{ pk, prop_id } in proposals"
+            :key="pk"
+            :value="pk"
+            color="primary"
+          >
+            #{{ prop_id }}
+          </v-chip>
+        </v-chip-group>
+      </v-sheet>
+      <v-alert
+        type="info"
+        class="my-8 d-print-none"
+        :text="$t('printing.proposalHelpText')"
+      />
+      <div
+        v-for="p in selectedProposals"
+        :key="p.pk"
+        class="proposal-container mb-12"
+      >
+        <p class="mb-2 text-h4">#{{ p.prop_id }}</p>
+        <p class="text-secondary">
+          <span v-if="p.meetingGroup">
+            {{ p.meetingGroup.title }}
+          </span>
+          <User v-else-if="p.author" :pk="p.author" userid />
+          -
+          {{ formatDate(p.created, DATETIME_SHORT) }}
+        </p>
+        <div
+          v-html="isDiffProposal(p) ? p.body_diff_brief : p.body"
+          class="text-h4 proposal-text-paragraph my-2"
+        ></div>
+      </div>
+    </v-col>
+  </v-row>
+</template>
 
 <style lang="sass" scoped>
 .proposal-container

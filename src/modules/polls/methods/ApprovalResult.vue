@@ -1,35 +1,3 @@
-<template>
-  <div>
-    <ProposalCard
-      v-for="{ icon, proposal, votes } in results"
-      :key="proposal.pk"
-      :p="proposal"
-      readOnly
-      class="my-4"
-    >
-      <template #bottom-right>
-        <p
-          class="text-subtitle flex-grow-1 text-right text-no-wrap text-black mt-2"
-        >
-          {{ $t('poll.result.voteCount', votes) }}
-          <v-tooltip location="top right">
-            <template #activator="{ props }">
-              <v-icon :icon="icon.icon" v-bind="props" :color="icon.color" />
-            </template>
-            {{ icon.text }}
-          </v-tooltip>
-        </p>
-      </template>
-    </ProposalCard>
-    <v-alert
-      :text="$t('poll.method.description.dutt')"
-      type="info"
-      icon="mdi-alert-decagram"
-      class="my-2"
-    />
-  </div>
-</template>
-
 <script lang="ts" setup>
 import { orderBy } from '@/utils'
 import { computed } from 'vue'
@@ -103,3 +71,35 @@ const results = computed(() => {
   )
 })
 </script>
+
+<template>
+  <div>
+    <ProposalCard
+      v-for="{ icon, proposal, votes } in results"
+      :key="proposal.pk"
+      :p="proposal"
+      readOnly
+      class="my-4"
+    >
+      <template #bottom-right>
+        <p
+          class="text-subtitle flex-grow-1 text-right text-no-wrap text-black mt-2"
+        >
+          {{ $t('poll.result.voteCount', votes) }}
+          <v-tooltip location="top right">
+            <template #activator="{ props }">
+              <v-icon :icon="icon.icon" v-bind="props" :color="icon.color" />
+            </template>
+            {{ icon.text }}
+          </v-tooltip>
+        </p>
+      </template>
+    </ProposalCard>
+    <v-alert
+      :text="$t('poll.method.description.dutt')"
+      type="info"
+      icon="mdi-alert-decagram"
+      class="my-2"
+    />
+  </div>
+</template>

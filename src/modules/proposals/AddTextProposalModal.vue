@@ -1,28 +1,3 @@
-<template>
-  <AddProposalModal
-    v-bind="modalProps"
-    :title="proposal ? undefined : t('proposal.change')"
-    @reset="reset"
-  >
-    <template #activator="attrs">
-      <slot name="activator" v-bind="attrs"></slot>
-    </template>
-    <template #editor>
-      <textarea class="form-control mb-2" v-model="body" required></textarea>
-    </template>
-    <template #actions>
-      <v-btn
-        color="warning"
-        :disabled="!isModified"
-        prepend-icon="mdi-undo-variant"
-        :text="$t('reset')"
-        variant="text"
-        @click="reset"
-      />
-    </template>
-  </AddProposalModal>
-</template>
-
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
@@ -73,3 +48,28 @@ const modalProps = computed(
     }) as const
 )
 </script>
+
+<template>
+  <AddProposalModal
+    v-bind="modalProps"
+    :title="proposal ? undefined : t('proposal.change')"
+    @reset="reset"
+  >
+    <template #activator="attrs">
+      <slot name="activator" v-bind="attrs"></slot>
+    </template>
+    <template #editor>
+      <textarea class="form-control mb-2" v-model="body" required></textarea>
+    </template>
+    <template #actions>
+      <v-btn
+        color="warning"
+        :disabled="!isModified"
+        prepend-icon="mdi-undo-variant"
+        :text="$t('reset')"
+        variant="text"
+        @click="reset"
+      />
+    </template>
+  </AddProposalModal>
+</template>

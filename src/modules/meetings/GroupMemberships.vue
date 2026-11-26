@@ -1,3 +1,82 @@
+<script lang="ts" setup>
+import { computed } from 'vue'
+
+import { getFullName } from '@/utils'
+import Tag from '@/components/Tag.vue'
+import UserSearch from '@/components/UserSearch.vue'
+import QueryDialog from '@/components/QueryDialog.vue'
+import useErrorHandler from '@/composables/useErrorHandler'
+import useActive from '../active/useActive'
+import useUserDetails from '../organisations/useUserDetails'
+import type { IUser } from '../organisations/types'
+
+import useMeeting from './useMeeting'
+import useMeetingGroups from './useMeetingGroups'
+import { groupMembershipType } from './contentTypes'
+import type { GroupMembership, MeetingGroup } from './types'
+import useElectoralRegisters from './electoralRegisters/useElectoralRegisters'
+
+const props = defineProps<{
+  editable?: boolean
+  group: MeetingGroup & { memberships: GroupMembership[] }
+}>()
+
+const { meeting, meetingId } = useMeeting()
+const { handler } = useErrorHandler({ target: 'dialog' })
+const { getUser } = useUserDetails(meetingId)
+const { groupRoles } = useMeetingGroups(meetingId)
+const { activeUserIds, componentActive } = useActive(meetingId)
+const { erMethodWeighted, getWeightInCurrent } =
+  useElectoralRegisters(meetingId)
+
+const annotatedMembers = computed(() => {
+  return props.group.memberships.map((m) => {
+    return {
+      ...m,
+      isActive: activeUserIds.value.includes(m.user),
+      user: getUser(m.user),
+      currentWeight: getWeightInCurrent(m.user)
+    }
+  })
+})
+
+const displayGroupVotes = computed(
+  () => erMethodWeighted.value && !!meeting.value?.dialect?.group_votes_active
+)
+
+/**
+ * Used as filter function for UserSearch
+ */
+function filterUser(user: IUser) {
+  return !props.group.memberships.find((m) => m.user === user.pk)
+}
+
+const addUser = handler((user: number) =>
+  groupMembershipType.api.add({
+    meeting_group: props.group.pk,
+    user
+  })
+)
+
+function getRoleTitle(role: number | null) {
+  const _role = groupRoles.value.find((r) => r.pk === role)
+  return _role ? _role.title : '---'
+}
+
+const removeMember = handler((pk: number) => groupMembershipType.api.delete(pk))
+
+/**
+ * Set role on users existing group membership
+ * @param user User primary key
+ * @param pk Primary key of membership object
+ */
+const setRole = handler(
+  (role: number | null, pk: number) =>
+    groupMembershipType.api.patch(pk, { role }),
+  'role'
+)
+</script>
+
 <template>
   <div>
     <p v-if="group.body" class="mb-6">
@@ -140,82 +219,3 @@
     />
   </div>
 </template>
-
-<script lang="ts" setup>
-import { computed } from 'vue'
-
-import { getFullName } from '@/utils'
-import Tag from '@/components/Tag.vue'
-import UserSearch from '@/components/UserSearch.vue'
-import QueryDialog from '@/components/QueryDialog.vue'
-import useErrorHandler from '@/composables/useErrorHandler'
-import useActive from '../active/useActive'
-import useUserDetails from '../organisations/useUserDetails'
-import type { IUser } from '../organisations/types'
-
-import useMeeting from './useMeeting'
-import useMeetingGroups from './useMeetingGroups'
-import { groupMembershipType } from './contentTypes'
-import type { GroupMembership, MeetingGroup } from './types'
-import useElectoralRegisters from './electoralRegisters/useElectoralRegisters'
-
-const props = defineProps<{
-  editable?: boolean
-  group: MeetingGroup & { memberships: GroupMembership[] }
-}>()
-
-const { meeting, meetingId } = useMeeting()
-const { handler } = useErrorHandler({ target: 'dialog' })
-const { getUser } = useUserDetails(meetingId)
-const { groupRoles } = useMeetingGroups(meetingId)
-const { activeUserIds, componentActive } = useActive(meetingId)
-const { erMethodWeighted, getWeightInCurrent } =
-  useElectoralRegisters(meetingId)
-
-const annotatedMembers = computed(() => {
-  return props.group.memberships.map((m) => {
-    return {
-      ...m,
-      isActive: activeUserIds.value.includes(m.user),
-      user: getUser(m.user),
-      currentWeight: getWeightInCurrent(m.user)
-    }
-  })
-})
-
-const displayGroupVotes = computed(
-  () => erMethodWeighted.value && !!meeting.value?.dialect?.group_votes_active
-)
-
-/**
- * Used as filter function for UserSearch
- */
-function filterUser(user: IUser) {
-  return !props.group.memberships.find((m) => m.user === user.pk)
-}
-
-const addUser = handler((user: number) =>
-  groupMembershipType.api.add({
-    meeting_group: props.group.pk,
-    user
-  })
-)
-
-function getRoleTitle(role: number | null) {
-  const _role = groupRoles.value.find((r) => r.pk === role)
-  return _role ? _role.title : '---'
-}
-
-const removeMember = handler((pk: number) => groupMembershipType.api.delete(pk))
-
-/**
- * Set role on users existing group membership
- * @param user User primary key
- * @param pk Primary key of membership object
- */
-const setRole = handler(
-  (role: number | null, pk: number) =>
-    groupMembershipType.api.patch(pk, { role }),
-  'role'
-)
-</script>
