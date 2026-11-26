@@ -3,7 +3,7 @@ import { flatmap, sorted } from 'itertools'
 import { computed, provide, reactive, shallowRef, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 
-import { dialogQuery, getFullName, minTime } from '@/utils'
+import { dialogAlert, dialogQuery, getFullName, minTime } from '@/utils'
 import { PickByType, ThemeColor } from '@/utils/types'
 import { getApiLink } from '@/utils/restApi'
 import Tag from '@/components/Tag.vue'
@@ -25,6 +25,7 @@ import useMeetingGroups from './useMeetingGroups'
 import { meetingGroupType } from './contentTypes'
 import { MeetingGroup, MeetingGroupColumn } from './types'
 import GroupMemberships from './GroupMemberships.vue'
+import { groupImportRule } from './groupImportRule'
 import { meetingGroupTablePlugins } from './registry'
 import { TagClickHandlerKey, TagsKey } from './useTags'
 
@@ -130,26 +131,27 @@ const headers = computed(() => {
   return h
 })
 
-const groupImportMultiline = rules.multiline(
-  rules.or(
-    rules.tabSeparated(rules.minLength(1), rules.minLength(1)),
-    rules.tabSeparated(rules.minLength(1), rules.minLength(1), rules.min(0))
-  )
-)
+const groupImportMultiline = groupImportRule(rules)
 
 const { handled, handler } = useErrorHandler({ target: 'dialog' })
 
 /**
- * Request group import. Errors are handled by the form.
+ * Request group import, then report how many groups were created and updated.
+ * Errors are handled by the form.
  */
-function createGroups(data: { groups: string }) {
-  return minTime(
-    meetingGroupType.api.listAction('bulk-create', {
-      meeting: meetingId.value,
-      ...data
-    }),
+async function createGroups(data: { groups: string }) {
+  const result = await minTime(
+    meetingGroupType.api.listAction<{ created: number; updated: number }>(
+      'bulk-create',
+      {
+        meeting: meetingId.value,
+        ...data
+      }
+    ),
     500
   )
+  // Not awaited, so the import dialog closes behind the alert
+  dialogAlert(t('meeting.groups.importResult', result), ThemeColor.Success)
 }
 
 // Provide tag autocompletion

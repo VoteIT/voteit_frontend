@@ -20,6 +20,7 @@ Version format is `major`.`minor`.`patch`. Until major version 1 is realeased, A
 - Voting: The "Time to vote" bubble opens by itself when there's a poll you haven't voted in, so it's clear where to vote. All bubbles share the same header style and width. [#280](https://github.com/VoteIT/voteit_frontend/issues/280)
 - Tags: While typing a tag, a hint says to press Enter to add it. A tag still typed when you leave the field (for example by clicking post or save) is added instead of lost. Fixes [#146](https://github.com/VoteIT/voteit_frontend/issues/146)
 - Polls: When a moderator changes a poll's state, the group for the new state opens, so the poll stays in view instead of disappearing into a collapsed group. Fixes [#214](https://github.com/VoteIT/voteit_frontend/issues/214)
+- Meeting group import: The id column is optional. A row without an id updates the group with the same name, or creates a new group. After importing, a message says how many groups were created and updated
 - Bugfix: Members of a meeting group can retract proposals posted as that group, like the author can. Retracting requires the proposer role, as on the server. Fixes [#254](https://github.com/VoteIT/voteit_frontend/issues/254)
 - Bugfix: Flag buttons that can't be toggled keep their color instead of looking disabled. Fixes [#415](https://github.com/VoteIT/voteit_frontend/issues/415)
 - New partial to pick login account among duplicates, or merge
