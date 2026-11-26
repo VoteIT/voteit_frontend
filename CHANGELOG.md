@@ -4,7 +4,7 @@ Document notable changes here.
 
 Version format is `major`.`minor`.`patch`. Until major version 1 is realeased, API changes accours on minor version bumps, but never on patch version bumps.
 
-## 1.8.0 (Unreleased)
+## 1.8.0 (2026-11-26)
 
 - Removal requests: Users whose only trace is in the log, for instance from meetings that have since been deleted, are shown as such and will be anonymised rather than deleted. Requests show how many log entries the user has made
 - Tags are shown as chips, and `#tags` in rich text and in the editor look the same. Tags typed in the editor get their color right away, and the pointer only shows where clicking a tag does something. Disabled tags can no longer be clicked
