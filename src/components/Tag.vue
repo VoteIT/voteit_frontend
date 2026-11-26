@@ -6,7 +6,7 @@ import { TagClickHandlerKey } from '@/modules/meetings/useTags'
 
 const clickHandler = inject(TagClickHandlerKey, undefined)
 
-defineEmits(['remove'])
+const emit = defineEmits<{ remove: [] }>()
 const props = defineProps<{
   name: string
   disabled?: boolean
@@ -14,52 +14,33 @@ const props = defineProps<{
   count?: number
 }>()
 
-const color = computed(() => stringToHSL(props.name))
-const clickable = computed(() => !!clickHandler && !props.disabled)
+const chipProps = computed(() => {
+  const clickable = !!clickHandler && !props.disabled
+  const onClick = clickable ? () => clickHandler(props.name) : undefined
 
-function onClick() {
-  if (clickable.value) clickHandler?.(props.name)
-}
+  return {
+    closable: props.closer,
+    color: stringToHSL(props.name),
+    'data-denotation-char': '#',
+    'data-value': props.name,
+    size: 'x-small',
+    text: `#${props.name}`,
+    variant: 'flat' as const,
+    onClick,
+    'onClick:close': () => emit('remove')
+  }
+})
 </script>
 
 <template>
   <v-badge
-    v-if="!!props.count"
-    :content="String(props.count)"
+    v-if="count"
+    :content="String(count)"
     offset-x="-5"
     offset-y="-2"
     color="secondary"
   >
-    <v-chip
-      :class="{ disabled }"
-      :closable="closer"
-      :color="color"
-      :link="clickable"
-      :ripple="clickable"
-      data-denotation-char="#"
-      :data-value="name"
-      size="x-small"
-      variant="flat"
-      @click="onClick"
-      @click:close="$emit('remove')"
-    >
-      #{{ name }}
-    </v-chip>
+    <v-chip v-bind="chipProps" />
   </v-badge>
-  <v-chip
-    v-else
-    :class="{ disabled }"
-    :closable="closer"
-    :color="color"
-    :link="clickable"
-    :ripple="clickable"
-    data-denotation-char="#"
-    :data-value="name"
-    size="x-small"
-    variant="flat"
-    @click="onClick"
-    @click:close="$emit('remove')"
-  >
-    #{{ name }}
-  </v-chip>
+  <v-chip v-else v-bind="chipProps" />
 </template>
