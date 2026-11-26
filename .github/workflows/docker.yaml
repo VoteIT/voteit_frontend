@@ -55,10 +55,8 @@ jobs:
       - run: npm test
       - name: Build distribution files
         env:
-          VERSION: ${{ steps.meta.outputs.version }}
-        run: |
-          echo "VITE_FRONTEND_VERSION=$VERSION" > .env.production
-          npm run build
+          VITE_FRONTEND_VERSION: ${{ steps.meta.outputs.version }}
+        run: npm run build
       - name: Upload distribution files
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
