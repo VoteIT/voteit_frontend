@@ -15,7 +15,6 @@ export interface RichtextEditorProps {
   autofocus?: boolean
   disabled?: boolean
   errorMessages?: string[]
-  modelValue?: string
   placeholder?: string
   rules?: ValidationRule[]
   variant?: QuillVariant
@@ -24,7 +23,6 @@ export interface RichtextEditorProps {
 export interface RichtextEditorEmits {
   (e: 'blur'): void
   (e: 'focus'): void
-  (e: 'update:modelValue', value: string): void
 }
 export enum QuillFormat {
   // Inline

@@ -26,9 +26,8 @@ const props = withDefaults(
   }
 )
 
-const emit = defineEmits<{
-  (e: 'update:modelValue', value: Blob | null): void
-}>()
+// Output only: the cropped image, or null when cleared
+const model = defineModel<Blob | null>()
 
 const image = reactive({
   croppingOpen: false,
@@ -185,7 +184,10 @@ watch(
   () => image.file,
   async (file) => {
     image.failed = false
-    if (file === null) return emit('update:modelValue', null)
+    if (file === null) {
+      model.value = null
+      return
+    }
     if (!file) return
     image.loading = true
     try {
@@ -195,7 +197,7 @@ watch(
       image.cropArea = initCropArea(orig)
       const { blob, src: croppedSrc } = await resizeImage(file, cropData.value)
       image.src = croppedSrc
-      emit('update:modelValue', blob)
+      model.value = blob
     } catch {
       image.failed = true
     }
@@ -234,7 +236,7 @@ async function setCrop() {
   try {
     const { blob, src } = await resizeImage(file, cropData.value)
     image.src = src
-    emit('update:modelValue', blob)
+    model.value = blob
   } catch {
     image.failed = true
   }

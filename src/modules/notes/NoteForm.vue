@@ -8,15 +8,14 @@ import { IProposalNote, ProposalIntent } from './types'
 
 const props = defineProps<{
   modelValue: Pick<IProposalNote, 'body' | 'intent'>
-  modified?: boolean
-  valid?: boolean
 }>()
 
+// The note object itself is edited in place, so it can't be a defineModel (same object never emits)
 const emit = defineEmits<{
   (e: 'update:modelValue', value: Pick<IProposalNote, 'body' | 'intent'>): void
-  (e: 'update:modified', value: boolean): void
-  (e: 'update:valid', value: boolean): void
 }>()
+const modified = defineModel<boolean>('modified')
+const valid = defineModel<boolean>('valid')
 
 const form = shallowReactive(props.modelValue)
 
@@ -24,12 +23,10 @@ watch(
   form,
   (value) => {
     emit('update:modelValue', value)
-    emit(
-      'update:modified',
+    modified.value =
       value.body !== props.modelValue.body ||
-        value.intent !== props.modelValue.intent
-    )
-    emit('update:valid', !!value.intent || !!stripHTML(value.body))
+      value.intent !== props.modelValue.intent
+    valid.value = !!value.intent || !!stripHTML(value.body)
   },
   { immediate: true }
 )

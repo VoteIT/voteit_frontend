@@ -136,11 +136,11 @@ const variants: Record<
 }
 
 const props = withDefaults(defineProps<RichtextEditorProps>(), {
-  modelValue: '',
   variant: 'restricted'
 })
 
 const emit = defineEmits<RichtextEditorEmits>()
+const model = defineModel<string>({ default: '' })
 
 let editor: Quill | undefined
 const editorElement = ref<HTMLElement | null>(null)
@@ -155,7 +155,7 @@ const editorId = computed(() => `quill-editor-${instance?.uid}`)
 onMounted(() => {
   if (!editorElement.value)
     throw new Error('Richtext editor element not available')
-  editorElement.value.innerHTML = props.modelValue // Set initial value, never change this
+  editorElement.value.innerHTML = model.value // Set initial value, never change this
   const config: QuillOptions = {
     ...variants[props.variant],
     bounds: '#' + editorId.value,
@@ -177,7 +177,7 @@ onMounted(() => {
         'Quill text-change event triggered, but editor is not available'
       )
     refreshTagColors() // Newly typed #tags trigger no Vue update
-    emit('update:modelValue', editor.root.innerHTML.replaceAll(/&nbsp;/g, ' ')) // Replace all non-beaking spaces - they often show up by accident
+    model.value = editor.root.innerHTML.replaceAll(/&nbsp;/g, ' ') // Replace all non-beaking spaces - they often show up by accident
   })
   if (props.autofocus) focus()
   editor.root.addEventListener('focus', () => emit('focus'))
@@ -211,7 +211,7 @@ defineExpose({
   <v-input
     :error-messages="errorMessages"
     :id="editorId"
-    :model-value="modelValue"
+    :model-value="model"
     :rules="rules"
   >
     <div class="flex-grow-1" ref="rootElement">

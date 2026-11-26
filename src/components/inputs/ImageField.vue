@@ -18,20 +18,19 @@ const props = withDefaults(
     label?: string
     errorMessages?: string[]
     maxSize?: number
-    position?: { x: number; y: number }
     src?: string
   }>(),
   {
     aspectRatio: '1',
-    maxSize: 640,
-    position: () => ({ x: 0.5, y: 0.5 })
+    maxSize: 640
   }
 )
 
-const emit = defineEmits<{
-  (e: 'update:modelValue', value: Blob | null): void
-  (e: 'update:position', value: { x: number; y: number }): void
-}>()
+// Output only: the selected image, or null when cleared
+const model = defineModel<Blob | null>()
+const position = defineModel<{ x: number; y: number }>('position', {
+  default: () => ({ x: 0.5, y: 0.5 })
+})
 
 const { xs } = useDisplay()
 
@@ -42,7 +41,7 @@ const image = reactive({
   loading: false,
   origSize: null as ImageSize | null,
   size: null as ImageSize | null,
-  position: props.position
+  position: position.value
 })
 
 /**
@@ -122,12 +121,15 @@ watch(
   () => image.file,
   async (file) => {
     image.failed = false
-    if (file === null) return emit('update:modelValue', null)
+    if (file === null) {
+      model.value = null
+      return
+    }
     if (!file) return // Revoke old using URL.revokeObjectURL()?
     image.loading = true
     try {
       const full = await resizeImage(file)
-      emit('update:modelValue', full.blob)
+      model.value = full.blob
       image.origSize = full.orig
       image.size = full.size
       image.src = full.src
@@ -162,8 +164,7 @@ function openImageSelector() {
 }
 
 async function savePosition(close: () => void) {
-  const { position } = image
-  emit('update:position', position)
+  position.value = image.position
   close()
 }
 

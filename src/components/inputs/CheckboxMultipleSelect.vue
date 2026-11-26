@@ -17,7 +17,6 @@ function toOutputValue(obj: ChoiceRecord): string[] {
 
 const props = withDefaults(
   defineProps<{
-    modelValue?: string[]
     settings: { options: Record<string, string> }
     label?: string
     requiredValues?: string[]
@@ -25,16 +24,13 @@ const props = withDefaults(
     errorMessages?: string | string[]
   }>(),
   {
-    modelValue: () => [],
     requiredValues: () => [],
     rules: () => [],
     errorMessages: undefined
   }
 )
 
-const emit = defineEmits<{
-  'update:modelValue': [value: string[]]
-}>()
+const model = defineModel<string[]>({ default: () => [] })
 
 if (!props.settings?.options)
   throw new Error(
@@ -44,32 +40,25 @@ if (!props.settings?.options)
 const val = reactive(
   createInitialValues(
     Object.keys(props.settings.options),
-    new Set([...props.modelValue, ...props.requiredValues])
+    new Set([...model.value, ...props.requiredValues])
   )
 )
 
-watch(
-  () => props.modelValue,
-  (values) => {
-    if (!props.settings?.options) return
-    for (const key in props.settings.options) {
-      val[key] = values.includes(key)
-    }
+watch(model, (values) => {
+  if (!props.settings?.options) return
+  for (const key in props.settings.options) {
+    val[key] = values.includes(key)
   }
-)
+})
 
 watch(val, (value) => {
-  emit('update:modelValue', toOutputValue(value))
+  model.value = toOutputValue(value)
 })
 </script>
 
 <template>
   <v-label v-if="label" :text="label" />
-  <v-input
-    :model-value="modelValue"
-    :rules="rules"
-    :error-messages="errorMessages"
-  >
+  <v-input :model-value="model" :rules="rules" :error-messages="errorMessages">
     <div class="mb-4 d-flex flex-wrap">
       <v-checkbox
         v-for="[key, optionLabel] in Object.entries(settings.options)"

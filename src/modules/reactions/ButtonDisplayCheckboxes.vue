@@ -1,30 +1,22 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 
-const props = defineProps<{
-  allowedModels: string[]
-  onPresentation?: boolean
-  onVote?: boolean
-  voteTemplate?: boolean
-}>()
-
-const emit = defineEmits<{
-  (e: 'update:allowedModels', data: string[]): void
-  (e: 'update:onPresentation', data: boolean): void
-  (e: 'update:onVote', data: boolean): void
-  (e: 'update:voteTemplate', data: boolean): void
-}>()
+const allowedModels = defineModel<string[]>('allowedModels', {
+  required: true
+})
+const onPresentation = defineModel<boolean>('onPresentation')
+const onVote = defineModel<boolean>('onVote')
+const voteTemplate = defineModel<boolean>('voteTemplate')
 
 function setAllowedModel(model: string, value: boolean) {
-  const allowed = value
-    ? [...props.allowedModels, model]
-    : props.allowedModels.filter((m) => m !== model)
-  emit('update:allowedModels', allowed)
+  allowedModels.value = value
+    ? [...allowedModels.value, model]
+    : allowedModels.value.filter((m) => m !== model)
 }
 
 const onDiscussions = computed({
   get() {
-    return props.allowedModels.includes('discussion_post')
+    return allowedModels.value.includes('discussion_post')
   },
   set(value) {
     setAllowedModel('discussion_post', value)
@@ -32,7 +24,7 @@ const onDiscussions = computed({
 })
 const onProposals = computed({
   get() {
-    return props.allowedModels.includes('proposal')
+    return allowedModels.value.includes('proposal')
   },
   set(value) {
     setAllowedModel('proposal', value)
@@ -52,27 +44,27 @@ const onProposals = computed({
         class="flex-grow-0 mr-8"
       />
       <v-checkbox
-        :modelValue="onProposals && onPresentation"
+        :model-value="onProposals && onPresentation"
         :disabled="!onProposals"
-        @update:modelValue="emit('update:onPresentation', $event!)"
+        @update:model-value="onPresentation = !!$event"
         :label="$t('reaction.onPresentation')"
         density="compact"
         hide-details
         class="flex-grow-0 mr-1"
       />
       <v-checkbox
-        :modelValue="onProposals && onVote"
+        :model-value="onProposals && onVote"
         :disabled="!onProposals"
-        @update:modelValue="emit('update:onVote', $event!)"
+        @update:model-value="onVote = !!$event"
         :label="$t('reaction.onPoll')"
         density="compact"
         hide-details
         class="flex-grow-0 mr-1"
       />
       <v-checkbox
-        :modelValue="onProposals && voteTemplate"
+        :model-value="onProposals && voteTemplate"
         :disabled="!onProposals"
-        @update:modelValue="emit('update:voteTemplate', $event!)"
+        @update:model-value="voteTemplate = !!$event"
         :label="$t('reaction.voteTemplate')"
         density="compact"
         hide-details

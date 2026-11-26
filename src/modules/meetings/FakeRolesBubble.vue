@@ -3,8 +3,8 @@ import BubbleHeader from './BubbleHeader.vue'
 import useMeetingId from './useMeetingId'
 import { setFakeRoles } from './rules'
 
-defineProps<{ modelValue?: boolean }>()
-defineEmits(['update:modelValue'])
+// Open state, passed by Bubbles
+defineModel<boolean>()
 
 const meetingId = useMeetingId()
 </script>

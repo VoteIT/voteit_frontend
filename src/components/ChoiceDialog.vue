@@ -1,11 +1,9 @@
 <script setup lang="ts" generic="T extends string | boolean">
-import { shallowRef, watch } from 'vue'
 import DefaultDialog from './DefaultDialog.vue'
 
 const props = defineProps<{
   description: string
   handler(value: T): Promise<void>
-  modelValue: boolean
   options: {
     color: string
     icon: string
@@ -15,15 +13,7 @@ const props = defineProps<{
   title: string
 }>()
 
-const dialogActive = shallowRef(props.modelValue)
-
-// React to change of modelValue
-watch(
-  () => props.modelValue,
-  (value) => {
-    dialogActive.value = value
-  }
-)
+const dialogActive = defineModel<boolean>({ required: true })
 
 async function selectValue(value: T) {
   await props.handler(value)

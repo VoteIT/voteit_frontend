@@ -13,7 +13,6 @@ const props = withDefaults(
   defineProps<{
     color?: string
     items: Item[]
-    modelValue?: Value | null
     loading?: boolean
     required?: boolean
   }>(),
@@ -22,9 +21,7 @@ const props = withDefaults(
   }
 )
 
-defineEmits<{
-  (e: 'update:modelValue', value: Value | null): void
-}>()
+const model = defineModel<Value | null>()
 
 const { t } = useI18n()
 
@@ -37,13 +34,8 @@ const rules = computed(() =>
 </script>
 
 <template>
-  <v-input :model-value="modelValue" :rules="rules" hide-details="auto">
-    <v-item-group
-      class="w-100"
-      :mandatory="required"
-      :model-value="modelValue"
-      @update:model-value="$emit('update:modelValue', $event as Value)"
-    >
+  <v-input :model-value="model" :rules="rules" hide-details="auto">
+    <v-item-group class="w-100" :mandatory="required" v-model="model">
       <v-item
         v-for="item in items"
         :key="item.value ?? ''"

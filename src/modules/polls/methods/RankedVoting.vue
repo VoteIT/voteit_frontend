@@ -82,25 +82,22 @@ import { pollPlugins } from '../registry'
 
 const props = defineProps<{
   disabled?: boolean
-  modelValue?: RankedVote
   poll: Poll
   proposals: Proposal[]
 }>()
 
-const emit = defineEmits<{
-  (e: 'update:modelValue', vote?: RankedVote): void
-}>()
+const model = defineModel<RankedVote>()
 
 const { t } = useI18n()
 const { getProposals } = useProposalStore()
 
 const pollMethod = computed(() => pollPlugins.getPlugin(props.poll.method_name))
 
-const ranking = ref<number[]>(props.modelValue?.ranking ?? [])
+const ranking = ref<number[]>(model.value?.ranking ?? [])
 
 function setOrder(order?: number[]) {
   if (order) ranking.value = order
-  emit('update:modelValue', { ranking: ranking.value })
+  model.value = { ranking: ranking.value }
 }
 
 const selectionRange = computed(
@@ -134,7 +131,7 @@ function toggleSelected(proposal: Proposal) {
     ranking.value.push(proposal.pk)
   }
   if (isValid.value) setOrder()
-  else emit('update:modelValue')
+  else model.value = undefined
 }
 
 const rankedProposals = computed(() => getProposals(ranking.value))

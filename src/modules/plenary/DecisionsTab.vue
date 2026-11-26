@@ -288,7 +288,7 @@ watchEffect(() => {
       :handler="setFollowAI"
       :options="broadcastFollowOptions"
       :title="$t('plenary.follow.title')"
-      v-model="followChoiceDialog"
+      :model-value="followChoiceDialog"
     />
     <div ref="agendaInfoEl">
       <AgendaInfoAlert class="ma-6 mb-0" />

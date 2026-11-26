@@ -47,18 +47,15 @@ import type { ApprovalPoll, ApprovalVote } from './types'
 
 const props = defineProps<{
   disabled?: boolean
-  modelValue?: ApprovalVote
   poll: ApprovalPoll
   proposals: Proposal[]
 }>()
 
-const emit = defineEmits<{
-  (e: 'update:modelValue', vote?: ApprovalVote): void
-}>()
+const model = defineModel<ApprovalVote>()
 
 const { t } = useI18n()
 
-const selected = ref<number[]>(props.modelValue?.choices ?? [])
+const selected = ref<number[]>(model.value?.choices ?? [])
 
 const missingProposals = computed(() => {
   const len = selected.value.length
@@ -80,7 +77,7 @@ const validVote = computed(() => {
 })
 
 watch(validVote, (value) => {
-  emit('update:modelValue', value)
+  model.value = value
 })
 
 const validHelpText = computed(() => {

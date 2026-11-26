@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import { onClickOutside } from '@vueuse/core'
-import { nextTick, ref, watch } from 'vue'
+import { nextTick, ref, shallowRef, watch } from 'vue'
 import type { ValidationRule } from 'vuetify'
 
 // Attrs passed to v-input
@@ -11,7 +11,6 @@ interface Props {
   editing?: boolean
   errorMessages?: string[]
   maxlength?: number
-  modelValue: string
   rules?: ValidationRule[]
   tag?: 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6'
 }
@@ -19,24 +18,20 @@ const props = withDefaults(defineProps<Props>(), {
   tag: 'h1'
 })
 const emit = defineEmits<{
-  (e: 'update:modelValue', value: string): void
-  (e: 'update:editing', value: boolean): void
   (e: 'submit'): void
 }>()
+const model = defineModel<string>({ required: true })
 
-const content = ref(props.modelValue)
-const editActive = ref(props.editing)
+const content = shallowRef(model.value)
+const editActive = shallowRef(props.editing)
 const inputEl = ref<HTMLInputElement | null>(null)
 watch(content, (value) => {
   // Always update modelValue if editing is requested from outside component
-  if (props.editing) emit('update:modelValue', value)
+  if (props.editing) model.value = value
 })
-watch(
-  () => props.modelValue,
-  (value) => {
-    content.value = value
-  }
-)
+watch(model, (value) => {
+  content.value = value
+})
 watch(
   () => props.editing,
   (value) => {
@@ -52,15 +47,14 @@ async function onClick() {
 }
 
 function done() {
-  if (content.value !== props.modelValue)
-    emit('update:modelValue', content.value)
+  model.value = content.value
   emit('submit')
   editActive.value = false
 }
 
 onClickOutside(inputEl, () => {
   if (!props.clickToEdit || !editActive.value) return
-  content.value = props.modelValue
+  content.value = model.value
   editActive.value = false
 })
 </script>

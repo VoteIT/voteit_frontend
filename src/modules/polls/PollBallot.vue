@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed, shallowRef } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 import { dialogAlert, dialogQuery } from '@/utils'
@@ -20,11 +20,10 @@ const props = defineProps<{
   disabled?: boolean
   poll: Poll
   proposals: Proposal[]
-  modelValue?: object
+  initialVote?: object
 }>()
 
 const emit = defineEmits<{
-  (e: 'update:modelValue', vote?: object): void
   (e: 'votingComplete'): void
 }>()
 
@@ -34,8 +33,9 @@ const pollPlugin = computed(() => pollPlugins.getPlugin(props.poll.method_name))
 const voteComponent = computed(() => pollPlugin.value?.voteComponent)
 const pollHelpText = computed(() => pollPlugin.value?.getHelp(t))
 
-const validVote = ref(props.modelValue) // Gets updates from method vote component, when valid.
-const submitting = ref(false)
+// Read once: the method vote component also reads its model only at setup, so later prop changes must not leak in.
+const validVote = shallowRef(props.initialVote) // Gets updates from method vote component, when valid.
+const submitting = shallowRef(false)
 
 const retryIcons = {
   timeout: 'mdi-timer-sand',

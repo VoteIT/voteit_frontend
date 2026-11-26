@@ -12,8 +12,7 @@ import ActiveListBubbleItem from './ActiveListBubbleItem.vue'
 import { hasActiveList } from './rules'
 import useSpeakerStore from './useSpeakerStore'
 
-defineProps<{ modelValue?: boolean }>()
-const emit = defineEmits(['update:modelValue'])
+const open = defineModel<boolean>({ default: false })
 
 const meetingId = useMeetingId()
 const { getSpeakerSystems } = useSpeakerStore()
@@ -80,9 +79,8 @@ function choose(room: number) {
   <ActiveListBubbleItem
     v-if="selected"
     :key="selected.system.pk"
-    :open="!!modelValue"
+    v-model="open"
     :system="selected.system"
-    @update:modelValue="emit('update:modelValue', $event)"
   />
   <v-list v-else class="mx-n2 mb-n3">
     <v-list-item

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref, watch } from 'vue'
+import { computed, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 import { dialogQuery, stripHTML } from '@/utils'
@@ -21,7 +21,6 @@ const props = withDefaults(
   defineProps<{
     name?: string
     handler(post: Partial<DiscussionPost>): Promise<void>
-    modelValue?: string
     submitIcon?: string
     submitText?: string
     placeholder?: string
@@ -30,13 +29,12 @@ const props = withDefaults(
     setTag?: string
   }>(),
   {
-    modelValue: '',
     minLength: 1,
     warnLength: 10
   }
 )
 
-const emit = defineEmits(['update:modelValue'])
+const text = defineModel<string>({ default: '' })
 
 const { t } = useI18n()
 
@@ -45,7 +43,6 @@ const author = ref<Author>()
 const postAsExpanded = ref(false)
 const submitting = ref(false)
 const tags = ref(props.setTag ? [props.setTag] : [])
-const text = ref(props.modelValue)
 
 const disabled = computed(
   () => submitting.value || textLength.value < props.minLength
@@ -79,16 +76,12 @@ async function submit() {
       tags: tags.value,
       ...(author.value || {})
     })
-    editorComponent.value?.setText(props.modelValue)
     reset()
   }, 'body')
   submitting.value = false
 }
 
 const editorComponent = ref<null | EditorComponent>(null)
-watch(text, (value) => {
-  emit('update:modelValue', value)
-})
 
 function textHasMention(id: number) {
   const div = document.createElement('div')

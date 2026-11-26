@@ -18,7 +18,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { shallowRef } from 'vue'
 
 import type { Proposal } from '@/modules/proposals/types'
 
@@ -28,22 +28,19 @@ import VoteProposal from '@/modules/proposals/VoteProposal.vue'
 
 const props = defineProps<{
   disabled?: boolean
-  modelValue?: MajorityVote
   poll: SimplePoll
   proposals: Proposal[]
 }>()
 
-const emit = defineEmits<{
-  (e: 'update:modelValue', vote?: MajorityVote): void
-}>()
+const model = defineModel<MajorityVote>()
 
-const choice = ref<number | undefined>(props.modelValue?.choice)
+const choice = shallowRef<number | undefined>(model.value?.choice)
 
 const option = simpleChoices.find((c) => c.value === SimpleChoice.Yes)!
 
 function select(proposal: Proposal) {
   if (props.disabled) return
   choice.value = proposal.pk
-  emit('update:modelValue', { choice: choice.value })
+  model.value = { choice: choice.value }
 }
 </script>

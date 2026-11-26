@@ -1,12 +1,5 @@
 <script setup lang="ts">
-import {
-  computed,
-  getCurrentInstance,
-  inject,
-  provide,
-  shallowRef,
-  watch
-} from 'vue'
+import { computed, getCurrentInstance, inject, provide, watch } from 'vue'
 import { useLink } from 'vue-router'
 
 import { TreeMenuLink } from '@/utils/types'
@@ -16,31 +9,19 @@ import MenuLevel from './MenuLevel.vue'
 const level = inject('menuLevel', 0)
 provide('menuLevel', level + 1)
 
-const props = withDefaults(
-  defineProps<{
-    autoOpen?: boolean
-    icon?: string
-    links?: TreeMenuLink[]
-    modelValue?: boolean
-    openEvent?: TypedEvent
-    title: string
-  }>(),
-  { modelValue: false }
-)
+const props = defineProps<{
+  autoOpen?: boolean
+  icon?: string
+  links?: TreeMenuLink[]
+  openEvent?: TypedEvent
+  title: string
+}>()
 
 const emit = defineEmits<{
-  (e: 'update:modelValue', value: boolean): void
   (e: 'activated'): void
 }>()
 
-const isOpen = shallowRef(props.modelValue)
-watch(
-  () => props.modelValue,
-  (value) => {
-    isOpen.value = value
-  }
-)
-watch(isOpen, (value) => emit('update:modelValue', value), { immediate: true })
+const isOpen = defineModel<boolean>({ default: false })
 // Listen to open event if available
 props.openEvent?.on(() => (isOpen.value = true))
 

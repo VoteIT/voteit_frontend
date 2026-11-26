@@ -9,26 +9,20 @@ import { TagsKey } from '@/modules/meetings/useTags'
 
 let uid = 0
 
-const emit = defineEmits(['update:modelValue'])
-const props = withDefaults(
-  defineProps<{
-    errorMessages?: string[]
-    label?: string
-    modelValue?: string[]
-    rules?: ValidationRule[]
-    setTag?: string
-  }>(),
-  {
-    modelValue: () => []
-  }
-)
+const props = defineProps<{
+  errorMessages?: string[]
+  label?: string
+  rules?: ValidationRule[]
+  setTag?: string
+}>()
+const model = defineModel<string[]>({ default: () => [] })
 
 const allTags = inject(TagsKey)
 uid++
 
 const newTag = ref('')
 const tags = reactive(
-  new Set(props.setTag ? [props.setTag, ...props.modelValue] : props.modelValue)
+  new Set(props.setTag ? [props.setTag, ...model.value] : model.value)
 )
 function addTag(name?: string) {
   const tag = tagify(name ?? newTag.value)
@@ -38,19 +32,16 @@ function addTag(name?: string) {
 }
 
 watch(tags, (value) => {
-  emit('update:modelValue', [...value])
+  model.value = [...value]
 })
-watch(
-  () => props.modelValue,
-  (value) => {
-    for (const tag of value) {
-      tags.add(tag)
-    }
-    for (const existing of tags.values()) {
-      if (!value.includes(existing)) tags.delete(existing)
-    }
+watch(model, (value) => {
+  for (const tag of value) {
+    tags.add(tag)
   }
-)
+  for (const existing of tags.values()) {
+    if (!value.includes(existing)) tags.delete(existing)
+  }
+})
 
 function detectTagClick(evt: Event) {
   if (

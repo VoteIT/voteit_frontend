@@ -5,7 +5,7 @@
  * Don't use inside a v-menu: its dialog is part of the menu content, which keeps the menu from closing.
  * Call dialogQuery() from the menu item's click handler instead.
  */
-import { inject, ref, shallowRef } from 'vue'
+import { inject, shallowRef } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 import { parseRestError } from '@/utils/restApi'
@@ -18,7 +18,6 @@ const { t } = useI18n()
 interface Props {
   confirm: () => unknown
   confirmText?: string
-  modelValue?: boolean
   persistent?: boolean
   text?: string
   color?: Color
@@ -28,7 +27,7 @@ const props = withDefaults(defineProps<Props>(), {
   color: 'primary'
 })
 
-const isActive = ref(props.modelValue)
+const isActive = defineModel<boolean>()
 const error = shallowRef<string>()
 const working = shallowRef(false)
 

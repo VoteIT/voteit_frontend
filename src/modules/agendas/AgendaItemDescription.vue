@@ -21,12 +21,9 @@ const props = defineProps<{
   agendaItem: AgendaItem
   body?: string // May load later
   canEdit?: boolean
-  editing?: boolean
 }>()
 
-const emit = defineEmits<{
-  (e: 'update:editing', value: boolean): void
-}>()
+const editing = defineModel<boolean>('editing')
 
 const { t } = useI18n()
 const rules = useRules(t)
@@ -66,7 +63,7 @@ const articleModified = computed(
 )
 
 function cancelEdit() {
-  emit('update:editing', false)
+  editing.value = false
   form.body = props.body ?? ''
   form.tags = extraTags.value
   form.title = props.agendaItem.title
@@ -80,7 +77,7 @@ async function save() {
   const { errors, submitting, ...content } = form
   try {
     await agendaItemType.api.patch(props.agendaItem.pk, { ...content })
-    emit('update:editing', false)
+    editing.value = false
   } catch (e) {
     form.errors = parseRestError(e)
   } finally {

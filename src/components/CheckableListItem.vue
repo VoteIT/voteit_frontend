@@ -1,25 +1,20 @@
 <script setup lang="ts">
 defineProps<{
   disabled?: boolean
-  modelValue?: boolean
   subtitle?: string
   title: string
 }>()
 
-defineEmits<{
-  (e: 'update:modelValue', value: boolean): void
-}>()
+const model = defineModel<boolean>({ default: false })
 </script>
 
 <template>
   <v-list-item
-    :prepend-icon="
-      modelValue ? 'mdi-checkbox-marked' : 'mdi-checkbox-blank-outline'
-    "
-    :active="modelValue"
+    :prepend-icon="model ? 'mdi-checkbox-marked' : 'mdi-checkbox-blank-outline'"
+    :active="model"
     :disabled="disabled"
     :subtitle="subtitle"
     :title="title"
-    @click="$emit('update:modelValue', !modelValue)"
+    @click="model = !model"
   />
 </template>

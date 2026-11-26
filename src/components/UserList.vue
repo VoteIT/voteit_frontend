@@ -9,16 +9,11 @@ import useUserDetails from '@/modules/organisations/useUserDetails'
 
 import UserAvatar from './UserAvatar.vue'
 
-defineEmits<{
-  (e: 'update:modelValue', value: Value): void
-}>()
-
 const props = withDefaults(
   defineProps<{
     bgColor?: string
     density?: 'default' | 'comfortable' | 'compact'
     multiple?: boolean
-    modelValue?: Value // Active user(s) pk, makes active list item
     userIds: number[]
   }>(),
   {
@@ -26,9 +21,12 @@ const props = withDefaults(
   }
 )
 
-if (props.multiple && typeof props.modelValue === 'number')
+// Active user(s) pk, makes active list item
+const model = defineModel<Value>()
+
+if (props.multiple && typeof model.value === 'number')
   throw new Error('Got multiple select but modelValue is not an array')
-if (!props.multiple && typeof props.modelValue === 'object')
+if (!props.multiple && typeof model.value === 'object')
   throw new Error('Got single select but modelValue is not a number')
 
 const { t } = useI18n()
@@ -45,21 +43,14 @@ const users = computed(() => {
 
 <template>
   <v-list :density="density" :bg-color="bgColor">
-    <v-item-group
-      :multiple="multiple"
-      :modelValue="modelValue"
-      @update:modelValue="$emit('update:modelValue', $event)"
-    >
+    <v-item-group :multiple="multiple" v-model="model">
       <v-item
         v-for="user in users"
         :key="user.pk"
         :value="user.pk"
         v-slot="{ isSelected, toggle }"
       >
-        <v-list-item
-          :onClick="modelValue ? toggle : undefined"
-          :active="isSelected"
-        >
+        <v-list-item :onClick="model ? toggle : undefined" :active="isSelected">
           <template #prepend>
             <UserAvatar :pk="user.pk" />
           </template>

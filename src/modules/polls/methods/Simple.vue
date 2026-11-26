@@ -46,19 +46,16 @@ import { simpleChoices } from './simple'
 
 const props = defineProps<{
   disabled?: boolean
-  modelValue?: SimpleVote
   poll: SimplePoll
   proposals: Proposal[]
 }>()
 
-const emit = defineEmits<{
-  (e: 'update:modelValue', vote?: SimpleVote): void
-}>()
+const model = defineModel<SimpleVote>()
 
 const votes = reactive<Map<number, SimpleChoice>>(new Map())
 
-if (props.modelValue) {
-  for (const [choice, pks] of Object.entries(props.modelValue)) {
+if (model.value) {
+  for (const [choice, pks] of Object.entries(model.value)) {
     for (const pk of pks) {
       votes.set(pk, choice as SimpleChoice)
     }
@@ -87,7 +84,7 @@ function change(proposal: Proposal, opt: SimpleChoiceDesc) {
 }
 
 watch(validVote, (value) => {
-  emit('update:modelValue', value)
+  model.value = value
 })
 
 function selectIds(proposals: number[]) {

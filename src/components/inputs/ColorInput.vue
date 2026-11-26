@@ -5,27 +5,19 @@ withDefaults(
   defineProps<{
     icon?: string
     label?: string
-    modelValue: string
   }>(),
   {
     icon: 'mdi-brush'
   }
 )
 
-defineEmits<{
-  (e: 'update:modelValue', value: string): void
-}>()
+const model = defineModel<string>({ required: true })
 </script>
 
 <template>
   <div>
     <v-label v-if="label" :text="label" />
-    <v-item-group
-      class="btn-controls"
-      mandatory
-      :model-value="modelValue"
-      @update:model-value="$emit('update:modelValue', $event)"
-    >
+    <v-item-group class="btn-controls" mandatory v-model="model">
       <v-item
         v-for="value in Object.values(ThemeColor)"
         :key="value"

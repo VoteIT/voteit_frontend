@@ -7,7 +7,7 @@
     <template #activator="{ props }">
       <span v-bind="props">
         <v-btn
-          v-if="modelValue || !readonly"
+          v-if="model || !readonly"
           v-bind="$attrs"
           :color="button.color"
           :loading="working"
@@ -16,7 +16,7 @@
           size="small"
           :text="button.title"
           :variant="variant"
-          @click.prevent="!readonly && emit('update:modelValue', !modelValue)"
+          @click.prevent="!readonly && (model = !model)"
         />
       </span>
     </template>
@@ -28,16 +28,17 @@ import { computed } from 'vue'
 
 import { IFlagButton } from './types'
 
-const props = defineProps<{
+defineProps<{
   button: IFlagButton
   readonly?: boolean
   working?: boolean
-  modelValue?: boolean
 }>()
 
-const emit = defineEmits(['update:modelValue', 'listOpen'])
+defineEmits(['listOpen'])
+
+const model = defineModel<boolean>()
 
 const variant = computed(() => {
-  return props.modelValue ? 'flat' : 'tonal'
+  return model.value ? 'flat' : 'tonal'
 })
 </script>

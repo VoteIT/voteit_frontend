@@ -58,17 +58,14 @@ import type { SchulzePoll, SchulzeVote } from './types'
 
 const props = defineProps<{
   disabled?: boolean
-  modelValue?: SchulzeVote
   poll: SchulzePoll
   proposals: Proposal[]
 }>()
 
-const emit = defineEmits<{
-  (e: 'update:modelValue', vote?: SchulzeVote): void
-}>()
+const model = defineModel<SchulzeVote>()
 
 function getGrades() {
-  if (props.modelValue) return Object.fromEntries(props.modelValue.ranking)
+  if (model.value) return Object.fromEntries(model.value.ranking)
   const deny = props.poll.settings.deny_proposal ? [0] : []
   return Object.fromEntries(
     [...props.poll.proposals, ...deny].map((id) => [id, 0])
@@ -81,10 +78,10 @@ const stars = computed(() => props.poll.settings?.stars ?? 5)
 const isValid = computed(() => Object.values(grades).some((n) => n))
 
 watch(grades, () => {
-  if (!isValid.value) return emit('update:modelValue') // Clear vote on invalid
-  emit('update:modelValue', {
-    ranking: Object.entries(grades).map(([k, v]) => [Number(k), v])
-  })
+  // Clear vote on invalid
+  model.value = isValid.value
+    ? { ranking: Object.entries(grades).map(([k, v]) => [Number(k), v]) }
+    : undefined
 })
 
 function selectIds(proposals: number[]) {

@@ -5,7 +5,6 @@ const props = withDefaults(
   defineProps<{
     label?: string
     rules?: ((value: any) => true | string)[]
-    modelValue?: string
     suggestions?: string[]
   }>(),
   {
@@ -26,15 +25,13 @@ const props = withDefaults(
   }
 )
 
-const emit = defineEmits<{
-  (e: 'update:modelValue', value?: string): void
-}>()
+const model = defineModel<string>()
 
-const selectedIcon = shallowRef(props.modelValue?.slice(4))
+const selectedIcon = shallowRef(model.value?.slice(4))
 const mdiIcon = computed(() =>
   selectedIcon.value ? 'mdi-' + selectedIcon.value : undefined
 )
-watch(mdiIcon, (value) => emit('update:modelValue', value))
+watch(mdiIcon, (value) => (model.value = value))
 
 const searchQuery = shallowRef<string>()
 

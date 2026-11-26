@@ -18,10 +18,9 @@ import { SpeakerSystem } from './types'
 import useSpeakerStore from './useSpeakerStore'
 
 const props = defineProps<{
-  open: boolean
   system: SpeakerSystem
 }>()
-const emit = defineEmits(['update:modelValue'])
+const open = defineModel<boolean>({ required: true })
 
 const { meeting } = useMeeting()
 const { getAgendaItem } = useAgendaStore()
@@ -30,14 +29,14 @@ const { getSpeakerList } = useSpeakerStore()
 const { getRoomRoute } = useRoom()
 
 function close() {
-  emit('update:modelValue', false)
+  open.value = false
 }
 
 // The room channel carries the active list and its speakers. Only subscribed
 // while the bubble is open.
 useChannel(
   roomChannel,
-  computed(() => (props.open ? props.system.room : undefined))
+  computed(() => (open.value ? props.system.room : undefined))
 )
 
 const list = computed(() =>

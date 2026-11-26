@@ -26,18 +26,15 @@
 <script setup lang="ts">
 import { reactive, watch } from 'vue'
 
-const props = withDefaults(
-  defineProps<{ errorMessages?: string | string[]; modelValue?: number }>(),
-  { modelValue: 0 }
-)
-const emit = defineEmits(['update:modelValue'])
+defineProps<{ errorMessages?: string | string[] }>()
+const model = defineModel<number>({ default: 0 })
 
 const duration = reactive({
-  minutes: String(Math.floor(props.modelValue / 60)),
-  seconds: String(props.modelValue % 60)
+  minutes: String(Math.floor(model.value / 60)),
+  seconds: String(model.value % 60)
 })
 
 watch(duration, ({ minutes, seconds }) => {
-  emit('update:modelValue', Number(minutes) * 60 + Number(seconds))
+  model.value = Number(minutes) * 60 + Number(seconds)
 })
 </script>

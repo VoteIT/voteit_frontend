@@ -296,7 +296,7 @@ const erPreliminary = computed(() => poll.value?.state === PollState.Upcoming)
         :disabled="!canVote"
         :poll="poll"
         :proposals="proposals"
-        :modelValue="userVote?.vote ?? undefined"
+        :initialVote="userVote?.vote ?? undefined"
         @votingComplete="votingComplete = true"
       />
       <div class="mt-6">
@@ -340,7 +340,7 @@ const erPreliminary = computed(() => poll.value?.state === PollState.Upcoming)
               disabled
               :poll="poll"
               :proposals="proposals"
-              :modelValue="userVote.vote"
+              :initialVote="userVote.vote"
             />
             <v-spacer />
             <div class="text-right">

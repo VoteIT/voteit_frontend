@@ -10,8 +10,8 @@ import useRooms from '../rooms/useRooms'
 
 import { IMeetingRoom } from './types'
 
-defineProps<{ modelValue?: boolean }>()
-defineEmits(['update:modelValue'])
+// Open state, passed by Bubbles
+defineModel<boolean>()
 
 const { t } = useI18n()
 

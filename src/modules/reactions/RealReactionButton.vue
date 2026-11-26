@@ -10,17 +10,18 @@ const props = defineProps<{
   disabled?: boolean
   listDisabled?: boolean
   working?: boolean
-  modelValue?: boolean
 }>()
 
-const emit = defineEmits(['update:modelValue', 'listOpen'])
+const emit = defineEmits(['listOpen'])
+
+const model = defineModel<boolean>()
 
 const meetsTarget = computed(() => {
   if (!props.button.target) return
   return props.count >= props.button.target
 })
 const variant = computed(() => {
-  return props.modelValue ? 'flat' : 'tonal'
+  return model.value ? 'flat' : 'tonal'
 })
 const countText = computed(() => {
   if (!props.button.target || meetsTarget.value) return String(props.count)
@@ -48,7 +49,7 @@ const countText = computed(() => {
           :prepend-icon="button.icon"
           size="small"
           :text="button.title"
-          @click.prevent="emit('update:modelValue', !modelValue)"
+          @click.prevent="model = !model"
         />
         <DefaultDialog
           @update:modelValue="$event && emit('listOpen')"

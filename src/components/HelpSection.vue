@@ -1,23 +1,18 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed } from 'vue'
 import { useStorage } from '@vueuse/core'
 
 const props = defineProps<{
   id: string
   startOpen?: boolean
   modal?: boolean
-  modelValue?: boolean
 }>()
 
-defineEmits<{
-  (e: 'update:modelValue', value: boolean): void
-}>()
+const isOpen = defineModel<boolean>({ default: false })
 
 const dismissedHelpIds = useStorage<string[]>('dismissedHelpIds', [])
 const isDismissed = computed(() => dismissedHelpIds.value.includes(props.id))
-const isOpen = ref(
-  (props.startOpen && !isDismissed.value) || !!props.modelValue
-)
+if (props.startOpen && !isDismissed.value) isOpen.value = true
 
 function toggle() {
   if (props.modal) {

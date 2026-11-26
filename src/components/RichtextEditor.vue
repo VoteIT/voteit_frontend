@@ -13,6 +13,7 @@ const QuillEditor = defineAsyncComponent(() => import('./QuillEditor.vue'))
 
 const props = defineProps<RichtextEditorProps>()
 const emit = defineEmits<RichtextEditorEmits>()
+const model = defineModel<string>()
 
 const editor = ref<EditorComponent | null>(null)
 
@@ -28,7 +29,7 @@ defineExpose({
     v-bind="props"
     @blur="emit('blur')"
     @focus="emit('focus')"
-    @update:model-value="emit('update:modelValue', $event)"
+    v-model="model"
   >
     <template #controls>
       <slot name="controls"></slot>

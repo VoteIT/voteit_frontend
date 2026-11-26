@@ -21,10 +21,7 @@ interface AutocompleteItem {
   value: string
 }
 
-const emit = defineEmits<{ (e: 'update:modelValue', value: Author): void }>()
-const props = defineProps<{
-  modelValue?: Author
-}>()
+const model = defineModel<Author>()
 
 const authStore = useAuthStore()
 const { isModerator, meetingId, postAs } = useMeeting()
@@ -33,14 +30,14 @@ const { getMeetingGroup } = useGroupStore()
 const { getUser } = useUserDetails(meetingId)
 
 // This means we're editing pre-existing content
-const editingMode = !!props.modelValue
+const editingMode = !!model.value
 
-const author: Ref<Author> = editingMode ? ref(props.modelValue) : postAs
+const author: Ref<Author> = editingMode ? ref(model.value!) : postAs
 
 watch(
   author,
   (author) => {
-    emit('update:modelValue', author)
+    model.value = author
   },
   { immediate: true }
 )

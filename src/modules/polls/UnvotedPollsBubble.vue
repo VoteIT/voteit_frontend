@@ -12,7 +12,7 @@
       :title="title"
       :subtitle="subtitle"
       :to="to"
-      @click="emit('update:modelValue', false)"
+      @click="open = false"
     />
   </v-list>
 </template>
@@ -27,8 +27,7 @@ import useMeeting from '../meetings/useMeeting'
 import usePollStore from './usePollStore'
 import { pollPlugins } from './registry'
 
-defineProps<{ modelValue?: boolean }>()
-const emit = defineEmits(['update:modelValue'])
+const open = defineModel<boolean>()
 
 const { t } = useI18n()
 const { meeting, meetingId } = useMeeting()
